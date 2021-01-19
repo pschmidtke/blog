@@ -1,1 +1,1 @@
-Sitemap: https://pschmidtke.github.io/fastpages/sitemap.xml
+Sitemap: https://pschmidtke.github.io/blog/sitemap.xml
