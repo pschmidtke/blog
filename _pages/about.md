@@ -4,10 +4,10 @@ title: About Me
 permalink: /about/
 ---
 
-Nothing super interesting here. 
+I'm a European citizen, currently stranded in France. I did my PhD in Xavier Barril's excellent group at the University of Barcelona, then a post-doc in molecular modelling within a French pharma company. However, I spent most of my "professional career" at [Discngine](https://www.discngine.com) based in Paris, France. 
 
-This website is powered by **[fastpages](https://github.com/fastai/fastpages)** [^1].
+I'll likely write about whatever crosses my mind here, but it'll surely focus on topics around cheminformatics, bioinformatics, binding sites, maybe a few papers. Let's see where this goes.
+
+This website is powered by [fastpages](https://github.com/fastai/fastpages) and github.
 
 
-
-[^1]:a blogging platform that natively supports Jupyter notebooks in addition to other formats.
