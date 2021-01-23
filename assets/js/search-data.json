@@ -18,7 +18,7 @@
   
       ,"page1": {
           "title": "About Me",
-          "content": "Nothing super interesting here. . This website is powered by fastpages 1. . a blogging platform that natively supports Jupyter notebooks in addition to other formats. &#8617; . |",
+          "content": "I’m a European citizen, currently stranded in France. I did my PhD in Xavier Barril’s excellent group at the University of Barcelona, then a post-doc in molecular modelling within a French pharma company. However, I spent most of my “professional career” at Discngine based in Paris, France. . I’ll likely write about whatever crosses my mind here, but it’ll surely focus on topics around cheminformatics, bioinformatics, binding sites, maybe a few papers. Let’s see where this goes. . This website is powered by fastpages and github. .",
           "url": "https://pschmidtke.github.io/blog/about/",
           "relUrl": "/about/",
           "date": ""
