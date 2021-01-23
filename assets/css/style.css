@@ -508,7 +508,7 @@ table td { background-color: #121212; border-color: #333333; color: rgba(255, 25
 
 .flash { color: #121212 !important; filter: brightness(80%); }
 
-canvas { filter: invert(100%); }
+canvas { filter: invert(20%); }
 
 .post-list > li > div { box-shadow: none !important; background-color: #1e1e1e; border: none !important; }
 
