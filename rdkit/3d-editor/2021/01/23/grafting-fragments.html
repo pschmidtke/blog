@@ -20,7 +20,13 @@
 <script type="application/ld+json">
 {"url":"https://pschmidtke.github.io/blog/rdkit/3d-editor/2021/01/23/grafting-fragments.html","@type":"BlogPosting","headline":"Grafting fragments onto molecules in rdkit - babysteps","dateModified":"2021-01-23T00:00:00-06:00","datePublished":"2021-01-23T00:00:00-06:00","image":"https://pschmidtke.github.io/blog/images/toc-grafting.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://pschmidtke.github.io/blog/rdkit/3d-editor/2021/01/23/grafting-fragments.html"},"author":{"@type":"Person","name":"Peter Schmidtke"},"description":"This is a quick set-up for attaching a fragment to a molecule on a particular location.","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
-<link rel="stylesheet" href="/blog/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://pschmidtke.github.io/blog/feed.xml" title="Cavities or pockets?" /><link rel="shortcut icon" type="image/x-icon" href="/blog/images/favicon.ico"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Primer/15.2.0/primer.css" integrity="sha512-xTz2ys4coGAOz8vuV1NcQBkgVmKhsSEtjbqyMJbBHRplFuvKIUo6xhLHpAyPt9mfR6twHJgn9OgVLuqOvjeBhg==" crossorigin="anonymous" />
+<link rel="stylesheet" href="/blog/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://pschmidtke.github.io/blog/feed.xml" title="Cavities or pockets?" /><!-- the google_analytics_id gets auto inserted from the config file -->
+
+
+
+<script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','//www.google-analytics.com/analytics.js','ga');ga('create','G-J0XMPRG095','auto');ga('require','displayfeatures');ga('send','pageview');</script>
+
+<link rel="shortcut icon" type="image/x-icon" href="/blog/images/favicon.ico"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Primer/15.2.0/primer.css" integrity="sha512-xTz2ys4coGAOz8vuV1NcQBkgVmKhsSEtjbqyMJbBHRplFuvKIUo6xhLHpAyPt9mfR6twHJgn9OgVLuqOvjeBhg==" crossorigin="anonymous" />
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
 
 <script>
@@ -521,7 +527,7 @@ viewer_16114413208701591.render();
 <h3 id="Aligning-the-fragment-onto-the-molecule">
 <a class="anchor" href="#Aligning-the-fragment-onto-the-molecule" aria-hidden="true"><span class="octicon octicon-link"></span></a>Aligning the fragment onto the molecule<a class="anchor-link" href="#Aligning-the-fragment-onto-the-molecule"> </a>
 </h3>
-<p>Now I have basically have the bond of the carbon to proton selected in the molecule and the carbon to R-group in my fragment. These bonds can be aligned onto each other to position the 3D-fragment correctly versus the molecule. This can be conveniently done using the AlignMol function available in rdkit.</p>
+<p>Now I have the bond of the carbon to proton selected in the molecule and the carbon to R-group in my fragment. These bonds can be aligned onto each other to position the 3D-fragment correctly versus the molecule. This can be conveniently done using the AlignMol function available in rdkit.</p>
 
 </div>
 </div>
