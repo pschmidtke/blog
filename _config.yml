@@ -6,7 +6,7 @@
 # https://learn-the-web.algonquindesign.ca/topics/markdown-yaml-cheat-sheet/#yaml
 # https://learnxinyminutes.com/docs/yaml/
 
-title: Cavities or pockets?
+title: Spinning coral
 description: A personal tech / science blog on subjects around molecular modelling, cheminformatics and code.
 github_username: pschmidtke
 # you can comment the below line out if your repo name is not different than your baseurl
@@ -58,7 +58,7 @@ annotations: false
 show_tags: true
 
 # Add your Google Analytics ID here if you have one and want to use it
-google_analytics: G-J0XMPRG095
+google_analytics: UA-188063211-1
 
 exclude:
   - docker-compose.yml
