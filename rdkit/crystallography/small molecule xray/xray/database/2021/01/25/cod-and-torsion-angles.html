@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="twitter:card" content="summary_large_image" /><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Crystallography Open Database and torsion angle statistics with rdkit | Spinning coral</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="Crystallography Open Database and torsion angle statistics with rdkit" />
+<meta name="author" content="Peter Schmidtke" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="First steps to check how easy / feasible it is to extract torsion angle statistics from the COD" />
+<meta property="og:description" content="First steps to check how easy / feasible it is to extract torsion angle statistics from the COD" />
+<link rel="canonical" href="https://pschmidtke.github.io/blog/rdkit/crystallography/small%20molecule%20xray/xray/database/2021/01/25/cod-and-torsion-angles.html" />
+<meta property="og:url" content="https://pschmidtke.github.io/blog/rdkit/crystallography/small%20molecule%20xray/xray/database/2021/01/25/cod-and-torsion-angles.html" />
+<meta property="og:site_name" content="Spinning coral" />
+<meta property="og:image" content="https://pschmidtke.github.io/blog/images/toc-cod.png" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-01-25T00:00:00-06:00" />
+<script type="application/ld+json">
+{"url":"https://pschmidtke.github.io/blog/rdkit/crystallography/small%20molecule%20xray/xray/database/2021/01/25/cod-and-torsion-angles.html","@type":"BlogPosting","headline":"Crystallography Open Database and torsion angle statistics with rdkit","dateModified":"2021-01-25T00:00:00-06:00","datePublished":"2021-01-25T00:00:00-06:00","image":"https://pschmidtke.github.io/blog/images/toc-cod.png","mainEntityOfPage":{"@type":"WebPage","@id":"https://pschmidtke.github.io/blog/rdkit/crystallography/small%20molecule%20xray/xray/database/2021/01/25/cod-and-torsion-angles.html"},"author":{"@type":"Person","name":"Peter Schmidtke"},"description":"First steps to check how easy / feasible it is to extract torsion angle statistics from the COD","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/blog/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://pschmidtke.github.io/blog/feed.xml" title="Spinning coral" /><!-- the google_analytics_id gets auto inserted from the config file -->
+
+
+
+<script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','//www.google-analytics.com/analytics.js','ga');ga('create','UA-188063211-1','auto');ga('require','displayfeatures');ga('send','pageview');</script>
+
+<link rel="shortcut icon" type="image/x-icon" href="/blog/images/favicon.ico"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Primer/15.2.0/primer.css" integrity="sha512-xTz2ys4coGAOz8vuV1NcQBkgVmKhsSEtjbqyMJbBHRplFuvKIUo6xhLHpAyPt9mfR6twHJgn9OgVLuqOvjeBhg==" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title") && (el.className != "emoji")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head>
+<body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/blog/">Spinning coral</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/blog/about/">About Me</a><a class="page-link" href="/blog/search/">Search</a><a class="page-link" href="/blog/categories/">Tags</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Crystallography Open Database and torsion angle statistics with rdkit</h1><p class="page-description">First steps to check how easy / feasible it is to extract torsion angle statistics from the COD</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2021-01-25T00:00:00-06:00" itemprop="datePublished">
+        Jan 25, 2021
+      </time>• 
+          <span itemprop="author" itemscope itemtype="http://schema.org/Person">
+            <span class="p-author h-card" itemprop="name">Peter Schmidtke</span></span>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      13 min read
+    
+</span></p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/blog/categories/#rdkit">rdkit</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/blog/categories/#crystallography">crystallography</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/blog/categories/#small molecule xray">small molecule xray</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/blog/categories/#xray">xray</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/blog/categories/#database">database</a>
+        
+      
+      </p>
+    
+
+    
+      
+        <div class="pb-5 d-flex flex-wrap flex-justify-end">
+          <div class="px-2">
+
+    <a href="https://github.com/pschmidtke/blog/tree/master/_notebooks/2021-01-25-cod-and-torsion-angles.ipynb" role="button" target="_blank">
+<img class="notebook-badge-image" src="/blog/assets/badges/github.svg" alt="View On GitHub">
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://mybinder.org/v2/gh/pschmidtke/blog/master?filepath=_notebooks%2F2021-01-25-cod-and-torsion-angles.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/blog/assets/badges/binder.svg" alt="Open In Binder"/>
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://colab.research.google.com/github/pschmidtke/blog/blob/master/_notebooks/2021-01-25-cod-and-torsion-angles.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/blog/assets/badges/colab.svg" alt="Open In Colab"/>
+    </a>
+</div>
+        </div>
+      </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <ul class="section-nav">
+<li class="toc-entry toc-h2"><a href="#Context">Context </a></li>
+<li class="toc-entry toc-h2"><a href="#Get-the-COD">Get the COD </a></li>
+<li class="toc-entry toc-h2"><a href="#Parsing-CIF-in-rdkit">Parsing CIF in rdkit </a></li>
+<li class="toc-entry toc-h2"><a href="#Extracting-relevant-molecules-from-the-COD">Extracting relevant molecules from the COD </a></li>
+<li class="toc-entry toc-h2"><a href="#Dask-&-multiprocessing-interlude">Dask &amp; multiprocessing interlude </a></li>
+<li class="toc-entry toc-h2"><a href="#Final-filtered-COD">Final filtered COD </a></li>
+<li class="toc-entry toc-h2"><a href="#Towards-torsion-angles">Towards torsion angles </a></li>
+<li class="toc-entry toc-h2"><a href="#Debugging-smarts-pattern-2">Debugging smarts pattern 2 </a></li>
+<li class="toc-entry toc-h1"><a href="#Conclusion">Conclusion </a></li>
+</ul><!--
+#################################################
+### THIS FILE WAS AUTOGENERATED! DO NOT EDIT! ###
+#################################################
+# file to edit: _notebooks/2021-01-25-cod-and-torsion-angles.ipynb
+-->
+
+<div class="container" id="notebook-container">
+        
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Context">
+<a class="anchor" href="#Context" aria-hidden="true"><span class="octicon octicon-link"></span></a>Context<a class="anchor-link" href="#Context"> </a>
+</h2>
+<p>When designing compounds in 3D, especially within the binding site, it is often very complicated to assess if what you've just designed actually makes sense. Is the molecule strained? Does it make ok or favourable interactions? Does it bump into the binding site somewhere? Especially when talking to medicinal chemists, they usually want to know whether their design passes all potential physical hurdles ... and while we're at it a prediction of the binding affinity would be nice and this in 1 second.</p>
+<p>Among all of these things to evaluate on a compound in 3D, the strain is something that can be either calculated (quantum mecanics, or force-field if you trust that) or compared to a set of reference compounds we know the structures of.</p>
+<p>A very popular reference database for small molecule conformations is the <a href="https://www.ccdc.cam.ac.uk/solutions/csd-core/components/csd/">CCDC CSD</a>. It contains more than a million small molecule crystal structures. It is widely used in pharma industry to assess various things ... among them: ligand strain. I won't enter the debate here whether the conformations observed in small molecule crystal structures are relevant and all the other debates on the use of such a database.</p>
+<p>The thing is, the CSD is not freely available. However, there's a free alternative available ... I guess the poor man's CSD and it's called COD for <a href="http://www.crystallography.net/cod/index.php">Crystallography Open Database</a>. It contains less structures than the CSD (466 000 by the time I'm writing this), that's for sure, but it's still maintained and people are depositing structures in there. The quality appears to be OK as well according to what I read so far, no tests done yet.</p>
+<p>Here I'll outline a few steps on how to get the COD and use rdkit to extract all torsion angles of all molecules - a long and bumpy ride. Here we go.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Get-the-COD">
+<a class="anchor" href="#Get-the-COD" aria-hidden="true"><span class="octicon octicon-link"></span></a>Get the COD<a class="anchor-link" href="#Get-the-COD"> </a>
+</h2>
+<p>That's rather easy. You can simply retrieve cif or hkl files from their server using this here:</p>
+<p><code>mkdir -p cif; rsync -av --delete rsync://www.crystallography.net/cif/ cif/</code></p>
+<p>This should run for a bit.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Parsing-CIF-in-rdkit">
+<a class="anchor" href="#Parsing-CIF-in-rdkit" aria-hidden="true"><span class="octicon octicon-link"></span></a>Parsing CIF in rdkit<a class="anchor-link" href="#Parsing-CIF-in-rdkit"> </a>
+</h2>
+<p>The first hurdle is as usual linked to molecular formats. To the best of my knowledge no cif parser was ported yet to rdkit. I tried a few parsers (gemmi - no mol or other useable output yet, pdbccdutils -&gt; only macromolecular cif files, I think) before ending up again with openbabel in the end. Let's stick with that for now.</p>
+<p>Let's try to see what this looks like for a single cif file from the COD:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">rdkit</span> <span class="kn">import</span> <span class="n">Chem</span>
+<span class="kn">from</span> <span class="nn">openbabel</span> <span class="kn">import</span> <span class="n">pybel</span>
+<span class="kn">import</span> <span class="nn">py3Dmol</span>
+<span class="kn">import</span> <span class="nn">dask</span>
+<span class="n">mol</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">pybel</span><span class="o">.</span><span class="n">readfile</span><span class="p">(</span><span class="s2">"cif"</span><span class="p">,</span> <span class="s2">"../../cod/cif/1/00/00/1000007.cif"</span><span class="p">))</span> 
+
+<span class="n">molblock</span><span class="o">=</span><span class="n">mol</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"mol"</span><span class="p">)</span>    <span class="c1">#write out as a molfile string and ship that now into rdkit</span>
+
+<span class="n">m</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">MolFromMolBlock</span><span class="p">(</span><span class="n">molblock</span><span class="p">,</span><span class="n">removeHs</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">m</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_png output_subarea output_execute_result">
+<img src="data:image/png;base64,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%0A">
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Well, that looks rather nasty. Let's check in 3D:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<details class="description">
+      <summary class="btn btn-sm" data-open="Hide Code" data-close="Show Code"></summary>
+        <p></p>
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">viewer</span> <span class="o">=</span> <span class="n">py3Dmol</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">addModel</span><span class="p">(</span><span class="n">molblock</span><span class="p">,</span> <span class="s1">'mol'</span><span class="p">)</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">setStyle</span><span class="p">({</span><span class="s2">"stick"</span><span class="p">:{}})</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">zoomTo</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+    </details>
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+<div id="3dmolviewer_1611794340751316" style="position: relative; width: 300px; height: 300px">
+        <p id="3dmolwarning_1611794340751316" style="background-color:#ffcccc;color:black">You appear to be running in JupyterLab (or JavaScript failed to load for some other reason).  You need to install the 3dmol extension: <br>
+        <tt>jupyter labextension install jupyterlab_3dmol</tt></p>
+        </div>
+<script>
+
+var loadScriptAsync = function(uri){
+  return new Promise((resolve, reject) => {
+    var tag = document.createElement('script');
+    tag.src = uri;
+    tag.async = true;
+    tag.onload = () => {
+      resolve();
+    };
+  var firstScriptTag = document.getElementsByTagName('script')[0];
+  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+});
+};
+
+if(typeof $3Dmolpromise === 'undefined') {
+$3Dmolpromise = null;
+  $3Dmolpromise = loadScriptAsync('https://3dmol.csb.pitt.edu/build/3Dmol.js');
+}
+
+var viewer_1611794340751316 = null;
+var warn = document.getElementById("3dmolwarning_1611794340751316");
+if(warn) {
+    warn.parentNode.removeChild(warn);
+}
+$3Dmolpromise.then(function() {
+viewer_1611794340751316 = $3Dmol.createViewer($("#3dmolviewer_1611794340751316"),{backgroundColor:"white"});
+	viewer_1611794340751316.addModel("?\n     RDKit          3D\n\n156159  0  0  0  0  0  0  0  0999 V2000\n    6.7116    7.5612    6.1763 O   0  0  0  0  0  0  0  0  0  0  0  0\n    6.4874    9.1026    7.8099 O   0  0  0  0  0  0  0  0  0  0  0  0\n    7.0851   12.2639    3.3688 O   0  0  0  0  0  0  0  0  0  0  0  0\n    7.6513   11.8884    3.8630 H   0  0  0  0  0  0  0  0  0  0  0  0\n    6.4672    9.7044    5.6185 N   0  0  0  0  0  0  0  0  0  0  0  0\n    6.7817    9.4078    4.2212 C   0  0  0  0  0  0  0  0  0  0  0  0\n    6.6880    8.4346    4.0641 H   0  0  0  0  0  0  0  0  0  0  0  0\n    7.7211    9.6584    4.0353 H   0  0  0  0  0  0  0  0  0  0  0  0\n    5.8606   10.1659    3.2709 C   0  0  0  0  0  0  0  0  0  0  0  0\n    4.9481    9.7881    3.3370 H   0  0  0  0  0  0  0  0  0  0  0  0\n    6.1771   10.0349    2.3425 H   0  0  0  0  0  0  0  0  0  0  0  0\n    5.8048   11.6671    3.5752 C   0  0  0  0  0  0  0  0  0  0  0  0\n    5.4713   11.8652    5.0565 C   0  0  0  0  0  0  0  0  0  0  0  0\n    5.4979   12.8318    5.2707 H   0  0  0  0  0  0  0  0  0  0  0  0\n    4.5530   11.5390    5.2309 H   0  0  0  0  0  0  0  0  0  0  0  0\n    6.4441   11.1255    5.9611 C   0  0  0  0  0  0  0  0  0  0  0  0\n    7.3512   11.5077    5.8563 H   0  0  0  0  0  0  0  0  0  0  0  0\n    6.1691   11.2357    6.9060 H   0  0  0  0  0  0  0  0  0  0  0  0\n    6.5702    8.8101    6.6282 C   0  0  0  0  0  0  0  0  0  0  0  0\n    6.7836    6.4272    7.1314 C   0  0  0  0  0  0  0  0  0  0  0  0\n    5.5008    6.3404    7.9405 C   0  0  0  0  0  0  0  0  0  0  0  0\n    5.4773    7.0707    8.5944 H   0  0  0  0  0  0  0  0  0  0  0  0\n    5.4670    5.4808    8.4088 H   0  0  0  0  0  0  0  0  0  0  0  0\n    4.7305    6.4159    7.3392 H   0  0  0  0  0  0  0  0  0  0  0  0\n    8.0100    6.5469    8.0050 C   0  0  0  0  0  0  0  0  0  0  0  0\n    8.8070    6.6209    7.4408 H   0  0  0  0  0  0  0  0  0  0  0  0\n    8.0854    5.7528    8.5745 H   0  0  0  0  0  0  0  0  0  0  0  0\n    7.9330    7.3447    8.5679 H   0  0  0  0  0  0  0  0  0  0  0  0\n    6.9102    5.2407    6.1991 C   0  0  0  0  0  0  0  0  0  0  0  0\n    6.1015    5.1691    5.6486 H   0  0  0  0  0  0  0  0  0  0  0  0\n    7.0202    4.4223    6.7248 H   0  0  0  0  0  0  0  0  0  0  0  0\n    7.6902    5.3637    5.6176 H   0  0  0  0  0  0  0  0  0  0  0  0\n    4.8505   12.4086    2.6051 C   0  0  0  0  0  0  0  0  0  0  0  0\n    5.3639   13.0241    1.4356 C   0  0  0  0  0  0  0  0  0  0  0  0\n    4.5199   13.8180    0.6548 C   0  0  0  0  0  0  0  0  0  0  0  0\n    4.8828   14.2481   -0.1105 H   0  0  0  0  0  0  0  0  0  0  0  0\n    3.1826   14.0054    0.9439 C   0  0  0  0  0  0  0  0  0  0  0  0\n    2.6787   13.3142    2.0177 C   0  0  0  0  0  0  0  0  0  0  0  0\n    1.7536   13.3987    2.2166 H   0  0  0  0  0  0  0  0  0  0  0  0\n    3.4647   12.4938    2.8294 C   0  0  0  0  0  0  0  0  0  0  0  0\n    6.7745   12.8837    0.8944 C   0  0  0  0  0  0  0  0  0  0  0  0\n    7.3775   13.4699    1.3967 H   0  0  0  0  0  0  0  0  0  0  0  0\n    6.7876   13.1352   -0.0530 H   0  0  0  0  0  0  0  0  0  0  0  0\n    7.0694   11.9532    0.9900 H   0  0  0  0  0  0  0  0  0  0  0  0\n    2.3136   14.9064    0.0924 C   0  0  0  0  0  0  0  0  0  0  0  0\n    2.8211   15.7061   -0.1591 H   0  0  0  0  0  0  0  0  0  0  0  0\n    1.5188   15.1706    0.6011 H   0  0  0  0  0  0  0  0  0  0  0  0\n    2.0388   14.4259   -0.7160 H   0  0  0  0  0  0  0  0  0  0  0  0\n    2.6644   11.7283    3.8744 C   0  0  0  0  0  0  0  0  0  0  0  0\n    3.0834   10.8571    4.0331 H   0  0  0  0  0  0  0  0  0  0  0  0\n    1.7479   11.5955    3.5514 H   0  0  0  0  0  0  0  0  0  0  0  0\n    2.6459   12.2398    4.7116 H   0  0  0  0  0  0  0  0  0  0  0  0\n    6.7264    7.1037   13.7937 O   0  0  0  0  0  0  0  0  0  0  0  0\n    7.3184    8.8817   15.0839 O   0  0  0  0  0  0  0  0  0  0  0  0\n    6.9942   10.7686   10.0326 O   0  0  0  0  0  0  0  0  0  0  0  0\n    6.8438   10.3592    9.3149 H   0  0  0  0  0  0  0  0  0  0  0  0\n    6.7297    9.1425   12.9002 N   0  0  0  0  0  0  0  0  0  0  0  0\n    7.1945   10.5403   12.8512 C   0  0  0  0  0  0  0  0  0  0  0  0\n    8.0579   10.5830   12.3690 H   0  0  0  0  0  0  0  0  0  0  0  0\n    7.3420   10.8717   13.7723 H   0  0  0  0  0  0  0  0  0  0  0  0\n    6.1783   11.4315   12.1498 C   0  0  0  0  0  0  0  0  0  0  0  0\n    6.5609   12.3381   12.0397 H   0  0  0  0  0  0  0  0  0  0  0  0\n    5.3685   11.5097   12.7137 H   0  0  0  0  0  0  0  0  0  0  0  0\n    5.7839   10.8834   10.7778 C   0  0  0  0  0  0  0  0  0  0  0  0\n    5.2746    9.4383   10.9619 C   0  0  0  0  0  0  0  0  0  0  0  0\n    4.4671    9.4429   11.5336 H   0  0  0  0  0  0  0  0  0  0  0  0\n    5.0249    9.0601   10.0817 H   0  0  0  0  0  0  0  0  0  0  0  0\n    6.3516    8.5700   11.6039 C   0  0  0  0  0  0  0  0  0  0  0  0\n    6.0088    7.6502   11.7303 H   0  0  0  0  0  0  0  0  0  0  0  0\n    7.1439    8.5267   11.0121 H   0  0  0  0  0  0  0  0  0  0  0  0\n    6.9558    8.4164   14.0107 C   0  0  0  0  0  0  0  0  0  0  0  0\n    6.8447    6.1049   14.8770 C   0  0  0  0  0  0  0  0  0  0  0  0\n    5.7206    6.2952   15.8697 C   0  0  0  0  0  0  0  0  0  0  0  0\n    5.8266    7.1586   16.3225 H   0  0  0  0  0  0  0  0  0  0  0  0\n    5.7453    5.5750   16.5325 H   0  0  0  0  0  0  0  0  0  0  0  0\n    4.8622    6.2758   15.3988 H   0  0  0  0  0  0  0  0  0  0  0  0\n    6.6536    4.7978   14.1192 C   0  0  0  0  0  0  0  0  0  0  0  0\n    5.7854    4.8072   13.6640 H   0  0  0  0  0  0  0  0  0  0  0  0\n    6.6834    4.0479   14.7491 H   0  0  0  0  0  0  0  0  0  0  0  0\n    7.3684    4.6964   13.4563 H   0  0  0  0  0  0  0  0  0  0  0  0\n    8.2092    6.1469   15.5312 C   0  0  0  0  0  0  0  0  0  0  0  0\n    8.9009    6.2172   14.8397 H   0  0  0  0  0  0  0  0  0  0  0  0\n    8.3477    5.3281   16.0507 H   0  0  0  0  0  0  0  0  0  0  0  0\n    8.2629    6.9243   16.1259 H   0  0  0  0  0  0  0  0  0  0  0  0\n    4.8086   11.8470   10.0541 C   0  0  0  0  0  0  0  0  0  0  0  0\n    5.3276   12.8134    9.1588 C   0  0  0  0  0  0  0  0  0  0  0  0\n    4.4436   13.5977    8.4163 C   0  0  0  0  0  0  0  0  0  0  0  0\n    4.8038   14.2146    7.7900 H   0  0  0  0  0  0  0  0  0  0  0  0\n    3.0751   13.5205    8.5476 C   0  0  0  0  0  0  0  0  0  0  0  0\n    2.5885   12.6659    9.5179 C   0  0  0  0  0  0  0  0  0  0  0  0\n    1.6517   12.6415    9.6751 H   0  0  0  0  0  0  0  0  0  0  0  0\n    3.4129   11.8371   10.2768 C   0  0  0  0  0  0  0  0  0  0  0  0\n    6.7954   13.1703    8.9847 C   0  0  0  0  0  0  0  0  0  0  0  0\n    7.2492   13.1163    9.8519 H   0  0  0  0  0  0  0  0  0  0  0  0\n    6.8701   14.0828    8.6320 H   0  0  0  0  0  0  0  0  0  0  0  0\n    7.2126   12.5432    8.3580 H   0  0  0  0  0  0  0  0  0  0  0  0\n    2.1535   14.3598    7.7001 C   0  0  0  0  0  0  0  0  0  0  0  0\n    2.5806   15.2208    7.5071 H   0  0  0  0  0  0  0  0  0  0  0  0\n    1.3138   14.5116    8.1834 H   0  0  0  0  0  0  0  0  0  0  0  0\n    1.9667   13.8924    6.8596 H   0  0  0  0  0  0  0  0  0  0  0  0\n    2.6900   11.0119   11.3261 C   0  0  0  0  0  0  0  0  0  0  0  0\n    2.5565   10.1019   10.9900 H   0  0  0  0  0  0  0  0  0  0  0  0\n    1.8200   11.4198   11.5204 H   0  0  0  0  0  0  0  0  0  0  0  0\n    3.2266   10.9826   12.1458 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.0902   13.6090    9.8921 O   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.4416   11.7806   11.1968 O   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.5698    9.9492    6.0375 O   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.5108   10.4973    5.4055 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.1878   11.5980    8.9381 N   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.9365   12.1917    7.6329 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.6185   13.1226    7.7436 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.7742   12.2105    7.1071 H   0  0  0  0  0  0  0  0  0  0  0  0\n    0.1153   11.3715    6.8996 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.9690   11.4072    7.4011 H   0  0  0  0  0  0  0  0  0  0  0  0\n    0.2703   11.7629    6.0022 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.3249    9.9040    6.7482 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.6631    9.3321    8.1294 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.0480    8.4263    8.0220 H   0  0  0  0  0  0  0  0  0  0  0  0\n    0.1684    9.2484    8.6607 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.6490   10.2079    8.8819 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -2.5302   10.1709    8.4331 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.7605    9.8613    9.8032 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.2635   12.2794   10.1082 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.1055   14.5623   11.0154 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.0605   14.2907   11.9418 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.0905   13.4469   12.4176 H   0  0  0  0  0  0  0  0  0  0  0  0\n    0.1409   15.0221   12.5900 H   0  0  0  0  0  0  0  0  0  0  0  0\n    0.8865   14.2271   11.4165 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -2.4269   14.5349   11.7491 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -3.1556   14.6999   11.1159 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -2.4305   15.2292   12.4419 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -2.5508   13.6561   12.1657 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.9175   15.8925   10.3071 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.0389   15.9091    9.8718 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.9724   16.6203   10.9590 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.6185   16.0053    9.6309 H   0  0  0  0  0  0  0  0  0  0  0  0\n    0.7022    9.0201    6.0055 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.2802    8.0953    5.0168 C   0  0  0  0  0  0  0  0  0  0  0  0\n    1.2295    7.3983    4.2740 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.9289    6.8092    3.5911 H   0  0  0  0  0  0  0  0  0  0  0  0\n    2.5920    7.5255    4.4855 C   0  0  0  0  0  0  0  0  0  0  0  0\n    2.9822    8.3334    5.5288 C   0  0  0  0  0  0  0  0  0  0  0  0\n    3.9081    8.3907    5.7348 H   0  0  0  0  0  0  0  0  0  0  0  0\n    2.0859    9.0714    6.2987 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.1573    7.6955    4.7173 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.6585    7.6250    5.5558 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.1672    6.8301    4.2563 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.5726    8.3740    4.1458 H   0  0  0  0  0  0  0  0  0  0  0  0\n    3.5943    6.7826    3.6406 C   0  0  0  0  0  0  0  0  0  0  0  0\n    3.3457    5.8365    3.5978 H   0  0  0  0  0  0  0  0  0  0  0  0\n    4.4854    6.8678    4.0398 H   0  0  0  0  0  0  0  0  0  0  0  0\n    3.6034    7.1606    2.7359 H   0  0  0  0  0  0  0  0  0  0  0  0\n    2.7309    9.8272    7.4464 C   0  0  0  0  0  0  0  0  0  0  0  0\n    2.9150   10.7483    7.1690 H   0  0  0  0  0  0  0  0  0  0  0  0\n    3.5702    9.3864    7.6972 H   0  0  0  0  0  0  0  0  0  0  0  0\n    2.1236    9.8341    8.2143 H   0  0  0  0  0  0  0  0  0  0  0  0\n  1 19  1  0\n  1 20  1  0\n  3 12  1  0\n  3  4  1  0\n  5 16  1  0\n  5 19  1  0\n  6  5  1  0\n  7  6  1  0\n  8  6  1  0\n  9 10  1  0\n  9 12  1  0\n  9  6  1  0\n 11  9  1  0\n 12 13  1  0\n 13 15  1  0\n 13 14  1  0\n 13 16  1  0\n 16 18  1  0\n 17 16  1  0\n 19  2  2  0\n 20 21  1  0\n 20 25  1  0\n 21 23  1  0\n 21 22  1  0\n 24 21  1  0\n 25 28  1  0\n 25 27  1  0\n 26 25  1  0\n 29 31  1  0\n 29 20  1  0\n 30 29  1  0\n 32 29  1  0\n 33 40  1  0\n 33 12  1  0\n 34 33  2  0\n 35 37  2  0\n 35 34  1  0\n 36 35  1  0\n 37 38  1  0\n 38 39  1  0\n 38 40  2  0\n 40 49  1  0\n 41 44  1  0\n 41 42  1  0\n 41 34  1  0\n 43 41  1  0\n 45 47  1  0\n 45 37  1  0\n 46 45  1  0\n 48 45  1  0\n 49 50  1  0\n 49 52  1  0\n 51 49  1  0\n 53 71  1  0\n 53 72  1  0\n 55 64  1  0\n 56 55  1  0\n 57 71  1  0\n 58 57  1  0\n 58 60  1  0\n 59 58  1  0\n 61 63  1  0\n 61 58  1  0\n 62 61  1  0\n 64 65  1  0\n 64 61  1  0\n 65 66  1  0\n 65 68  1  0\n 67 65  1  0\n 68 69  1  0\n 68 57  1  0\n 70 68  1  0\n 71 54  2  0\n 72 81  1  0\n 72 73  1  0\n 73 74  1  0\n 73 75  1  0\n 76 73  1  0\n 77 79  1  0\n 77 72  1  0\n 78 77  1  0\n 80 77  1  0\n 81 83  1  0\n 81 84  1  0\n 82 81  1  0\n 85 92  1  0\n 85 64  1  0\n 86 85  2  0\n 87 89  2  0\n 87 86  1  0\n 88 87  1  0\n 89 90  1  0\n 90 91  1  0\n 90 92  2  0\n 92101  1  0\n 93 86  1  0\n 93 94  1  0\n 95 93  1  0\n 96 93  1  0\n 97 99  1  0\n 97 89  1  0\n 98 97  1  0\n100 97  1  0\n101103  1  0\n101104  1  0\n102101  1  0\n105123  1  0\n105124  1  0\n107116  1  0\n108107  1  0\n109123  1  0\n110111  1  0\n110109  1  0\n112110  1  0\n113114  1  0\n113110  1  0\n115113  1  0\n116113  1  0\n116117  1  0\n117119  1  0\n117120  1  0\n118117  1  0\n120109  1  0\n120122  1  0\n121120  1  0\n123106  2  0\n124129  1  0\n124125  1  0\n125126  1  0\n125127  1  0\n128125  1  0\n129132  1  0\n129131  1  0\n130129  1  0\n133135  1  0\n133124  1  0\n134133  1  0\n136133  1  0\n137144  1  0\n137116  1  0\n138137  2  0\n139141  2  0\n139138  1  0\n140139  1  0\n141142  1  0\n142143  1  0\n142144  2  0\n144153  1  0\n145138  1  0\n145146  1  0\n147145  1  0\n148145  1  0\n149151  1  0\n149141  1  0\n150149  1  0\n152149  1  0\n153155  1  0\n153156  1  0\n154153  1  0\nM  END\n","mol");
+	viewer_1611794340751316.setStyle({"stick": {}});
+	viewer_1611794340751316.zoomTo();
+viewer_1611794340751316.render();
+});
+</script>
+</div>
+
+</div>
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&lt;py3Dmol.view at 0x7fc9906c7400&gt;</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>So good news, cif parsing seems to work (at least on this particular example). The bad news, how can I get to relevant molecules in the COD?</p>
+<h2 id="Extracting-relevant-molecules-from-the-COD">
+<a class="anchor" href="#Extracting-relevant-molecules-from-the-COD" aria-hidden="true"><span class="octicon octicon-link"></span></a>Extracting relevant molecules from the COD<a class="anchor-link" href="#Extracting-relevant-molecules-from-the-COD"> </a>
+</h2>
+<p>Thanks to researchgate I came across <a href="http://www.openmolecules.org/datawarrior/datafiles.html#cod">this page</a> where they provide a datawarrior file of the content of the cod (at least a curated subpart of that). You can see that the COD contains organic, inorganic and metalorganic structures.</p>
+<p><img src="/blog/images/copied_from_nb/../images/datawarrior_example.png" alt="datawarrior screenshot" title="Example screenshot from datawarrior"></p>
+<p>As you might already observe on the screenshot above, there's a lot of noise (for drug discovery) in there.</p>
+<p>So how can we filter out only the organic ones? I checked the individual cif files, and no easy way to get to this classification ... would have been too easy. So two solutions - either take the prepared datawarrior file (which I would not prefer, because I'm dependent on somebody else doing this nice work during his free-time, Thomas Sander), or trial and error and identify organic compounds with a set of rules. Good thing is, I can use Thomas Sanders work (the datawarrior file) to check if the filter works or not (+ visual inspection).</p>
+<p>The COD dump you can download via rsync is structured a bit like the PDB: with two levels of subfolders, numbered and 100 files max per subfolder. Basically I'll have to loop over all of this -&gt; let's blow up the notebook ;) I'll loop over all molecules and try to run through sanitize. All failing molecules should not be added. Next I'm checking as well if there's at least a carbon atom in the structure (for a lot of them there isn't). I filter out metalorganics as well. Last I keep only molecules with more than 6 atoms.</p>
+<p>As this is a bit slow and can be easily put on several cpu's I'm doing that right here as well. I wanted to test how dask behaves on such a task. It's total overkill for what I'm doing here, but I want to see how the scheduling behaves on short living and often failing jobs (difficult to orchestrate, unless you handle it yourself in the code).</p>
+<p>Below you have a standalone python script (was not optimal in the notebook) to run all of this quick and dirty preparation. There are tons of rdkit &amp; openbabel warnings popping out of that, as expected:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">rdkit</span> <span class="kn">import</span> <span class="n">Chem</span>
+<span class="kn">from</span> <span class="nn">openbabel</span> <span class="kn">import</span> <span class="n">pybel</span>
+<span class="kn">import</span> <span class="nn">glob</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">multiprocessing</span> <span class="k">as</span> <span class="nn">mp</span>
+<span class="kn">from</span> <span class="nn">wrapt_timeout_decorator</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">rdkit</span> <span class="kn">import</span> <span class="n">rdBase</span>
+<span class="n">rdBase</span><span class="o">.</span><span class="n">DisableLog</span><span class="p">(</span><span class="s1">'rdApp.error'</span><span class="p">)</span>
+<span class="n">rdBase</span><span class="o">.</span><span class="n">DisableLog</span><span class="p">(</span><span class="s1">'rdApp.warning'</span><span class="p">)</span>
+
+<span class="n">ob_log_handler</span> <span class="o">=</span> <span class="n">pybel</span><span class="o">.</span><span class="n">ob</span><span class="o">.</span><span class="n">OBMessageHandler</span><span class="p">()</span>
+<span class="n">ob_log_handler</span><span class="o">.</span><span class="n">SetOutputLevel</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">carbon</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">MolFromSmarts</span><span class="p">(</span><span class="s2">"[#6]"</span><span class="p">)</span>
+
+
+
+<span class="k">def</span> <span class="nf">is_transition_metal</span><span class="p">(</span><span class="n">at</span><span class="p">):</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="n">at</span><span class="o">.</span><span class="n">GetAtomicNum</span><span class="p">()</span>
+    <span class="k">return</span> <span class="p">(</span><span class="n">n</span><span class="o">&gt;=</span><span class="mi">22</span> <span class="ow">and</span> <span class="n">n</span><span class="o">&lt;=</span><span class="mi">29</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">n</span><span class="o">&gt;=</span><span class="mi">40</span> <span class="ow">and</span> <span class="n">n</span><span class="o">&lt;=</span><span class="mi">47</span><span class="p">)</span> <span class="ow">or</span> <span class="p">(</span><span class="n">n</span><span class="o">&gt;=</span><span class="mi">72</span> <span class="ow">and</span> <span class="n">n</span><span class="o">&lt;=</span><span class="mi">79</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">write_output</span><span class="p">(</span><span class="n">filenames</span><span class="p">,</span><span class="n">outputname</span><span class="o">=</span><span class="s2">"out.sdf"</span><span class="p">):</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">SDWriter</span><span class="p">(</span><span class="n">outputname</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">st_size</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1024</span> <span class="o">*</span> <span class="mi">1024</span><span class="p">)</span><span class="o">&lt;</span><span class="mf">2.0</span><span class="p">:</span>
+                <span class="n">mol</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">pybel</span><span class="o">.</span><span class="n">readfile</span><span class="p">(</span><span class="s2">"cif"</span><span class="p">,</span><span class="nb">str</span><span class="p">(</span><span class="n">filename</span><span class="p">)))</span> 
+                <span class="n">molblock</span><span class="o">=</span><span class="n">mol</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"mol"</span><span class="p">)</span>    <span class="c1">#write out as a molfile string and ship that now into rdkit</span>
+                <span class="n">m</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">MolFromMolBlock</span><span class="p">(</span><span class="n">molblock</span><span class="p">,</span><span class="n">removeHs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">sanitize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+                <span class="n">m</span><span class="o">.</span><span class="n">SetProp</span><span class="p">(</span><span class="s1">'COD'</span><span class="p">,</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="n">w</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">pass</span>
+    <span class="n">w</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">select_molecule</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+
+    <span class="n">blacklist</span><span class="o">=</span><span class="p">[</span><span class="s2">"../../cod/cif/2/31/17/2311717.cif"</span><span class="p">,</span><span class="s2">"../../cod/cif/2/10/46/2104629.cif"</span><span class="p">,</span><span class="s2">"../../cod/cif/2/10/59/2105953.cif"</span><span class="p">]</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">filename</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">blacklist</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">mol</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">pybel</span><span class="o">.</span><span class="n">readfile</span><span class="p">(</span><span class="s2">"cif"</span><span class="p">,</span><span class="nb">str</span><span class="p">(</span><span class="n">filename</span><span class="p">)))</span> 
+            <span class="n">molblock</span><span class="o">=</span><span class="n">mol</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">"mol"</span><span class="p">)</span>    <span class="c1">#write out as a molfile string and ship that now into rdkit</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">MolFromMolBlock</span><span class="p">(</span><span class="n">molblock</span><span class="p">,</span><span class="n">removeHs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">sanitize</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            
+            <span class="k">if</span> <span class="n">m</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">m</span><span class="o">.</span><span class="n">GetSubstructMatches</span><span class="p">(</span><span class="n">carbon</span><span class="p">))</span><span class="o">&gt;</span><span class="mi">0</span> <span class="ow">and</span> <span class="n">m</span><span class="o">.</span><span class="n">GetNumAtoms</span><span class="p">()</span><span class="o">&gt;</span> <span class="mi">6</span>  <span class="p">:</span>
+                
+                <span class="k">if</span><span class="p">(</span><span class="kc">True</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="n">is_transition_metal</span><span class="p">(</span><span class="n">atom</span><span class="p">)</span> <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">m</span><span class="o">.</span><span class="n">GetAtoms</span><span class="p">()]):</span>
+                    <span class="k">return</span> <span class="n">filename</span>
+        <span class="k">except</span> <span class="ne">Exception</span><span class="p">:</span>
+            <span class="k">return</span> <span class="kc">None</span>
+        <span class="k">return</span> <span class="kc">None</span>
+    <span class="k">return</span> <span class="kc">None</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">'__main__'</span><span class="p">:</span>
+    <span class="n">files</span><span class="o">=</span><span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s1">'../../cod/cif/**/*.cif'</span><span class="p">,</span> <span class="n">recursive</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">n</span><span class="o">=</span><span class="mi">0</span>
+
+    <span class="n">pool</span> <span class="o">=</span> <span class="n">mp</span><span class="o">.</span><span class="n">Pool</span><span class="p">(</span><span class="n">mp</span><span class="o">.</span><span class="n">cpu_count</span><span class="p">())</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">pool</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="n">select_molecule</span><span class="p">,</span> <span class="n">files</span><span class="p">)</span>
+    
+    <span class="n">validresults</span><span class="o">=</span><span class="p">[</span><span class="n">el</span> <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">results</span> <span class="k">if</span> <span class="n">el</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
+    <span class="n">codids</span><span class="o">=</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">"."</span><span class="p">)[</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">validresults</span><span class="p">]</span>
+    
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_table</span><span class="p">(</span><span class="s1">'/Users/peter/Downloads/COD_2020jun13.txt'</span><span class="p">,</span>  <span class="n">header</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">dwr</span><span class="o">=</span><span class="n">df</span><span class="p">[</span><span class="s2">"COD Number"</span><span class="p">]</span>
+
+    <span class="n">common</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">dwr</span><span class="p">)</span> <span class="o">&amp;</span> <span class="nb">set</span><span class="p">(</span><span class="n">codids</span><span class="p">))</span>
+
+    <span class="n">write_output</span><span class="p">(</span><span class="n">validresults</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"common molecules"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">common</span><span class="p">))</span>
+
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"in mine, not in datawarrior"</span><span class="p">)</span>
+    <span class="n">intersect1</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">setdiff1d</span><span class="p">(</span><span class="n">codids</span><span class="p">,</span><span class="n">dwr</span><span class="p">)</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="s2">"out_intersect1.csv"</span><span class="p">,</span><span class="n">intersect1</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span><span class="n">delimiter</span><span class="o">=</span><span class="s2">","</span><span class="p">,</span><span class="n">fmt</span><span class="o">=</span><span class="s1">'</span><span class="si">%i</span><span class="s1">'</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">intersect1</span><span class="p">))</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">"in datawarrior, not in mine"</span><span class="p">)</span>
+    <span class="n">intersect2</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">setdiff1d</span><span class="p">(</span><span class="n">dwr</span><span class="p">,</span><span class="n">codids</span><span class="p">)</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="s2">"out_intersect2.csv"</span><span class="p">,</span><span class="n">intersect2</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">),</span><span class="n">delimiter</span><span class="o">=</span><span class="s2">","</span><span class="p">,</span><span class="n">fmt</span><span class="o">=</span><span class="s1">'</span><span class="si">%i</span><span class="s1">'</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">intersect2</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>I finally decided to strip out the dask code and run it through multiprocessing. Anyhow, easy to set up and a quick discussion on that below as well!</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Dask-&amp;-multiprocessing-interlude">
+<a class="anchor" href="#Dask-&amp;-multiprocessing-interlude" aria-hidden="true"><span class="octicon octicon-link"></span></a>Dask &amp; multiprocessing interlude<a class="anchor-link" href="#Dask-&amp;-multiprocessing-interlude"> </a>
+</h2>
+<p>Before analyzing the results, let's briefly assess how dask performs here.
+Dask enables us to run the code in a classical threaded, but also distributed mode, even on a local machine. As I have 12 cores's hanging in my MacPro I tested a distributed calculation. That is rather easy to set up. A bit like a multiprocessing Pool, but with the advantage that the functions are not 100% isolated (advantage or disadvantage, I let you decide ;)).<br>
+The other nice thing (I didn't know about) is that dask (if installed through conda at least) comes with bokeh, a tool allowing you to do some monitoring of your jobs. It's not super advanced, but gives you an overview of the worker loads, the job queue and the overall advancement. So that's quite cool compared to being completely blind on what's happening in your queue.</p>
+<p><img src="/blog/images/copied_from_nb/../images/dask_cod.png" alt="dask screenshot" title="Monitoring dask distributed computation using Bokeh"></p>
+<p>I tested quite a range of combinations and ways to run this in dask (bag, compute, map .... ) and combinations of number of worker nodes vs threads. In the end, parallelization still isn't optimally spread over all cpu's, but I guess that's likely due to the fact that every calculation can range from immediate failure to runnning for a very long time. I guess, that on longer living and more stable jobs this is far more efficient.</p>
+<p>The most frustrating thing was that the script completely froze on a single job during the last 10% of the molecules. I narrowed down the issue to 3 molecules that openbabel naturally had issues with. When I say naturally, have a look at these:</p>
+<p><img src="/blog/images/copied_from_nb/../images/weird_cods.png" alt="issues with these cod's" title="unprocessable with openbabel"></p>
+<p>The nasty thing here is that I even tried to kill these freezing jobs with timeout decorators and such. Without success. Even a ctrl+c in a shell didn't kill the job ... only a kill -9 did. So in the end I kept the multiprocessing version here in the code and filtered out the three incriminating molecules ( by hand, but would be really interested to know how this can be handled in a more geeky way).</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Final-filtered-COD">
+<a class="anchor" href="#Final-filtered-COD" aria-hidden="true"><span class="octicon octicon-link"></span></a>Final filtered COD<a class="anchor-link" href="#Final-filtered-COD"> </a>
+</h2>
+<p>Let's come back to the actual aim of this post. Extract torsion angle statistics from small molecule crystal structures. First let's have a look what molecules I have in common now with Datawarrior and which ones are different and whether the filter should / could be refined a bit.</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>obabel &amp; rdkit</th>
+<th>Datawarrior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>obabel &amp; rdkit</td>
+<td>78643</td>
+<td>117674</td>
+</tr>
+<tr>
+<td>Datawarrior</td>
+<td>117674</td>
+<td>18344</td>
+</tr>
+</tbody>
+</table>
+<p>The majority of retained molecules are in common with datawarrior, but I am, I guess still a bit permissive for now. I don't want to go too much into the analysis of differences here and now. Quickly checking the sd file (above 1Gb) with datawarrior gives a few ideas on what to filter out. I guess I can also use some of the published usual filters on top of that.</p>
+<p><img src="/blog/images/copied_from_nb/../images/myselection.png" alt="quick overview" title="My selection of compounds - excerpt"></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Towards-torsion-angles">
+<a class="anchor" href="#Towards-torsion-angles" aria-hidden="true"><span class="octicon octicon-link"></span></a>Towards torsion angles<a class="anchor-link" href="#Towards-torsion-angles"> </a>
+</h2>
+<p>Now the next step is to identify whether there's enough data to gather some statistics on some typical torsion angles that you can encounter in druglike molecules. Fortunately Sereina Riniker &amp; Greg Landrum already did <a href="https://pubs.acs.org/doi/abs/10.1021/acs.jcim.5b00654">something a bit similar in the past with data from the CSD and the PDB</a> to write the ETKDG (I hope I got that right) conformer generator for rdkit.</p>
+<p>The SI of that paper lists a bunch of smarts patterns describing such torsion angles. I'll blindly use these here to sieve through all molecules from the COD to see what I can get out of that. 
+The smarts patterns are available <a href="https://pubs.acs.org/doi/suppl/10.1021/acs.jcim.5b00654/suppl_file/ci5b00654_si_007.zip">here</a> - freely available ... unlike the paper behind it :(</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">rdkit.Chem</span> <span class="kn">import</span> <span class="n">rdMolTransforms</span>
+
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span> 
+<span class="kn">import</span> <span class="nn">matplotlib.image</span> <span class="k">as</span> <span class="nn">mpimg</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">urllib.parse</span>
+
+<span class="n">torsions</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">read_table</span><span class="p">(</span><span class="s2">"../data/list_torsion_patterns.txt"</span><span class="p">,</span><span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">usecols</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">suppl</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">SDMolSupplier</span><span class="p">(</span><span class="s1">'out.sdf'</span><span class="p">,</span><span class="n">removeHs</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="n">patterns</span><span class="o">=</span><span class="n">torsions</span><span class="p">[</span><span class="mi">1</span><span class="p">][:</span><span class="mi">3</span><span class="p">]</span>
+
+<span class="k">for</span> <span class="n">torsionSmarts</span> <span class="ow">in</span> <span class="n">patterns</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">torsionSmarts</span><span class="p">)</span>
+    <span class="n">angles</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">torsionQuery</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">MolFromSmarts</span><span class="p">(</span><span class="n">torsionSmarts</span><span class="p">)</span>
+    <span class="n">i</span><span class="o">=</span><span class="mi">0</span>
+    <span class="c1">#suppl.reset()</span>
+    <span class="k">for</span> <span class="n">mol</span> <span class="ow">in</span> <span class="n">suppl</span><span class="p">:</span>
+        <span class="n">i</span><span class="o">+=</span><span class="mi">1</span>
+        <span class="k">if</span> <span class="n">mol</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="k">continue</span>
+        <span class="n">conf</span><span class="o">=</span><span class="n">mol</span><span class="o">.</span><span class="n">GetConformer</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">matches</span> <span class="o">=</span> <span class="n">mol</span><span class="o">.</span><span class="n">GetSubstructMatches</span><span class="p">(</span><span class="n">torsionQuery</span><span class="p">)</span>
+        <span class="k">if</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">matches</span><span class="p">:</span>
+                <span class="n">angle</span><span class="o">=</span><span class="n">rdMolTransforms</span><span class="o">.</span><span class="n">GetDihedralDeg</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">match</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">match</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">match</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="n">match</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+                <span class="n">angles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
+
+
+    <span class="k">if</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">angles</span><span class="p">)):</span>
+        <span class="n">smarts</span><span class="o">=</span><span class="n">urllib</span><span class="o">.</span><span class="n">parse</span><span class="o">.</span><span class="n">quote</span><span class="p">(</span><span class="n">torsionSmarts</span><span class="p">)</span>
+        <span class="n">img</span> <span class="o">=</span> <span class="n">mpimg</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="s2">"https://smarts.plus/smartsview/download_rest?smarts="</span><span class="o">+</span><span class="n">smarts</span><span class="p">,</span><span class="nb">format</span><span class="o">=</span><span class="s2">"png"</span><span class="p">)</span>
+
+        <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span>
+        <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">121</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">'smarts pattern'</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">axis</span><span class="p">(</span><span class="s1">'off'</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+
+        <span class="n">fig</span><span class="o">.</span><span class="n">add_subplot</span><span class="p">(</span><span class="mi">122</span><span class="p">)</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">'torsion angle histogram'</span><span class="p">)</span>
+        
+        <span class="c1">#df = pd.DataFrame(angles,columns = [torsionSmarts])  </span>
+        
+        <span class="n">plt</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">angles</span><span class="p">),</span><span class="n">bins</span><span class="o">=</span><span class="mi">36</span><span class="p">,</span><span class="nb">range</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">180</span><span class="p">,</span> <span class="mi">180</span><span class="p">])</span>
+        
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><img src="/blog/images/copied_from_nb/../images/cod/res-1.png" alt="pattern1" title="First pattern statistics">
+<img src="/blog/images/copied_from_nb/../images/cod/res-2.png" alt="pattern2" title="2nd pattern statistics">
+<img src="/blog/images/copied_from_nb/../images/cod/res-3.png" alt="pattern3" title="3rd pattern statistics"></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>I'm only showing 3 smarts patterns here, but the code is written to run on all of the smarts patterns from the Riniker &amp; Landrum paper. So feel free to adjust it to get the full results on your machine (to big for the notebook here ;).</p>
+<p>As you can see, there is still a lot of errors when re-reading the molecules from the SD file ... so still a lot of curation to be done. Also, on fullerenes or graphene or other larger structures (that are still in there), we'll likely get a repeated overrepresentation of several torsion angles. So something to think about when normalizing all of this data in the end.</p>
+<p>In theory, the order of the smarts patterns in the file I used here should be comparable to torsion angles provided in the <a href="https://pubs.acs.org/doi/suppl/10.1021/acs.jcim.5b00654/suppl_file/ci5b00654_si_002.zip">S1.zip</a> by both authors (fingers crossed). These histograms were generated on a filtered / curated CCDC CSD dataset (unlike my hairy monster dataset here).</p>
+<p><img src="/blog/images/copied_from_nb/../images/torsion_angles_riniker.png" alt="torsions"></p>
+<p>The first thing to notice is that they calculated a dihedral between 0 and 360, I just took the angles popping out of rdkit (between -180 and 180). So a bit of a mindgame to compare both. On smarts patterns 1 and 3 we have peaks around 0, which coincides with the CSD results. It is interesting to see that there's a bit of data for smarts pattern 1 suggesting angles around 180° might be possible, though not favourable (again, more filtering and quality checks needed to confirm/discard that).</p>
+<p>Smarts pattern 2 doesn't coincide at all with results from the CSD however, which makes me worried ... a bit ;)</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Debugging-smarts-pattern-2">
+<a class="anchor" href="#Debugging-smarts-pattern-2" aria-hidden="true"><span class="octicon octicon-link"></span></a>Debugging smarts pattern 2<a class="anchor-link" href="#Debugging-smarts-pattern-2"> </a>
+</h2>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">pattern</span><span class="o">=</span><span class="s2">"[O:1]=[C:2]([N])!@;-[O:3]~[C:4]"</span>
+<span class="n">i</span><span class="o">=</span><span class="mi">0</span>
+<span class="n">torsionQuery</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">MolFromSmarts</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">mol</span> <span class="ow">in</span> <span class="n">suppl</span><span class="p">:</span>
+    <span class="n">i</span><span class="o">+=</span><span class="mi">1</span>
+    <span class="k">if</span> <span class="n">mol</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="k">continue</span>
+    <span class="n">conf</span><span class="o">=</span><span class="n">mol</span><span class="o">.</span><span class="n">GetConformer</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">matches</span> <span class="o">=</span> <span class="n">mol</span><span class="o">.</span><span class="n">GetSubstructMatches</span><span class="p">(</span><span class="n">torsionQuery</span><span class="p">)</span>
+    <span class="k">if</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)):</span>
+        <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">matches</span><span class="p">:</span>
+                <span class="n">angle</span><span class="o">=</span><span class="n">rdMolTransforms</span><span class="o">.</span><span class="n">GetDihedralDeg</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">match</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">match</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">match</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="n">match</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+                <span class="c1">#break</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">mol</span><span class="o">.</span><span class="n">GetProp</span><span class="p">(</span><span class="s2">"COD"</span><span class="p">))</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">i</span><span class="o">&gt;</span><span class="mi">5000</span><span class="p">):</span>
+        <span class="k">break</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>178.94640626006364
+7031170
+-177.12326809469428
+7039689
+-179.7556421050122
+7039689
+-179.06730293018322
+7039689
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Here are 4 compounds where we calculate in theory wrong angles. Let's visualize the last one and check what dihedral angle we are actually calculating here</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">for</span> <span class="n">mol</span> <span class="ow">in</span> <span class="n">suppl</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">mol</span><span class="o">.</span><span class="n">GetProp</span><span class="p">(</span><span class="s2">"COD"</span><span class="p">))</span><span class="o">==</span><span class="nb">str</span><span class="p">(</span><span class="mi">7039689</span><span class="p">):</span>
+        <span class="n">mol</span><span class="o">.</span><span class="n">GetSubstructMatches</span><span class="p">(</span><span class="n">torsionQuery</span><span class="p">)</span>
+        <span class="k">break</span>
+
+<span class="n">matches</span><span class="o">=</span><span class="n">mol</span><span class="o">.</span><span class="n">GetSubstructMatches</span><span class="p">(</span><span class="n">torsionQuery</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span>
+<span class="n">flat_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">sublist</span> <span class="ow">in</span> <span class="n">matches</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">sublist</span><span class="p">]</span>
+<span class="n">molblock</span><span class="o">=</span><span class="n">Chem</span><span class="o">.</span><span class="n">MolToMolBlock</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span>
+<span class="n">viewer</span> <span class="o">=</span> <span class="n">py3Dmol</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">300</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">300</span><span class="p">)</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">addModel</span><span class="p">(</span><span class="n">molblock</span><span class="p">,</span> <span class="s1">'mol'</span><span class="p">)</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">setStyle</span><span class="p">({</span><span class="s2">"stick"</span><span class="p">:{}})</span>
+<span class="c1">#viewer.setStyle({'serial':flat_list},{'stick':{'color': 'pink'}})</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">setStyle</span><span class="p">({</span><span class="s1">'serial'</span><span class="p">:</span><span class="n">flat_list</span><span class="p">},{</span><span class="s1">'stick'</span><span class="p">:{</span><span class="s1">'color'</span><span class="p">:</span> <span class="s1">'pink'</span><span class="p">}})</span>
+
+<span class="n">viewer</span><span class="o">.</span><span class="n">zoomTo</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>((1, 18, 4, 0, 19), (53, 70, 56, 52, 71), (105, 122, 108, 104, 123))
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea ">
+<div id="3dmolviewer_1611793897271323" style="position: relative; width: 300px; height: 300px">
+        <p id="3dmolwarning_1611793897271323" style="background-color:#ffcccc;color:black">You appear to be running in JupyterLab (or JavaScript failed to load for some other reason).  You need to install the 3dmol extension: <br>
+        <tt>jupyter labextension install jupyterlab_3dmol</tt></p>
+        </div>
+<script>
+
+var loadScriptAsync = function(uri){
+  return new Promise((resolve, reject) => {
+    var tag = document.createElement('script');
+    tag.src = uri;
+    tag.async = true;
+    tag.onload = () => {
+      resolve();
+    };
+  var firstScriptTag = document.getElementsByTagName('script')[0];
+  firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+});
+};
+
+if(typeof $3Dmolpromise === 'undefined') {
+$3Dmolpromise = null;
+  $3Dmolpromise = loadScriptAsync('https://3dmol.csb.pitt.edu/build/3Dmol.js');
+}
+
+var viewer_1611793897271323 = null;
+var warn = document.getElementById("3dmolwarning_1611793897271323");
+if(warn) {
+    warn.parentNode.removeChild(warn);
+}
+$3Dmolpromise.then(function() {
+viewer_1611793897271323 = $3Dmol.createViewer($("#3dmolviewer_1611793897271323"),{backgroundColor:"white"});
+	viewer_1611793897271323.addModel("?\n     RDKit          3D\n\n156159  0  0  0  0  0  0  0  0999 V2000\n    6.7116    7.5612    6.1763 O   0  0  0  0  0  0  0  0  0  0  0  0\n    6.4874    9.1026    7.8099 O   0  0  0  0  0  0  0  0  0  0  0  0\n    7.0851   12.2639    3.3688 O   0  0  0  0  0  0  0  0  0  0  0  0\n    7.6513   11.8884    3.8630 H   0  0  0  0  0  0  0  0  0  0  0  0\n    6.4672    9.7044    5.6185 N   0  0  0  0  0  0  0  0  0  0  0  0\n    6.7817    9.4078    4.2212 C   0  0  0  0  0  0  0  0  0  0  0  0\n    6.6880    8.4346    4.0641 H   0  0  0  0  0  0  0  0  0  0  0  0\n    7.7211    9.6584    4.0353 H   0  0  0  0  0  0  0  0  0  0  0  0\n    5.8606   10.1659    3.2709 C   0  0  0  0  0  0  0  0  0  0  0  0\n    4.9481    9.7881    3.3370 H   0  0  0  0  0  0  0  0  0  0  0  0\n    6.1771   10.0349    2.3425 H   0  0  0  0  0  0  0  0  0  0  0  0\n    5.8048   11.6671    3.5752 C   0  0  0  0  0  0  0  0  0  0  0  0\n    5.4713   11.8652    5.0565 C   0  0  0  0  0  0  0  0  0  0  0  0\n    5.4979   12.8318    5.2707 H   0  0  0  0  0  0  0  0  0  0  0  0\n    4.5530   11.5390    5.2309 H   0  0  0  0  0  0  0  0  0  0  0  0\n    6.4441   11.1255    5.9611 C   0  0  0  0  0  0  0  0  0  0  0  0\n    7.3512   11.5077    5.8563 H   0  0  0  0  0  0  0  0  0  0  0  0\n    6.1691   11.2357    6.9060 H   0  0  0  0  0  0  0  0  0  0  0  0\n    6.5702    8.8101    6.6282 C   0  0  0  0  0  0  0  0  0  0  0  0\n    6.7836    6.4272    7.1314 C   0  0  0  0  0  0  0  0  0  0  0  0\n    5.5008    6.3404    7.9405 C   0  0  0  0  0  0  0  0  0  0  0  0\n    5.4773    7.0707    8.5944 H   0  0  0  0  0  0  0  0  0  0  0  0\n    5.4670    5.4808    8.4088 H   0  0  0  0  0  0  0  0  0  0  0  0\n    4.7305    6.4159    7.3392 H   0  0  0  0  0  0  0  0  0  0  0  0\n    8.0100    6.5469    8.0050 C   0  0  0  0  0  0  0  0  0  0  0  0\n    8.8070    6.6209    7.4408 H   0  0  0  0  0  0  0  0  0  0  0  0\n    8.0854    5.7528    8.5745 H   0  0  0  0  0  0  0  0  0  0  0  0\n    7.9330    7.3447    8.5679 H   0  0  0  0  0  0  0  0  0  0  0  0\n    6.9102    5.2407    6.1991 C   0  0  0  0  0  0  0  0  0  0  0  0\n    6.1015    5.1691    5.6486 H   0  0  0  0  0  0  0  0  0  0  0  0\n    7.0202    4.4223    6.7248 H   0  0  0  0  0  0  0  0  0  0  0  0\n    7.6902    5.3637    5.6176 H   0  0  0  0  0  0  0  0  0  0  0  0\n    4.8505   12.4086    2.6051 C   0  0  0  0  0  0  0  0  0  0  0  0\n    5.3639   13.0241    1.4356 C   0  0  0  0  0  0  0  0  0  0  0  0\n    4.5199   13.8180    0.6548 C   0  0  0  0  0  0  0  0  0  0  0  0\n    4.8828   14.2481   -0.1105 H   0  0  0  0  0  0  0  0  0  0  0  0\n    3.1826   14.0054    0.9439 C   0  0  0  0  0  0  0  0  0  0  0  0\n    2.6787   13.3142    2.0177 C   0  0  0  0  0  0  0  0  0  0  0  0\n    1.7536   13.3987    2.2166 H   0  0  0  0  0  0  0  0  0  0  0  0\n    3.4647   12.4938    2.8294 C   0  0  0  0  0  0  0  0  0  0  0  0\n    6.7745   12.8837    0.8944 C   0  0  0  0  0  0  0  0  0  0  0  0\n    7.3775   13.4699    1.3967 H   0  0  0  0  0  0  0  0  0  0  0  0\n    6.7876   13.1352   -0.0530 H   0  0  0  0  0  0  0  0  0  0  0  0\n    7.0694   11.9532    0.9900 H   0  0  0  0  0  0  0  0  0  0  0  0\n    2.3136   14.9064    0.0924 C   0  0  0  0  0  0  0  0  0  0  0  0\n    2.8211   15.7061   -0.1591 H   0  0  0  0  0  0  0  0  0  0  0  0\n    1.5188   15.1706    0.6011 H   0  0  0  0  0  0  0  0  0  0  0  0\n    2.0388   14.4259   -0.7160 H   0  0  0  0  0  0  0  0  0  0  0  0\n    2.6644   11.7283    3.8744 C   0  0  0  0  0  0  0  0  0  0  0  0\n    3.0834   10.8571    4.0331 H   0  0  0  0  0  0  0  0  0  0  0  0\n    1.7479   11.5955    3.5514 H   0  0  0  0  0  0  0  0  0  0  0  0\n    2.6459   12.2398    4.7116 H   0  0  0  0  0  0  0  0  0  0  0  0\n    6.7264    7.1037   13.7937 O   0  0  0  0  0  0  0  0  0  0  0  0\n    7.3184    8.8817   15.0839 O   0  0  0  0  0  0  0  0  0  0  0  0\n    6.9942   10.7686   10.0326 O   0  0  0  0  0  0  0  0  0  0  0  0\n    6.8438   10.3592    9.3149 H   0  0  0  0  0  0  0  0  0  0  0  0\n    6.7297    9.1425   12.9002 N   0  0  0  0  0  0  0  0  0  0  0  0\n    7.1945   10.5403   12.8512 C   0  0  0  0  0  0  0  0  0  0  0  0\n    8.0579   10.5830   12.3690 H   0  0  0  0  0  0  0  0  0  0  0  0\n    7.3420   10.8717   13.7723 H   0  0  0  0  0  0  0  0  0  0  0  0\n    6.1783   11.4315   12.1498 C   0  0  0  0  0  0  0  0  0  0  0  0\n    6.5609   12.3381   12.0397 H   0  0  0  0  0  0  0  0  0  0  0  0\n    5.3685   11.5097   12.7137 H   0  0  0  0  0  0  0  0  0  0  0  0\n    5.7839   10.8834   10.7778 C   0  0  0  0  0  0  0  0  0  0  0  0\n    5.2746    9.4383   10.9619 C   0  0  0  0  0  0  0  0  0  0  0  0\n    4.4671    9.4429   11.5336 H   0  0  0  0  0  0  0  0  0  0  0  0\n    5.0249    9.0601   10.0817 H   0  0  0  0  0  0  0  0  0  0  0  0\n    6.3516    8.5700   11.6039 C   0  0  0  0  0  0  0  0  0  0  0  0\n    6.0088    7.6502   11.7303 H   0  0  0  0  0  0  0  0  0  0  0  0\n    7.1439    8.5267   11.0121 H   0  0  0  0  0  0  0  0  0  0  0  0\n    6.9558    8.4164   14.0107 C   0  0  0  0  0  0  0  0  0  0  0  0\n    6.8447    6.1049   14.8770 C   0  0  0  0  0  0  0  0  0  0  0  0\n    5.7206    6.2952   15.8697 C   0  0  0  0  0  0  0  0  0  0  0  0\n    5.8266    7.1586   16.3225 H   0  0  0  0  0  0  0  0  0  0  0  0\n    5.7453    5.5750   16.5325 H   0  0  0  0  0  0  0  0  0  0  0  0\n    4.8622    6.2758   15.3988 H   0  0  0  0  0  0  0  0  0  0  0  0\n    6.6536    4.7978   14.1192 C   0  0  0  0  0  0  0  0  0  0  0  0\n    5.7854    4.8072   13.6640 H   0  0  0  0  0  0  0  0  0  0  0  0\n    6.6834    4.0479   14.7491 H   0  0  0  0  0  0  0  0  0  0  0  0\n    7.3684    4.6964   13.4563 H   0  0  0  0  0  0  0  0  0  0  0  0\n    8.2092    6.1469   15.5312 C   0  0  0  0  0  0  0  0  0  0  0  0\n    8.9009    6.2172   14.8397 H   0  0  0  0  0  0  0  0  0  0  0  0\n    8.3477    5.3281   16.0507 H   0  0  0  0  0  0  0  0  0  0  0  0\n    8.2629    6.9243   16.1259 H   0  0  0  0  0  0  0  0  0  0  0  0\n    4.8086   11.8470   10.0541 C   0  0  0  0  0  0  0  0  0  0  0  0\n    5.3276   12.8134    9.1588 C   0  0  0  0  0  0  0  0  0  0  0  0\n    4.4436   13.5977    8.4163 C   0  0  0  0  0  0  0  0  0  0  0  0\n    4.8038   14.2146    7.7900 H   0  0  0  0  0  0  0  0  0  0  0  0\n    3.0751   13.5205    8.5476 C   0  0  0  0  0  0  0  0  0  0  0  0\n    2.5885   12.6659    9.5179 C   0  0  0  0  0  0  0  0  0  0  0  0\n    1.6517   12.6415    9.6751 H   0  0  0  0  0  0  0  0  0  0  0  0\n    3.4129   11.8371   10.2768 C   0  0  0  0  0  0  0  0  0  0  0  0\n    6.7954   13.1703    8.9847 C   0  0  0  0  0  0  0  0  0  0  0  0\n    7.2492   13.1163    9.8519 H   0  0  0  0  0  0  0  0  0  0  0  0\n    6.8701   14.0828    8.6320 H   0  0  0  0  0  0  0  0  0  0  0  0\n    7.2126   12.5432    8.3580 H   0  0  0  0  0  0  0  0  0  0  0  0\n    2.1535   14.3598    7.7001 C   0  0  0  0  0  0  0  0  0  0  0  0\n    2.5806   15.2208    7.5071 H   0  0  0  0  0  0  0  0  0  0  0  0\n    1.3138   14.5116    8.1834 H   0  0  0  0  0  0  0  0  0  0  0  0\n    1.9667   13.8924    6.8596 H   0  0  0  0  0  0  0  0  0  0  0  0\n    2.6900   11.0119   11.3261 C   0  0  0  0  0  0  0  0  0  0  0  0\n    2.5565   10.1019   10.9900 H   0  0  0  0  0  0  0  0  0  0  0  0\n    1.8200   11.4198   11.5204 H   0  0  0  0  0  0  0  0  0  0  0  0\n    3.2266   10.9826   12.1458 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.0902   13.6090    9.8921 O   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.4416   11.7806   11.1968 O   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.5698    9.9492    6.0375 O   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.5108   10.4973    5.4055 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.1878   11.5980    8.9381 N   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.9365   12.1917    7.6329 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.6185   13.1226    7.7436 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.7742   12.2105    7.1071 H   0  0  0  0  0  0  0  0  0  0  0  0\n    0.1153   11.3715    6.8996 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.9690   11.4072    7.4011 H   0  0  0  0  0  0  0  0  0  0  0  0\n    0.2703   11.7629    6.0022 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.3249    9.9040    6.7482 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.6631    9.3321    8.1294 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.0480    8.4263    8.0220 H   0  0  0  0  0  0  0  0  0  0  0  0\n    0.1684    9.2484    8.6607 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.6490   10.2079    8.8819 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -2.5302   10.1709    8.4331 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.7605    9.8613    9.8032 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.2635   12.2794   10.1082 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.1055   14.5623   11.0154 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.0605   14.2907   11.9418 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.0905   13.4469   12.4176 H   0  0  0  0  0  0  0  0  0  0  0  0\n    0.1409   15.0221   12.5900 H   0  0  0  0  0  0  0  0  0  0  0  0\n    0.8865   14.2271   11.4165 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -2.4269   14.5349   11.7491 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -3.1556   14.6999   11.1159 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -2.4305   15.2292   12.4419 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -2.5508   13.6561   12.1657 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.9175   15.8925   10.3071 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.0389   15.9091    9.8718 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -0.9724   16.6203   10.9590 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.6185   16.0053    9.6309 H   0  0  0  0  0  0  0  0  0  0  0  0\n    0.7022    9.0201    6.0055 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.2802    8.0953    5.0168 C   0  0  0  0  0  0  0  0  0  0  0  0\n    1.2295    7.3983    4.2740 C   0  0  0  0  0  0  0  0  0  0  0  0\n    0.9289    6.8092    3.5911 H   0  0  0  0  0  0  0  0  0  0  0  0\n    2.5920    7.5255    4.4855 C   0  0  0  0  0  0  0  0  0  0  0  0\n    2.9822    8.3334    5.5288 C   0  0  0  0  0  0  0  0  0  0  0  0\n    3.9081    8.3907    5.7348 H   0  0  0  0  0  0  0  0  0  0  0  0\n    2.0859    9.0714    6.2987 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.1573    7.6955    4.7173 C   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.6585    7.6250    5.5558 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.1672    6.8301    4.2563 H   0  0  0  0  0  0  0  0  0  0  0  0\n   -1.5726    8.3740    4.1458 H   0  0  0  0  0  0  0  0  0  0  0  0\n    3.5943    6.7826    3.6406 C   0  0  0  0  0  0  0  0  0  0  0  0\n    3.3457    5.8365    3.5978 H   0  0  0  0  0  0  0  0  0  0  0  0\n    4.4854    6.8678    4.0398 H   0  0  0  0  0  0  0  0  0  0  0  0\n    3.6034    7.1606    2.7359 H   0  0  0  0  0  0  0  0  0  0  0  0\n    2.7309    9.8272    7.4464 C   0  0  0  0  0  0  0  0  0  0  0  0\n    2.9150   10.7483    7.1690 H   0  0  0  0  0  0  0  0  0  0  0  0\n    3.5702    9.3864    7.6972 H   0  0  0  0  0  0  0  0  0  0  0  0\n    2.1236    9.8341    8.2143 H   0  0  0  0  0  0  0  0  0  0  0  0\n  1 19  1  0\n  1 20  1  0\n  3 12  1  0\n  3  4  1  0\n  5 16  1  0\n  5 19  1  0\n  6  5  1  0\n  7  6  1  0\n  8  6  1  0\n  9 10  1  0\n  9 12  1  0\n  9  6  1  0\n 11  9  1  0\n 12 13  1  0\n 13 15  1  0\n 13 14  1  0\n 13 16  1  0\n 16 18  1  0\n 17 16  1  0\n 19  2  2  0\n 20 21  1  0\n 20 25  1  0\n 21 23  1  0\n 21 22  1  0\n 24 21  1  0\n 25 28  1  0\n 25 27  1  0\n 26 25  1  0\n 29 31  1  0\n 29 20  1  0\n 30 29  1  0\n 32 29  1  0\n 33 40  1  0\n 33 12  1  0\n 34 33  2  0\n 35 37  2  0\n 35 34  1  0\n 36 35  1  0\n 37 38  1  0\n 38 39  1  0\n 38 40  2  0\n 40 49  1  0\n 41 44  1  0\n 41 42  1  0\n 41 34  1  0\n 43 41  1  0\n 45 47  1  0\n 45 37  1  0\n 46 45  1  0\n 48 45  1  0\n 49 50  1  0\n 49 52  1  0\n 51 49  1  0\n 53 71  1  0\n 53 72  1  0\n 55 64  1  0\n 56 55  1  0\n 57 71  1  0\n 58 57  1  0\n 58 60  1  0\n 59 58  1  0\n 61 63  1  0\n 61 58  1  0\n 62 61  1  0\n 64 65  1  0\n 64 61  1  0\n 65 66  1  0\n 65 68  1  0\n 67 65  1  0\n 68 69  1  0\n 68 57  1  0\n 70 68  1  0\n 71 54  2  0\n 72 81  1  0\n 72 73  1  0\n 73 74  1  0\n 73 75  1  0\n 76 73  1  0\n 77 79  1  0\n 77 72  1  0\n 78 77  1  0\n 80 77  1  0\n 81 83  1  0\n 81 84  1  0\n 82 81  1  0\n 85 92  1  0\n 85 64  1  0\n 86 85  2  0\n 87 89  2  0\n 87 86  1  0\n 88 87  1  0\n 89 90  1  0\n 90 91  1  0\n 90 92  2  0\n 92101  1  0\n 93 86  1  0\n 93 94  1  0\n 95 93  1  0\n 96 93  1  0\n 97 99  1  0\n 97 89  1  0\n 98 97  1  0\n100 97  1  0\n101103  1  0\n101104  1  0\n102101  1  0\n105123  1  0\n105124  1  0\n107116  1  0\n108107  1  0\n109123  1  0\n110111  1  0\n110109  1  0\n112110  1  0\n113114  1  0\n113110  1  0\n115113  1  0\n116113  1  0\n116117  1  0\n117119  1  0\n117120  1  0\n118117  1  0\n120109  1  0\n120122  1  0\n121120  1  0\n123106  2  0\n124129  1  0\n124125  1  0\n125126  1  0\n125127  1  0\n128125  1  0\n129132  1  0\n129131  1  0\n130129  1  0\n133135  1  0\n133124  1  0\n134133  1  0\n136133  1  0\n137144  1  0\n137116  1  0\n138137  2  0\n139141  2  0\n139138  1  0\n140139  1  0\n141142  1  0\n142143  1  0\n142144  2  0\n144153  1  0\n145138  1  0\n145146  1  0\n147145  1  0\n148145  1  0\n149151  1  0\n149141  1  0\n150149  1  0\n152149  1  0\n153155  1  0\n153156  1  0\n154153  1  0\nM  END\n","mol");
+	viewer_1611793897271323.setStyle({"stick": {}});
+	viewer_1611793897271323.setStyle({"serial": [1, 18, 4, 0, 19, 53, 70, 56, 52, 71, 105, 122, 108, 104, 123]},{"stick": {"color": "pink"}});
+	viewer_1611793897271323.zoomTo();
+viewer_1611793897271323.render();
+});
+</script>
+</div>
+
+</div>
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&lt;py3Dmol.view at 0x7fc980882130&gt;</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The matching atoms are coloured in pink here.</p>
+<p>From the substructure matches above, we can see that the smarts pattern matches 5 atoms, instead of 4. Including the nitrogen (the third atom matching here). In the end, this doesn't describe the bond or the torsion angle we want at all, thus the discrepancies in the results.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Conclusion">
+<a class="anchor" href="#Conclusion" aria-hidden="true"><span class="octicon octicon-link"></span></a>Conclusion<a class="anchor-link" href="#Conclusion"> </a>
+</h1>
+<p>Alright, this turned out to be much messier than I thought. However, extracting statistics from the COD seems possible, even though there should be a lot careful curation steps integrated when doing something like that. I'll try to dig through the results during the next days and will try to report whether patterns published before using the CSD can be reproduced or not (to some extent).</p>
+<p>The steps outlined here should also provide a first automated pipeline to select relevant compounds from the COD for regular updates of the potentials - which I do hope will be helpful on the long run for some folks.</p>
+
+</div>
+</div>
+</div>
+</div>
+
+
+
+  </div><!-- from https://github.com/utterance/utterances -->
+<script src="https://utteranc.es/client.js"
+        repo="pschmidtke/blog"
+        issue-term="title"
+        label="blogpost-comment"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script><a class="u-url" href="/blog/rdkit/crystallography/small%20molecule%20xray/xray/database/2021/01/25/cod-and-torsion-angles.html" hidden></a>
+</article>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/blog/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/blog/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/blog/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <p>A personal tech / science blog on subjects around molecular modelling, cheminformatics and code.</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/pschmidtke" title="pschmidtke"><svg class="svg-icon grey"><use xlink:href="/blog/assets/minima-social-icons.svg#github"></use></svg></a></li><li><a rel="me" href="https://twitter.com/pschmidtke" title="pschmidtke"><svg class="svg-icon grey"><use xlink:href="/blog/assets/minima-social-icons.svg#twitter"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
