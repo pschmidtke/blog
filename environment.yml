@@ -13,3 +13,4 @@ dependencies:
   - ipython-sql
   - matplotlib
   - openbabel
+  - altair
