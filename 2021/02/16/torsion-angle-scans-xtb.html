@@ -1,0 +1,1149 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="twitter:card" content="summary_large_image" /><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Title | Spinning coral</title>
+<meta name="generator" content="Jekyll v4.1.1" />
+<meta property="og:title" content="Title" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="A personal tech / science blog on subjects around molecular modelling, cheminformatics and code." />
+<meta property="og:description" content="A personal tech / science blog on subjects around molecular modelling, cheminformatics and code." />
+<link rel="canonical" href="https://pschmidtke.github.io/blog/2021/02/16/torsion-angle-scans-xtb.html" />
+<meta property="og:url" content="https://pschmidtke.github.io/blog/2021/02/16/torsion-angle-scans-xtb.html" />
+<meta property="og:site_name" content="Spinning coral" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-02-16T00:00:00-06:00" />
+<script type="application/ld+json">
+{"url":"https://pschmidtke.github.io/blog/2021/02/16/torsion-angle-scans-xtb.html","@type":"BlogPosting","headline":"Title","dateModified":"2021-02-16T00:00:00-06:00","datePublished":"2021-02-16T00:00:00-06:00","mainEntityOfPage":{"@type":"WebPage","@id":"https://pschmidtke.github.io/blog/2021/02/16/torsion-angle-scans-xtb.html"},"description":"A personal tech / science blog on subjects around molecular modelling, cheminformatics and code.","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/blog/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://pschmidtke.github.io/blog/feed.xml" title="Spinning coral" /><!-- the google_analytics_id gets auto inserted from the config file -->
+
+
+
+<script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','//www.google-analytics.com/analytics.js','ga');ga('create','UA-188063211-1','auto');ga('require','displayfeatures');ga('send','pageview');</script>
+
+<link rel="shortcut icon" type="image/x-icon" href="/blog/images/favicon.ico"><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Primer/15.2.0/primer.css" integrity="sha512-xTz2ys4coGAOz8vuV1NcQBkgVmKhsSEtjbqyMJbBHRplFuvKIUo6xhLHpAyPt9mfR6twHJgn9OgVLuqOvjeBhg==" crossorigin="anonymous" />
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.14.0/css/all.min.css" integrity="sha512-1PKOgIY59xJ8Co8+NE6FZ+LOAZKjy+KY8iq0G4B3CyeY6wYHN3yt9PW0XpSriVlkMXe40PTKnXrLnZ9+fkDaog==" crossorigin="anonymous" />
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title") && (el.className != "emoji")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head>
+<body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/blog/">Spinning coral</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/blog/about/">About Me</a><a class="page-link" href="/blog/search/">Search</a><a class="page-link" href="/blog/categories/">Tags</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Title</h1><p class="post-meta post-meta-title"><time class="dt-published" datetime="2021-02-16T00:00:00-06:00" itemprop="datePublished">
+        Feb 16, 2021
+      </time>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      10 min read
+    
+</span></p>
+
+    
+
+    
+      
+        <div class="pb-5 d-flex flex-wrap flex-justify-end">
+          <div class="px-2">
+
+    <a href="https://github.com/pschmidtke/blog/tree/master/_notebooks/2021-02-16-torsion-angle-scans-xtb.ipynb" role="button" target="_blank">
+<img class="notebook-badge-image" src="/blog/assets/badges/github.svg" alt="View On GitHub">
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://mybinder.org/v2/gh/pschmidtke/blog/master?filepath=_notebooks%2F2021-02-16-torsion-angle-scans-xtb.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/blog/assets/badges/binder.svg" alt="Open In Binder"/>
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://colab.research.google.com/github/pschmidtke/blog/blob/master/_notebooks/2021-02-16-torsion-angle-scans-xtb.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/blog/assets/badges/colab.svg" alt="Open In Colab"/>
+    </a>
+</div>
+        </div>
+      </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <!--
+#################################################
+### THIS FILE WAS AUTOGENERATED! DO NOT EDIT! ###
+#################################################
+# file to edit: _notebooks/2021-02-16-torsion-angle-scans-xtb.ipynb
+-->
+
+<div class="container" id="notebook-container">
+        
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">&gt;</span> <span class="s2">&quot;Log of the huzzle doing torsion angle scans with rdkit &amp; xtb&quot;</span>
+
+<span class="o">-</span> <span class="n">toc</span><span class="p">:</span> <span class="n">true</span>
+<span class="o">-</span> <span class="n">branch</span><span class="p">:</span> <span class="n">master</span>
+<span class="o">-</span> <span class="n">badges</span><span class="p">:</span> <span class="n">true</span>
+<span class="o">-</span> <span class="n">comments</span><span class="p">:</span> <span class="n">true</span>
+<span class="o">-</span> <span class="n">author</span><span class="p">:</span> <span class="n">Peter</span> <span class="n">Schmidtke</span>
+<span class="o">-</span> <span class="n">categories</span><span class="p">:</span> <span class="p">[</span><span class="n">torsion</span><span class="p">,</span> <span class="n">dihedral</span><span class="p">,</span> <span class="n">oss</span><span class="p">,</span> <span class="n">opensource</span><span class="p">,</span> <span class="n">rdkit</span><span class="p">,</span> <span class="n">xtb</span><span class="p">,</span> <span class="n">energy</span><span class="p">]</span>
+<span class="o">-</span> <span class="n">image</span><span class="p">:</span> <span class="n">images</span><span class="o">/</span><span class="n">xtb_torsion_scan</span><span class="o">.</span><span class="n">png</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Post #4 will be along the lines of dihedral / torsion angle analysis and log some of the hurdles I had to overcome to run a torsion angle analysis with <a href="https://github.com/grimme-lab/xtb">xtb</a> and / or <a href="https://www.rdkit.org/">rdkit</a>.</p>
+<p>What I'm trying to accomplish here is mainly to see how torsion angle scans can be performed using open source tools available. This is in preparation of a larger work track on analysing the data from the <a href="http://www.crystallography.net/cod/">COD</a>, where <a href="https://pschmidtke.github.io/blog/rdkit/crystallography/small%20molecule%20xray/xray/database/2021/01/25/cod-and-torsion-angles.html">first steps have already been set here</a>.</p>
+<h2 id="Aim">Aim<a class="anchor-link" href="#Aim"> </a></h2><p>Given an input molecule and a particular torsion angle I'd like to see what the energy langscape of the molecule looks like when rotating around that torsion angle. I'd like to know how easy/complicated this is using two different tools:</p>
+<ol>
+<li><strong>rdkit</strong> with the integrated MMFF </li>
+<li><strong>xtb</strong> from the Grimme lab.</li>
+</ol>
+<p>The post is also inspired by an older <a href="https://iwatobipen.wordpress.com/2020/09/06/visualize-the-torsion-drive-with-different-approach-openff-torchani-chemoinformatics-quantum_chemistry/">post done by iwatobipen</a> analyzing openforcefield with Ani2 on some torsion energy predictions using the <a href="https://qcarchivetutorials.readthedocs.io/en/latest/basic_examples/torsiondrive_datasets.html">torsion drive dataset from the openforcefield initiative</a></p>
+<p>All code used for this post is available on <a href="https://github.com/pschmidtke/dihedral_scans/tree/main/notebooks">this separate repo</a>, as it uses a slightly different environment (you'll see why).</p>
+<h2 id="Dihedral-scan-with-rdkit">Dihedral scan with rdkit<a class="anchor-link" href="#Dihedral-scan-with-rdkit"> </a></h2><p>I don't really know why, but I started out with this molecule here:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<details class="description">
+      <summary class="btn btn-sm" data-open="Hide Code" data-close="Show Code"></summary>
+        <p><div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">rdkit</span> <span class="kn">import</span> <span class="n">Chem</span>
+<span class="kn">from</span> <span class="nn">rdkit.Chem</span> <span class="kn">import</span> <span class="n">AllChem</span>
+<span class="kn">from</span> <span class="nn">rdkit.Chem</span> <span class="kn">import</span> <span class="n">Draw</span>
+<span class="n">mol</span><span class="o">=</span><span class="n">Chem</span><span class="o">.</span><span class="n">AddHs</span><span class="p">(</span><span class="n">Chem</span><span class="o">.</span><span class="n">MolFromSmiles</span><span class="p">(</span><span class="s1">&#39;CCCOC1=CC=C(Cl)C(C)=C1&#39;</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">a</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">mol</span><span class="o">.</span><span class="n">GetAtoms</span><span class="p">()):</span>
+        <span class="n">a</span><span class="o">.</span><span class="n">SetAtomMapNum</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+<span class="n">AllChem</span><span class="o">.</span><span class="n">EmbedMolecule</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span><span class="n">randomSeed</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>    <span class="c1">#generate an initial random conformation (randomSeed is fixed to have something reproducible)</span>
+<span class="c1">#mol</span>
+<span class="n">Draw</span><span class="o">.</span><span class="n">MolToFile</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span><span class="s2">&quot;../images/mol.png&quot;</span><span class="p">,</span><span class="n">includeAtomNumbers</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">highlightAtoms</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>        <span class="c1">#sorry - rdkit 2019.03 issues with newer python versions (I guess)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+</p>
+    </details>
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p><img src="/blog/images/copied_from_nb/../images/mol.png" alt="" /></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The torsion angle I'm interested in is highlighted in red and situated between carbons 1,2,3 &amp; 4. Now let's try to set up a torsion angle scan in rdkit using MMFF (UFF should be similar procedure ... )</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">rdkit.Chem</span> <span class="kn">import</span> <span class="n">rdMolTransforms</span>
+<span class="kn">import</span> <span class="nn">altair</span> <span class="k">as</span> <span class="nn">alt</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">rdkit.Chem</span> <span class="kn">import</span> <span class="n">rdForceFieldHelpers</span>
+<span class="kn">from</span> <span class="nn">rdkit.Chem</span> <span class="kn">import</span> <span class="n">ChemicalForceFields</span>
+
+<span class="n">conformer</span><span class="o">=</span><span class="n">mol</span><span class="o">.</span><span class="n">GetConformer</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">m2</span><span class="o">=</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span>
+<span class="n">mp2</span> <span class="o">=</span> <span class="n">AllChem</span><span class="o">.</span><span class="n">MMFFGetMoleculeProperties</span><span class="p">(</span><span class="n">m2</span><span class="p">)</span>
+<span class="n">energy</span><span class="o">=</span><span class="p">[]</span>
+<span class="n">confid</span><span class="o">=</span><span class="mi">0</span>
+<span class="n">angles</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">370</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">angle</span> <span class="ow">in</span> <span class="n">angles</span><span class="p">:</span>
+    <span class="n">confid</span><span class="o">+=</span><span class="mi">1</span>
+    <span class="n">ff2</span> <span class="o">=</span> <span class="n">AllChem</span><span class="o">.</span><span class="n">MMFFGetMoleculeForceField</span><span class="p">(</span><span class="n">m2</span><span class="p">,</span> <span class="n">mp2</span><span class="p">)</span>
+    <span class="n">ff2</span><span class="o">.</span><span class="n">MMFFAddTorsionConstraint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">angle</span> <span class="o">-</span> <span class="o">.</span><span class="mi">1</span><span class="p">,</span> <span class="n">angle</span> <span class="o">+</span> <span class="o">.</span><span class="mi">1</span><span class="p">,</span> <span class="mf">10000.0</span><span class="p">)</span>
+    <span class="n">ff2</span><span class="o">.</span><span class="n">Minimize</span><span class="p">()</span>
+    <span class="n">energy</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ff2</span><span class="o">.</span><span class="n">CalcEnergy</span><span class="p">())</span>
+
+    <span class="n">xyz</span><span class="o">=</span><span class="n">ff2</span><span class="o">.</span><span class="n">Positions</span><span class="p">()</span>
+    <span class="n">new_conf</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">Conformer</span><span class="p">(</span><span class="n">mol</span><span class="o">.</span><span class="n">GetNumAtoms</span><span class="p">())</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">mol</span><span class="o">.</span><span class="n">GetNumAtoms</span><span class="p">()):</span>
+        <span class="n">new_conf</span><span class="o">.</span><span class="n">SetAtomPosition</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">m2</span><span class="o">.</span><span class="n">GetConformer</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">GetAtomPosition</span><span class="p">(</span><span class="n">i</span><span class="p">)))</span>
+    <span class="n">new_conf</span><span class="o">.</span><span class="n">SetId</span><span class="p">(</span><span class="n">confid</span><span class="p">)</span>
+    <span class="n">mol</span><span class="o">.</span><span class="n">AddConformer</span><span class="p">(</span><span class="n">new_conf</span><span class="p">)</span>
+
+
+<span class="n">dfrdkit</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;angle&#39;</span><span class="p">:</span><span class="n">angles</span><span class="p">,</span> <span class="s1">&#39;energy&#39;</span><span class="p">:</span><span class="n">energy</span><span class="p">})</span>
+<span class="n">alt</span><span class="o">.</span><span class="n">Chart</span><span class="p">(</span><span class="n">dfrdkit</span><span class="p">)</span><span class="o">.</span><span class="n">mark_line</span><span class="p">(</span><span class="n">point</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">interpolate</span><span class="o">=</span><span class="s2">&quot;natural&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span>
+    <span class="n">alt</span><span class="o">.</span><span class="n">X</span><span class="p">(</span><span class="s1">&#39;angle:Q&#39;</span><span class="p">,</span>
+        <span class="n">scale</span><span class="o">=</span><span class="n">alt</span><span class="o">.</span><span class="n">Scale</span><span class="p">(</span><span class="n">domain</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">360</span><span class="p">,</span><span class="mi">350</span><span class="p">])</span>
+    <span class="p">),</span>
+    <span class="n">alt</span><span class="o">.</span><span class="n">Y</span><span class="p">(</span><span class="s1">&#39;energy:Q&#39;</span><span class="p">,</span>
+        <span class="n">scale</span><span class="o">=</span><span class="n">alt</span><span class="o">.</span><span class="n">Scale</span><span class="p">(</span><span class="n">zero</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="p">)</span>
+<span class="p">)</span><span class="o">.</span><span class="n">interactive</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+
+<div id="altair-viz-bde73d90992c4e20a7021e1a82bd5dde"></div>
+<script type="text/javascript">
+  (function(spec, embedOpt){
+    let outputDiv = document.currentScript.previousElementSibling;
+    if (outputDiv.id !== "altair-viz-bde73d90992c4e20a7021e1a82bd5dde") {
+      outputDiv = document.getElementById("altair-viz-bde73d90992c4e20a7021e1a82bd5dde");
+    }
+    const paths = {
+      "vega": "https://cdn.jsdelivr.net/npm//vega@5?noext",
+      "vega-lib": "https://cdn.jsdelivr.net/npm//vega-lib?noext",
+      "vega-lite": "https://cdn.jsdelivr.net/npm//vega-lite@4.8.1?noext",
+      "vega-embed": "https://cdn.jsdelivr.net/npm//vega-embed@6?noext",
+    };
+
+    function loadScript(lib) {
+      return new Promise(function(resolve, reject) {
+        var s = document.createElement('script');
+        s.src = paths[lib];
+        s.async = true;
+        s.onload = () => resolve(paths[lib]);
+        s.onerror = () => reject(`Error loading script: ${paths[lib]}`);
+        document.getElementsByTagName("head")[0].appendChild(s);
+      });
+    }
+
+    function showError(err) {
+      outputDiv.innerHTML = `<div class="error" style="color:red;">${err}</div>`;
+      throw err;
+    }
+
+    function displayChart(vegaEmbed) {
+      vegaEmbed(outputDiv, spec, embedOpt)
+        .catch(err => showError(`Javascript Error: ${err.message}<br>This usually means there's a typo in your chart specification. See the javascript console for the full traceback.`));
+    }
+
+    if(typeof define === "function" && define.amd) {
+      requirejs.config({paths});
+      require(["vega-embed"], displayChart, err => showError(`Error loading script: ${err.message}`));
+    } else if (typeof vegaEmbed === "function") {
+      displayChart(vegaEmbed);
+    } else {
+      loadScript("vega")
+        .then(() => loadScript("vega-lite"))
+        .then(() => loadScript("vega-embed"))
+        .catch(showError)
+        .then(() => displayChart(vegaEmbed));
+    }
+  })({"config": {"view": {"continuousWidth": 400, "continuousHeight": 300}}, "data": {"name": "data-5a8628b2fe510fdf9ee991259367ef16"}, "mark": {"type": "line", "interpolate": "natural", "point": true}, "encoding": {"x": {"type": "quantitative", "field": "angle", "scale": {"domain": [0, 360, 350]}}, "y": {"type": "quantitative", "field": "energy", "scale": {"zero": false}}}, "selection": {"selector006": {"type": "interval", "bind": "scales", "encodings": ["x", "y"]}}, "$schema": "https://vega.github.io/schema/vega-lite/v4.8.1.json", "datasets": {"data-5a8628b2fe510fdf9ee991259367ef16": [{"angle": 0, "energy": 620.989355421067}, {"angle": 10, "energy": 615.7841635282731}, {"angle": 20, "energy": 605.0064045079387}, {"angle": 30, "energy": 585.9096654158492}, {"angle": 40, "energy": 555.5343089066367}, {"angle": 50, "energy": 24.17449563971809}, {"angle": 60, "energy": 23.048081928824377}, {"angle": 70, "energy": 22.355345744652553}, {"angle": 80, "energy": 22.01278285916455}, {"angle": 90, "energy": 21.952194229636717}, {"angle": 100, "energy": 22.08970200029826}, {"angle": 110, "energy": 22.324413910773615}, {"angle": 120, "energy": 22.555415687282537}, {"angle": 130, "energy": 22.69895155375408}, {"angle": 140, "energy": 21.50951779341781}, {"angle": 150, "energy": 20.87729630227783}, {"angle": 160, "energy": 20.33347545326556}, {"angle": 170, "energy": 19.96939605129096}, {"angle": 180, "energy": 19.83603529055038}, {"angle": 190, "energy": 19.94286715866218}, {"angle": 200, "energy": 20.273592671905913}, {"angle": 210, "energy": 20.77417861862089}, {"angle": 220, "energy": 21.363328712075337}, {"angle": 230, "energy": 21.965133087446773}, {"angle": 240, "energy": 22.558931269676755}, {"angle": 250, "energy": 23.137000881930664}, {"angle": 260, "energy": 23.64206889844345}, {"angle": 270, "energy": 23.856339623499426}, {"angle": 280, "energy": 24.430866284943722}, {"angle": 290, "energy": 25.234311865673007}, {"angle": 300, "energy": 26.33698174888261}, {"angle": 310, "energy": 27.7184748396719}, {"angle": 320, "energy": 29.203604418131235}, {"angle": 330, "energy": 30.510267997585398}, {"angle": 340, "energy": 31.38991978783373}, {"angle": 350, "energy": 31.701114112173244}, {"angle": 360, "energy": 31.412871101940645}]}}, {"mode": "vega-lite"});
+</script>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="RDKit-issues">RDKit issues<a class="anchor-link" href="#RDKit-issues"> </a></h2><p>Alright, first of all ... to run all of these I have to use rdkit <strong>2019.03.3</strong> or earlier!! as since then there has been obviously a regression on the MMFF &amp; UFF torsion constrain code (or other). You can <a href="https://github.com/rdkit/rdkit/issues/3781">track this issue on github directly</a> for newer rdkit versions.
+But in the end, this basically means you cannot run any of this with newer rdkit versions, which is suboptimal.</p>
+<p>Next, seeing this plot above, it doesn't look anything like the one I expected from the torsion archive (but a bit better than on the new bugged rdkit, believe me ;)). Here is the one from iwatobipen's post:</p>
+<p><img src="https://iwatobipen.files.wordpress.com/2020/09/mol3.png?w=920" alt="" /></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>In order to understand what happens here, you really have to look at the minimized conformations. Here's a bit of code to browse through them, as I collected all conformations generated with the torsion scan before.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<details class="description">
+      <summary class="btn btn-sm" data-open="Hide Code" data-close="Show Code"></summary>
+        <p><div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">ipywidgets</span> <span class="kn">import</span> <span class="n">interact</span><span class="p">,</span> <span class="n">interactive</span><span class="p">,</span> <span class="n">fixed</span>
+<span class="kn">import</span> <span class="nn">py3Dmol</span>
+<span class="n">patt</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">MolFromSmarts</span><span class="p">(</span><span class="s1">&#39;c1ccccc1&#39;</span><span class="p">);</span><span class="n">patt</span>
+<span class="n">match</span> <span class="o">=</span> <span class="n">mol</span><span class="o">.</span><span class="n">GetSubstructMatch</span><span class="p">(</span><span class="n">patt</span><span class="p">)</span>
+
+<span class="n">AllChem</span><span class="o">.</span><span class="n">AlignMolConformers</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span><span class="n">atomIds</span><span class="o">=</span><span class="n">match</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">drawit</span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">confId</span><span class="p">):</span>
+    <span class="n">mb</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">MolToMolBlock</span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="n">confId</span><span class="o">=</span><span class="n">confId</span><span class="p">)</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">removeAllModels</span><span class="p">()</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">addModel</span><span class="p">(</span><span class="n">mb</span><span class="p">,</span><span class="s1">&#39;sdf&#39;</span><span class="p">)</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">setStyle</span><span class="p">({</span><span class="s1">&#39;stick&#39;</span><span class="p">:{}})</span>
+    <span class="c1">#p.zoomTo()</span>
+    <span class="k">return</span> <span class="n">p</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">viewer</span> <span class="o">=</span> <span class="n">py3Dmol</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+<span class="n">mb</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">MolToMolBlock</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span><span class="n">confId</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">addModel</span><span class="p">(</span><span class="n">mb</span><span class="p">,</span><span class="s1">&#39;sdf&#39;</span><span class="p">)</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">setStyle</span><span class="p">({</span><span class="s1">&#39;stick&#39;</span><span class="p">:{}})</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">zoomTo</span><span class="p">()</span>
+<span class="c1">#viewer.show()</span>
+<span class="n">conformerIds</span><span class="o">=</span><span class="p">[</span><span class="n">conf</span><span class="o">.</span><span class="n">GetId</span><span class="p">()</span> <span class="k">for</span> <span class="n">conf</span> <span class="ow">in</span> <span class="n">mol</span><span class="o">.</span><span class="n">GetConformers</span><span class="p">()]</span>
+<span class="n">interact</span><span class="p">(</span><span class="n">drawit</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="n">fixed</span><span class="p">(</span><span class="n">mol</span><span class="p">),</span><span class="n">p</span><span class="o">=</span><span class="n">fixed</span><span class="p">(</span><span class="n">viewer</span><span class="p">),</span><span class="n">confId</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">mol</span><span class="o">.</span><span class="n">GetNumConformers</span><span class="p">()</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+</p>
+    </details>
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&lt;function __main__.drawit(m, p, confId)&gt;</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>You can use the slider above to browse through the first conformers. You'll see that essentially conformers 1 to 5 are wrong. So likely I'm doing something very wrong here (I followed some sample code on that from Jason Biggs posted in the github issue on that) or there's still another bug. Digging a bit deeper into this issue I found that this might come from the out of plane terms of the MMFF in rdkit. To double check that we can actually rerun the whole thing without out of plane energy terms - sorry a bit verbose the code here :) :</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">rdkit.Chem</span> <span class="kn">import</span> <span class="n">rdMolTransforms</span>
+<span class="kn">import</span> <span class="nn">altair</span> <span class="k">as</span> <span class="nn">alt</span>
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">rdkit.Chem</span> <span class="kn">import</span> <span class="n">rdForceFieldHelpers</span>
+<span class="kn">from</span> <span class="nn">rdkit.Chem</span> <span class="kn">import</span> <span class="n">ChemicalForceFields</span>
+
+<span class="n">mol</span><span class="o">=</span><span class="n">Chem</span><span class="o">.</span><span class="n">AddHs</span><span class="p">(</span><span class="n">Chem</span><span class="o">.</span><span class="n">MolFromSmiles</span><span class="p">(</span><span class="s1">&#39;CCCOC1=CC=C(Cl)C(C)=C1&#39;</span><span class="p">))</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">a</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">mol</span><span class="o">.</span><span class="n">GetAtoms</span><span class="p">()):</span>
+        <span class="n">a</span><span class="o">.</span><span class="n">SetAtomMapNum</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+<span class="n">AllChem</span><span class="o">.</span><span class="n">EmbedMolecule</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span><span class="n">randomSeed</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span> 
+
+<span class="n">conformer</span><span class="o">=</span><span class="n">mol</span><span class="o">.</span><span class="n">GetConformer</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">m2</span><span class="o">=</span><span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">mol</span><span class="p">)</span>
+<span class="n">mp</span> <span class="o">=</span> <span class="n">AllChem</span><span class="o">.</span><span class="n">MMFFGetMoleculeProperties</span><span class="p">(</span><span class="n">m2</span><span class="p">)</span>
+<span class="n">mp</span><span class="o">.</span><span class="n">SetMMFFOopTerm</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>    <span class="c1"># That&#39;s the critical bit here - switch off out of plane terms for MMFF</span>
+<span class="n">ffm</span> <span class="o">=</span> <span class="n">AllChem</span><span class="o">.</span><span class="n">MMFFGetMoleculeForceField</span><span class="p">(</span><span class="n">m2</span><span class="p">,</span> <span class="n">mp</span><span class="p">)</span>
+<span class="n">energy</span><span class="o">=</span><span class="p">[]</span>
+<span class="n">confid</span><span class="o">=</span><span class="mi">0</span>
+<span class="n">angles</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">370</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">angle</span> <span class="ow">in</span> <span class="n">angles</span><span class="p">:</span>
+    <span class="n">confid</span><span class="o">+=</span><span class="mi">1</span>
+    <span class="n">ff2</span> <span class="o">=</span> <span class="n">AllChem</span><span class="o">.</span><span class="n">MMFFGetMoleculeForceField</span><span class="p">(</span><span class="n">m2</span><span class="p">,</span> <span class="n">mp</span><span class="p">)</span>
+    <span class="n">ff2</span><span class="o">.</span><span class="n">MMFFAddTorsionConstraint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">angle</span> <span class="o">-</span> <span class="o">.</span><span class="mi">1</span><span class="p">,</span> <span class="n">angle</span> <span class="o">+</span> <span class="o">.</span><span class="mi">1</span><span class="p">,</span> <span class="mf">10000.0</span><span class="p">)</span>
+    <span class="n">ff2</span><span class="o">.</span><span class="n">Minimize</span><span class="p">()</span>
+    <span class="n">energy</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ff2</span><span class="o">.</span><span class="n">CalcEnergy</span><span class="p">())</span>
+    <span class="n">xyz</span><span class="o">=</span><span class="n">ff2</span><span class="o">.</span><span class="n">Positions</span><span class="p">()</span>
+    <span class="n">new_conf</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">Conformer</span><span class="p">(</span><span class="n">mol</span><span class="o">.</span><span class="n">GetNumAtoms</span><span class="p">())</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">mol</span><span class="o">.</span><span class="n">GetNumAtoms</span><span class="p">()):</span>
+        <span class="n">new_conf</span><span class="o">.</span><span class="n">SetAtomPosition</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">m2</span><span class="o">.</span><span class="n">GetConformer</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">GetAtomPosition</span><span class="p">(</span><span class="n">i</span><span class="p">)))</span>
+    <span class="n">new_conf</span><span class="o">.</span><span class="n">SetId</span><span class="p">(</span><span class="n">confid</span><span class="p">)</span>
+    <span class="n">mol</span><span class="o">.</span><span class="n">AddConformer</span><span class="p">(</span><span class="n">new_conf</span><span class="p">)</span>
+
+<span class="n">dfrdkit</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;angle&#39;</span><span class="p">:</span><span class="n">angles</span><span class="p">,</span> <span class="s1">&#39;energy&#39;</span><span class="p">:</span><span class="n">energy</span><span class="p">})</span>
+<span class="n">alt</span><span class="o">.</span><span class="n">Chart</span><span class="p">(</span><span class="n">dfrdkit</span><span class="p">)</span><span class="o">.</span><span class="n">mark_line</span><span class="p">(</span><span class="n">point</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">interpolate</span><span class="o">=</span><span class="s2">&quot;natural&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span>
+    <span class="n">alt</span><span class="o">.</span><span class="n">X</span><span class="p">(</span><span class="s1">&#39;angle:Q&#39;</span><span class="p">,</span>
+        <span class="n">scale</span><span class="o">=</span><span class="n">alt</span><span class="o">.</span><span class="n">Scale</span><span class="p">(</span><span class="n">domain</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">360</span><span class="p">,</span><span class="mi">350</span><span class="p">])</span>
+    <span class="p">),</span>
+    <span class="n">alt</span><span class="o">.</span><span class="n">Y</span><span class="p">(</span><span class="s1">&#39;energy:Q&#39;</span><span class="p">,</span>
+        <span class="n">scale</span><span class="o">=</span><span class="n">alt</span><span class="o">.</span><span class="n">Scale</span><span class="p">(</span><span class="n">zero</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="p">)</span>
+<span class="p">)</span><span class="o">.</span><span class="n">interactive</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+
+<div id="altair-viz-ce7787c1d969412db8dc764b928df04c"></div>
+<script type="text/javascript">
+  (function(spec, embedOpt){
+    let outputDiv = document.currentScript.previousElementSibling;
+    if (outputDiv.id !== "altair-viz-ce7787c1d969412db8dc764b928df04c") {
+      outputDiv = document.getElementById("altair-viz-ce7787c1d969412db8dc764b928df04c");
+    }
+    const paths = {
+      "vega": "https://cdn.jsdelivr.net/npm//vega@5?noext",
+      "vega-lib": "https://cdn.jsdelivr.net/npm//vega-lib?noext",
+      "vega-lite": "https://cdn.jsdelivr.net/npm//vega-lite@4.8.1?noext",
+      "vega-embed": "https://cdn.jsdelivr.net/npm//vega-embed@6?noext",
+    };
+
+    function loadScript(lib) {
+      return new Promise(function(resolve, reject) {
+        var s = document.createElement('script');
+        s.src = paths[lib];
+        s.async = true;
+        s.onload = () => resolve(paths[lib]);
+        s.onerror = () => reject(`Error loading script: ${paths[lib]}`);
+        document.getElementsByTagName("head")[0].appendChild(s);
+      });
+    }
+
+    function showError(err) {
+      outputDiv.innerHTML = `<div class="error" style="color:red;">${err}</div>`;
+      throw err;
+    }
+
+    function displayChart(vegaEmbed) {
+      vegaEmbed(outputDiv, spec, embedOpt)
+        .catch(err => showError(`Javascript Error: ${err.message}<br>This usually means there's a typo in your chart specification. See the javascript console for the full traceback.`));
+    }
+
+    if(typeof define === "function" && define.amd) {
+      requirejs.config({paths});
+      require(["vega-embed"], displayChart, err => showError(`Error loading script: ${err.message}`));
+    } else if (typeof vegaEmbed === "function") {
+      displayChart(vegaEmbed);
+    } else {
+      loadScript("vega")
+        .then(() => loadScript("vega-lite"))
+        .then(() => loadScript("vega-embed"))
+        .catch(showError)
+        .then(() => displayChart(vegaEmbed));
+    }
+  })({"config": {"view": {"continuousWidth": 400, "continuousHeight": 300}}, "data": {"name": "data-6b3379f73e65514a7e00dfe4eb2a193f"}, "mark": {"type": "line", "interpolate": "natural", "point": true}, "encoding": {"x": {"type": "quantitative", "field": "angle", "scale": {"domain": [0, 360, 350]}}, "y": {"type": "quantitative", "field": "energy", "scale": {"zero": false}}}, "selection": {"selector007": {"type": "interval", "bind": "scales", "encodings": ["x", "y"]}}, "$schema": "https://vega.github.io/schema/vega-lite/v4.8.1.json", "datasets": {"data-6b3379f73e65514a7e00dfe4eb2a193f": [{"angle": 0, "energy": 28.820457951738103}, {"angle": 10, "energy": 28.47324718467284}, {"angle": 20, "energy": 27.69556808914211}, {"angle": 30, "energy": 26.539694667033555}, {"angle": 40, "energy": 25.206273439661764}, {"angle": 50, "energy": 23.934491061055564}, {"angle": 60, "energy": 22.91559444828023}, {"angle": 70, "energy": 22.1980605965604}, {"angle": 80, "energy": 21.779039752119733}, {"angle": 90, "energy": 21.647390507588558}, {"angle": 100, "energy": 21.73611063808699}, {"angle": 110, "energy": 21.94732817423372}, {"angle": 120, "energy": 22.17610688102127}, {"angle": 130, "energy": 22.33446276180328}, {"angle": 140, "energy": 22.32624024253387}, {"angle": 150, "energy": 20.669854888344148}, {"angle": 160, "energy": 20.168322796860313}, {"angle": 170, "energy": 19.83840077926902}, {"angle": 180, "energy": 19.72504687152755}, {"angle": 190, "energy": 19.83840077919593}, {"angle": 200, "energy": 20.168322803294654}, {"angle": 210, "energy": 20.669854890290548}, {"angle": 220, "energy": 21.261895595796858}, {"angle": 230, "energy": 21.826454156097736}, {"angle": 240, "energy": 22.24724536548198}, {"angle": 250, "energy": 22.474981175308688}, {"angle": 260, "energy": 22.569708651992283}, {"angle": 270, "energy": 22.633298599878575}, {"angle": 280, "energy": 22.71023121172098}, {"angle": 290, "energy": 22.26732539762029}, {"angle": 300, "energy": 22.955836198500926}, {"angle": 310, "energy": 23.943671645078517}, {"angle": 320, "energy": 25.195099688710577}, {"angle": 330, "energy": 26.519564446252932}, {"angle": 340, "energy": 27.675879258821457}, {"angle": 350, "energy": 28.461190440509636}, {"angle": 360, "energy": 28.74591603162974}]}}, {"mode": "vega-lite"});
+</script>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Well, that looks slightly more reasonable in terms of positions of the energy wells. We see a minimum at 180°, other minimas around 75° and 275° &amp; and energy peak around 0°. This is a bit more in line with what we'd have expected here. You can browse through the conformations below. They look more reasonable as well now:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<details class="description">
+      <summary class="btn btn-sm" data-open="Hide Code" data-close="Show Code"></summary>
+        <p><div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">ipywidgets</span> <span class="kn">import</span> <span class="n">interact</span><span class="p">,</span> <span class="n">interactive</span><span class="p">,</span> <span class="n">fixed</span>
+<span class="kn">import</span> <span class="nn">py3Dmol</span>
+<span class="n">patt</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">MolFromSmarts</span><span class="p">(</span><span class="s1">&#39;c1ccccc1&#39;</span><span class="p">);</span><span class="n">patt</span>
+<span class="n">match</span> <span class="o">=</span> <span class="n">mol</span><span class="o">.</span><span class="n">GetSubstructMatch</span><span class="p">(</span><span class="n">patt</span><span class="p">)</span>
+<span class="n">AllChem</span><span class="o">.</span><span class="n">AlignMolConformers</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span><span class="n">atomIds</span><span class="o">=</span><span class="n">match</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">drawit</span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="n">p</span><span class="p">,</span><span class="n">confId</span><span class="p">):</span>
+    <span class="n">mb</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">MolToMolBlock</span><span class="p">(</span><span class="n">m</span><span class="p">,</span><span class="n">confId</span><span class="o">=</span><span class="n">confId</span><span class="p">)</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">removeAllModels</span><span class="p">()</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">addModel</span><span class="p">(</span><span class="n">mb</span><span class="p">,</span><span class="s1">&#39;sdf&#39;</span><span class="p">)</span>
+    <span class="n">p</span><span class="o">.</span><span class="n">setStyle</span><span class="p">({</span><span class="s1">&#39;stick&#39;</span><span class="p">:{}})</span>
+    <span class="k">return</span> <span class="n">p</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">viewer</span> <span class="o">=</span> <span class="n">py3Dmol</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">500</span><span class="p">)</span>
+<span class="n">mb</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">MolToMolBlock</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span><span class="n">confId</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">addModel</span><span class="p">(</span><span class="n">mb</span><span class="p">,</span><span class="s1">&#39;sdf&#39;</span><span class="p">)</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">setStyle</span><span class="p">({</span><span class="s1">&#39;stick&#39;</span><span class="p">:{}})</span>
+<span class="n">viewer</span><span class="o">.</span><span class="n">zoomTo</span><span class="p">()</span>
+<span class="n">conformerIds</span><span class="o">=</span><span class="p">[</span><span class="n">conf</span><span class="o">.</span><span class="n">GetId</span><span class="p">()</span> <span class="k">for</span> <span class="n">conf</span> <span class="ow">in</span> <span class="n">mol</span><span class="o">.</span><span class="n">GetConformers</span><span class="p">()]</span>
+<span class="n">interact</span><span class="p">(</span><span class="n">drawit</span><span class="p">,</span> <span class="n">m</span><span class="o">=</span><span class="n">fixed</span><span class="p">(</span><span class="n">mol</span><span class="p">),</span><span class="n">p</span><span class="o">=</span><span class="n">fixed</span><span class="p">(</span><span class="n">viewer</span><span class="p">),</span><span class="n">confId</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">mol</span><span class="o">.</span><span class="n">GetNumConformers</span><span class="p">()</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+</p>
+    </details>
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&lt;function __main__.drawit(m, p, confId)&gt;</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>So the bottomline here is at least in this example the out of plane terms are not living well together with my other dihedral constraints.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Dihedral-scan-with-XTB">Dihedral scan with XTB<a class="anchor-link" href="#Dihedral-scan-with-XTB"> </a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>XTB is a toolkit implementing semiempirical quantum mechanics and you can do quite a lot of things. Among these, in theory energy optimization, dihedral scans, constrained optimizations, metadynamics etc...It's conda packaged, so easy to deploy anywhere. 
+In contrary to things like Gaussian, Jaguar etc, it's:</p>
+<ol>
+<li>free</li>
+<li>opensource</li>
+<li>actually quite fast</li>
+</ol>
+<p>Running an energy optimization with xtb is rather straightforward and would work like this:</p>
+<p><code>xtb mol.sdf --opt --charge 0</code></p>
+<p>This will write the optimized molecule in an SD file, together with the energy (in hartree).</p>
+<p>XTB also supports dihedral scans as described in the documentation and the <a href="https://xtb-docs.readthedocs.io/en/latest/scan.html#ethane">examples work well on ethane</a>. The thing is, as usual ... we are not working with ethane or 1-Bromo-2-chloroethane (the other example).</p>
+<p>Long story short, I tried to integrate a dihedral scan as described in the documentation, but on my molecule above (which still remains rather simple)</p>
+<p>This resulted in a ton of segmentation faults (fond memories of Gaussian came back to me) after a few dihedral scan cycles. My suspicion is that the xtb optimizer is not robust enough to allow to resolve larger clashes (I'm just guessing here) that one creates when doing such torsion scans.</p>
+<p>So here's the workaround I came up with: preparing "good enough" starting conformations with rdkit and constrained optimizing with xtb and last, gathering the final energy values. Given the issues with the out of plane terms before I would have preferred having a self contained and functioning way to do this with xtb, but well...there are days like these.</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="n">angles</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">370</span><span class="p">,</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">xtbenergy</span><span class="o">=</span><span class="p">[]</span>
+
+<span class="c1">#loop over the previous conformations we obtained with rdkit</span>
+<span class="k">for</span> <span class="n">idx</span><span class="p">,</span><span class="n">deg</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">angles</span><span class="p">):</span>
+  <span class="n">w</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">SDWriter</span><span class="p">(</span><span class="s1">&#39;mol.sdf&#39;</span><span class="p">)</span>
+  <span class="n">w</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">mol</span><span class="p">,</span><span class="n">confId</span><span class="o">=</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+  <span class="n">w</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+  <span class="n">atoms</span> <span class="o">=</span> <span class="s1">&#39;2,3,4,5&#39;</span> <span class="c1">#set atoms to define the dihedral - NB: xtb indexes start at 1, rdkit at 0</span>
+  <span class="c1"># Now write the xtb input file:</span>
+  <span class="n">fh</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;dihedral_constraint.inp&quot;</span><span class="p">,</span><span class="s2">&quot;w&quot;</span><span class="p">)</span>
+  <span class="n">fh</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;&quot;&quot;$constrain</span>
+<span class="s2">    force constant=1.00</span>
+<span class="s2">    dihedral: </span><span class="si">{}</span><span class="s2">,</span><span class="si">{}</span><span class="s2"></span>
+<span class="s2">  $end&quot;&quot;&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">atoms</span><span class="p">,</span><span class="nb">float</span><span class="p">(</span><span class="n">deg</span><span class="p">)))</span>
+  <span class="n">fh</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+  <span class="c1"># run xtb</span>
+  <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot;export OMP_STACKSIZE=48G &amp;&amp; export OMP_NUM_THREADS=12,1 &amp;&amp; xtb mol.sdf --opt vtight --charge 0 --input dihedral_constraint.inp&quot;</span><span class="p">)</span>
+
+  <span class="n">sdr</span><span class="o">=</span><span class="n">Chem</span><span class="o">.</span><span class="n">SDMolSupplier</span><span class="p">(</span><span class="s2">&quot;xtbopt.sdf&quot;</span><span class="p">)</span>
+  <span class="k">for</span> <span class="n">xtbmol</span> <span class="ow">in</span> <span class="n">sdr</span><span class="p">:</span>
+      <span class="n">xtbenergy</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">xtbmol</span><span class="o">.</span><span class="n">GetProp</span><span class="p">(</span><span class="s2">&quot;total energy / Eh&quot;</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>This runs for a while, but it's still reasonably fast. Also, you might have noticed that I specified an argument to the <code>--opt</code> flag. This argument allows you to tweak how loose or precise the optimisation should be. More information on that can be found in the <a href="https://xtb-docs.readthedocs.io/en/latest/optimization.html">xtb documentation here</a>. In this example I specified a rather precise method. Feel free to play around with them and check the outcome (rather interesting as well).</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">angle</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">370</span><span class="p">,</span><span class="mi">10</span><span class="p">))</span>
+
+<span class="n">dfxtb</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;angle&#39;</span><span class="p">:</span><span class="n">angle</span><span class="p">,</span> <span class="s1">&#39;xtb&#39;</span><span class="p">:</span><span class="n">xtbenergy</span><span class="p">,</span><span class="s1">&#39;MMFF&#39;</span><span class="p">:</span><span class="n">dfrdkit</span><span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">]})</span>
+<span class="c1">#data = dfxtb.melt(&#39;angle&#39;)</span>
+
+<span class="n">base</span> <span class="o">=</span> <span class="n">alt</span><span class="o">.</span><span class="n">Chart</span><span class="p">(</span><span class="n">dfxtb</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span>
+    <span class="n">alt</span><span class="o">.</span><span class="n">X</span><span class="p">(</span><span class="s1">&#39;angle:Q&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">alt</span><span class="o">.</span><span class="n">Axis</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span><span class="n">scale</span><span class="o">=</span><span class="n">alt</span><span class="o">.</span><span class="n">Scale</span><span class="p">(</span><span class="n">domain</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">360</span><span class="p">,</span><span class="mi">350</span><span class="p">]))</span>
+<span class="p">)</span>
+<span class="n">line1</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">mark_line</span><span class="p">(</span><span class="n">stroke</span><span class="o">=</span><span class="s1">&#39;#5276A7&#39;</span><span class="p">,</span> <span class="n">interpolate</span><span class="o">=</span><span class="s1">&#39;natural&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span>
+    <span class="n">alt</span><span class="o">.</span><span class="n">Y</span><span class="p">(</span><span class="s1">&#39;xtb:Q&#39;</span><span class="p">,</span>
+          <span class="n">axis</span><span class="o">=</span><span class="n">alt</span><span class="o">.</span><span class="n">Axis</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;xtb energy&#39;</span><span class="p">,</span> <span class="n">titleColor</span><span class="o">=</span><span class="s1">&#39;#5276A7&#39;</span><span class="p">),</span><span class="n">scale</span><span class="o">=</span><span class="n">alt</span><span class="o">.</span><span class="n">Scale</span><span class="p">(</span><span class="n">zero</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+<span class="p">)</span>
+<span class="n">line2</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">mark_line</span><span class="p">(</span><span class="n">stroke</span><span class="o">=</span><span class="s1">&#39;#57A44C&#39;</span><span class="p">,</span> <span class="n">interpolate</span><span class="o">=</span><span class="s1">&#39;natural&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span>
+    <span class="n">alt</span><span class="o">.</span><span class="n">Y</span><span class="p">(</span><span class="s1">&#39;MMFF:Q&#39;</span><span class="p">,</span>
+          <span class="n">axis</span><span class="o">=</span><span class="n">alt</span><span class="o">.</span><span class="n">Axis</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;MMFF energy&#39;</span><span class="p">,</span> <span class="n">titleColor</span><span class="o">=</span><span class="s1">&#39;#57A44C&#39;</span><span class="p">),</span><span class="n">scale</span><span class="o">=</span><span class="n">alt</span><span class="o">.</span><span class="n">Scale</span><span class="p">(</span><span class="n">zero</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+<span class="p">)</span>
+<span class="n">alt</span><span class="o">.</span><span class="n">layer</span><span class="p">(</span><span class="n">line1</span><span class="p">,</span> <span class="n">line2</span><span class="p">)</span><span class="o">.</span><span class="n">resolve_scale</span><span class="p">(</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="s1">&#39;independent&#39;</span>
+<span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+
+<div id="altair-viz-456d76a5e750479989f5fe069ce8a395"></div>
+<script type="text/javascript">
+  (function(spec, embedOpt){
+    let outputDiv = document.currentScript.previousElementSibling;
+    if (outputDiv.id !== "altair-viz-456d76a5e750479989f5fe069ce8a395") {
+      outputDiv = document.getElementById("altair-viz-456d76a5e750479989f5fe069ce8a395");
+    }
+    const paths = {
+      "vega": "https://cdn.jsdelivr.net/npm//vega@5?noext",
+      "vega-lib": "https://cdn.jsdelivr.net/npm//vega-lib?noext",
+      "vega-lite": "https://cdn.jsdelivr.net/npm//vega-lite@4.8.1?noext",
+      "vega-embed": "https://cdn.jsdelivr.net/npm//vega-embed@6?noext",
+    };
+
+    function loadScript(lib) {
+      return new Promise(function(resolve, reject) {
+        var s = document.createElement('script');
+        s.src = paths[lib];
+        s.async = true;
+        s.onload = () => resolve(paths[lib]);
+        s.onerror = () => reject(`Error loading script: ${paths[lib]}`);
+        document.getElementsByTagName("head")[0].appendChild(s);
+      });
+    }
+
+    function showError(err) {
+      outputDiv.innerHTML = `<div class="error" style="color:red;">${err}</div>`;
+      throw err;
+    }
+
+    function displayChart(vegaEmbed) {
+      vegaEmbed(outputDiv, spec, embedOpt)
+        .catch(err => showError(`Javascript Error: ${err.message}<br>This usually means there's a typo in your chart specification. See the javascript console for the full traceback.`));
+    }
+
+    if(typeof define === "function" && define.amd) {
+      requirejs.config({paths});
+      require(["vega-embed"], displayChart, err => showError(`Error loading script: ${err.message}`));
+    } else if (typeof vegaEmbed === "function") {
+      displayChart(vegaEmbed);
+    } else {
+      loadScript("vega")
+        .then(() => loadScript("vega-lite"))
+        .then(() => loadScript("vega-embed"))
+        .catch(showError)
+        .then(() => displayChart(vegaEmbed));
+    }
+  })({"config": {"view": {"continuousWidth": 400, "continuousHeight": 300}}, "layer": [{"mark": {"type": "line", "interpolate": "natural", "stroke": "#5276A7"}, "encoding": {"x": {"type": "quantitative", "axis": {"title": null}, "field": "angle", "scale": {"domain": [0, 360, 350]}}, "y": {"type": "quantitative", "axis": {"title": "xtb energy", "titleColor": "#5276A7"}, "field": "xtb", "scale": {"zero": false}}}}, {"mark": {"type": "line", "interpolate": "natural", "stroke": "#57A44C"}, "encoding": {"x": {"type": "quantitative", "axis": {"title": null}, "field": "angle", "scale": {"domain": [0, 360, 350]}}, "y": {"type": "quantitative", "axis": {"title": "MMFF energy", "titleColor": "#57A44C"}, "field": "MMFF", "scale": {"zero": false}}}}], "data": {"name": "data-85209c57c8062abddcd4c9e061c6826b"}, "resolve": {"scale": {"y": "independent"}}, "$schema": "https://vega.github.io/schema/vega-lite/v4.8.1.json", "datasets": {"data-85209c57c8062abddcd4c9e061c6826b": [{"angle": 0, "xtb": "    -36.657950693184", "MMFF": 28.820457951738103}, {"angle": 10, "xtb": "    -36.658895716440", "MMFF": 28.47324718467284}, {"angle": 20, "xtb": "    -36.660365658061", "MMFF": 27.69556808914211}, {"angle": 30, "xtb": "    -36.662183817344", "MMFF": 26.539694667033555}, {"angle": 40, "xtb": "    -36.664113654451", "MMFF": 25.206273439661764}, {"angle": 50, "xtb": "    -36.665868762372", "MMFF": 23.934491061055564}, {"angle": 60, "xtb": "    -36.667189022056", "MMFF": 22.91559444828023}, {"angle": 70, "xtb": "    -36.667910956410", "MMFF": 22.1980605965604}, {"angle": 80, "xtb": "    -36.667910956410", "MMFF": 21.779039752119733}, {"angle": 90, "xtb": "    -36.667591811377", "MMFF": 21.647390507588558}, {"angle": 100, "xtb": "    -36.666742710107", "MMFF": 21.73611063808699}, {"angle": 110, "xtb": "    -36.665662200826", "MMFF": 21.94732817423372}, {"angle": 120, "xtb": "    -36.664601128750", "MMFF": 22.17610688102127}, {"angle": 130, "xtb": "    -36.664601128750", "MMFF": 22.33446276180328}, {"angle": 140, "xtb": "    -36.665524201751", "MMFF": 22.32624024253387}, {"angle": 150, "xtb": "    -36.666117447829", "MMFF": 20.669854888344148}, {"angle": 160, "xtb": "    -36.666828368816", "MMFF": 20.168322796860313}, {"angle": 170, "xtb": "    -36.667314771598", "MMFF": 19.83840077926902}, {"angle": 180, "xtb": "    -36.667487264636", "MMFF": 19.72504687152755}, {"angle": 190, "xtb": "    -36.667314769713", "MMFF": 19.83840077919593}, {"angle": 200, "xtb": "    -36.666828669911", "MMFF": 20.168322803294654}, {"angle": 210, "xtb": "    -36.666117420735", "MMFF": 20.669854890290548}, {"angle": 220, "xtb": "    -36.665320936208", "MMFF": 21.261895595796858}, {"angle": 230, "xtb": "    -36.665320936208", "MMFF": 21.826454156097736}, {"angle": 240, "xtb": "    -36.665320936208", "MMFF": 22.24724536548198}, {"angle": 250, "xtb": "    -36.665426841229", "MMFF": 22.474981175308688}, {"angle": 260, "xtb": "    -36.666503292865", "MMFF": 22.569708651992283}, {"angle": 270, "xtb": "    -36.667348526216", "MMFF": 22.633298599878575}, {"angle": 280, "xtb": "    -36.667348526216", "MMFF": 22.71023121172098}, {"angle": 290, "xtb": "    -36.667348526216", "MMFF": 22.26732539762029}, {"angle": 300, "xtb": "    -36.666995900990", "MMFF": 22.955836198500926}, {"angle": 310, "xtb": "    -36.665715545549", "MMFF": 23.943671645078517}, {"angle": 320, "xtb": "    -36.663990893385", "MMFF": 25.195099688710577}, {"angle": 330, "xtb": "    -36.662089190697", "MMFF": 26.519564446252932}, {"angle": 340, "xtb": "    -36.660289130148", "MMFF": 27.675879258821457}, {"angle": 350, "xtb": "    -36.658832665586", "MMFF": 28.461190440509636}, {"angle": 360, "xtb": "    -36.657589558412", "MMFF": 28.74591603162974}]}}, {"mode": "vega-lite"});
+</script>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>On this plot we can see both results, from rdkit's MMFF implementation and xtb. Good news...at least they agree on the maximum around 0°. Other than that there are quite important discrepancies on the location of the global minimum and the importance &amp; extent of the energy barriers between them. Interestingly, openFF and ani2 also predict 180° as a global minimum.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Comparing-vs-COD">Comparing vs COD<a class="anchor-link" href="#Comparing-vs-COD"> </a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Let's double check these results now <a href="https://pschmidtke.github.io/blog/rdkit/crystallography/small%20molecule%20xray/xray/database/2021/01/25/cod-and-torsion-angles.html">with the initial work done on the COD</a> (not yet cleaned and curated - so there will be some noise in here still)
+First I'll try to identify the smarts patterns from the torsion library that match the dihedral under investigation here:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">mol</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>&lt;rdkit.Chem.rdchem.Mol at 0x7fb7b8f17030&gt;</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">patterns</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">read_table</span><span class="p">(</span><span class="s2">&quot;../data/list_torsion_patterns.txt&quot;</span><span class="p">,</span><span class="n">header</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span><span class="n">usecols</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">selectedPatterns</span><span class="o">=</span><span class="p">[]</span>
+<span class="k">for</span> <span class="n">torsionSmarts</span> <span class="ow">in</span> <span class="n">patterns</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+    <span class="n">torsionQuery</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">MolFromSmarts</span><span class="p">(</span><span class="n">torsionSmarts</span><span class="p">)</span>
+    <span class="n">matches</span> <span class="o">=</span> <span class="n">mol</span><span class="o">.</span><span class="n">GetSubstructMatches</span><span class="p">(</span><span class="n">torsionQuery</span><span class="p">)</span>
+    <span class="k">if</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">):</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">matches</span><span class="o">==</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">),)):</span>
+            <span class="n">selectedPatterns</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">torsionQuery</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;selected: &quot;</span><span class="p">,</span><span class="n">torsionSmarts</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>selected:  [C:1][CX4H2:2]!@;-[OX2:3][c:4]
+selected:  [!#1:1][CX4H2:2]!@;-[OX2:3][c:4]
+selected:  [C:1][CX4H2:2]!@;-[OX2:3][!#1:4]
+selected:  [!#1:1][CX4H2:2]!@;-[OX2:3][!#1:4]
+selected:  [!#1:1][CX4:2]!@;-[OX2:3][!#1:4]
+[&lt;rdkit.Chem.rdchem.Mol object at 0x7fb7b96e8c60&gt;, &lt;rdkit.Chem.rdchem.Mol object at 0x7fb7b96e7850&gt;, &lt;rdkit.Chem.rdchem.Mol object at 0x7fb7b96e82b0&gt;, &lt;rdkit.Chem.rdchem.Mol object at 0x7fb7b96e76c0&gt;, &lt;rdkit.Chem.rdchem.Mol object at 0x7fb7b96e7940&gt;]
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Now we have the selected patterns, let's run these through the prepared <a href="https://pschmidtke.github.io/blog/rdkit/crystallography/small%20molecule%20xray/xray/database/2021/01/25/cod-and-torsion-angles.html">COD molecules (a huge local sd file right now)</a> and gather statistics on angles. NB: the smart patterns used here might be redundant and map the same molecules. So here I'm keeping track of which molecule previously was selected and don't include it in a subsequent calculation anymore:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">suppl</span> <span class="o">=</span> <span class="n">Chem</span><span class="o">.</span><span class="n">SDMolSupplier</span><span class="p">(</span><span class="s1">&#39;out.sdf&#39;</span><span class="p">,</span><span class="n">removeHs</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>    <span class="c1">#load the COD sd</span>
+<span class="n">angles</span><span class="o">=</span><span class="p">[]</span>
+<span class="n">matchingmols</span><span class="o">=</span><span class="p">[]</span>
+<span class="k">for</span> <span class="n">pattern</span> <span class="ow">in</span> <span class="n">selectedPatterns</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">Chem</span><span class="o">.</span><span class="n">MolToSmarts</span><span class="p">(</span><span class="n">pattern</span><span class="p">))</span>
+    <span class="c1"># based on the gist from Geoff Hutchison: https://gist.github.com/ghutchis/b388dd83ddcd7dc0be11f1ed72309da2</span>
+    <span class="n">index_map</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="k">for</span> <span class="n">atom</span> <span class="ow">in</span> <span class="n">pattern</span><span class="o">.</span><span class="n">GetAtoms</span><span class="p">()</span> <span class="p">:</span>
+        <span class="n">map_num</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">GetAtomMapNum</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">map_num</span><span class="p">:</span>
+            <span class="n">index_map</span><span class="p">[</span><span class="n">map_num</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">atom</span><span class="o">.</span><span class="n">GetIdx</span><span class="p">()</span>
+    <span class="n">map_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">index_map</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">index_map</span><span class="p">)]</span>
+
+    <span class="c1">#i=0</span>
+    <span class="c1">#suppl.reset()</span>
+    <span class="n">nMols</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">suppl</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">nMols</span><span class="p">):</span>
+        <span class="n">mol</span><span class="o">=</span><span class="n">suppl</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="c1">#for mol in suppl:</span>
+    <span class="c1">#    i+=1</span>
+        <span class="k">if</span> <span class="n">mol</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span> <span class="k">continue</span>
+        
+        <span class="k">if</span> <span class="p">(</span><span class="n">i</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">matchingmols</span><span class="p">)</span> <span class="ow">and</span> <span class="p">(</span><span class="n">i</span><span class="o">&lt;</span><span class="mi">10000</span><span class="p">):</span>
+            <span class="n">conf</span><span class="o">=</span><span class="n">mol</span><span class="o">.</span><span class="n">GetConformer</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">matches</span> <span class="o">=</span> <span class="n">mol</span><span class="o">.</span><span class="n">GetSubstructMatches</span><span class="p">(</span><span class="n">pattern</span><span class="p">)</span>
+            <span class="k">if</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">matches</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">):</span>
+                <span class="n">matchingmols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">match</span> <span class="ow">in</span> <span class="n">matches</span><span class="p">:</span>
+                    <span class="n">mapped</span> <span class="o">=</span> <span class="p">[</span><span class="n">match</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">map_list</span><span class="p">]</span>
+                    <span class="n">angle</span> <span class="o">=</span> <span class="n">rdMolTransforms</span><span class="o">.</span><span class="n">GetDihedralDeg</span><span class="p">(</span><span class="n">conf</span><span class="p">,</span> <span class="n">mapped</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">mapped</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span><span class="n">mapped</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="n">mapped</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
+                    <span class="k">if</span> <span class="p">(</span><span class="n">angle</span> <span class="o">&lt;</span> <span class="mf">0.0</span><span class="p">):</span>
+                        <span class="n">angle</span> <span class="o">+=</span> <span class="mf">360.0</span>
+                    <span class="n">angles</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">angle</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>&lt;rdkit.Chem.rdchem.Mol object at 0x7fb7b96e8c60&gt;
+193853
+&lt;rdkit.Chem.rdchem.Mol object at 0x7fb7b96e7850&gt;
+193853
+&lt;rdkit.Chem.rdchem.Mol object at 0x7fb7b96e82b0&gt;
+193853
+&lt;rdkit.Chem.rdchem.Mol object at 0x7fb7b96e76c0&gt;
+193853
+&lt;rdkit.Chem.rdchem.Mol object at 0x7fb7b96e7940&gt;
+193853
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">angles</span><span class="p">))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered"><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>This runs again for quite some time...so patience is needed. Once this is done, here you should see something like that:</p>
+
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<details class="description">
+      <summary class="btn btn-sm" data-open="Hide Code" data-close="Show Code"></summary>
+        <p><div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dfcod</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;angles&#39;</span><span class="p">:</span><span class="n">angles</span><span class="p">})</span>
+<span class="n">alt</span><span class="o">.</span><span class="n">Chart</span><span class="p">(</span><span class="n">dfcod</span><span class="p">)</span><span class="o">.</span><span class="n">mark_bar</span><span class="p">()</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span>
+    <span class="n">alt</span><span class="o">.</span><span class="n">X</span><span class="p">(</span><span class="s2">&quot;angles:Q&quot;</span><span class="p">,</span> <span class="nb">bin</span><span class="o">=</span><span class="n">alt</span><span class="o">.</span><span class="n">Bin</span><span class="p">(</span><span class="n">maxbins</span><span class="o">=</span><span class="mi">100</span><span class="p">)),</span>
+    <span class="n">y</span><span class="o">=</span><span class="s1">&#39;count()&#39;</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+</p>
+    </details>
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+
+<div class="output_html rendered_html output_subarea output_execute_result">
+
+<div id="altair-viz-35fc5624e4924aa3882cf4b6bbb7e7a0"></div>
+<script type="text/javascript">
+  (function(spec, embedOpt){
+    let outputDiv = document.currentScript.previousElementSibling;
+    if (outputDiv.id !== "altair-viz-35fc5624e4924aa3882cf4b6bbb7e7a0") {
+      outputDiv = document.getElementById("altair-viz-35fc5624e4924aa3882cf4b6bbb7e7a0");
+    }
+    const paths = {
+      "vega": "https://cdn.jsdelivr.net/npm//vega@5?noext",
+      "vega-lib": "https://cdn.jsdelivr.net/npm//vega-lib?noext",
+      "vega-lite": "https://cdn.jsdelivr.net/npm//vega-lite@4.8.1?noext",
+      "vega-embed": "https://cdn.jsdelivr.net/npm//vega-embed@6?noext",
+    };
+
+    function loadScript(lib) {
+      return new Promise(function(resolve, reject) {
+        var s = document.createElement('script');
+        s.src = paths[lib];
+        s.async = true;
+        s.onload = () => resolve(paths[lib]);
+        s.onerror = () => reject(`Error loading script: ${paths[lib]}`);
+        document.getElementsByTagName("head")[0].appendChild(s);
+      });
+    }
+
+    function showError(err) {
+      outputDiv.innerHTML = `<div class="error" style="color:red;">${err}</div>`;
+      throw err;
+    }
+
+    function displayChart(vegaEmbed) {
+      vegaEmbed(outputDiv, spec, embedOpt)
+        .catch(err => showError(`Javascript Error: ${err.message}<br>This usually means there's a typo in your chart specification. See the javascript console for the full traceback.`));
+    }
+
+    if(typeof define === "function" && define.amd) {
+      requirejs.config({paths});
+      require(["vega-embed"], displayChart, err => showError(`Error loading script: ${err.message}`));
+    } else if (typeof vegaEmbed === "function") {
+      displayChart(vegaEmbed);
+    } else {
+      loadScript("vega")
+        .then(() => loadScript("vega-lite"))
+        .then(() => loadScript("vega-embed"))
+        .catch(showError)
+        .then(() => displayChart(vegaEmbed));
+    }
+  })({"config": {"view": {"continuousWidth": 400, "continuousHeight": 300}}, "data": {"name": "data-d328bd3433d1153fd29fc7eca1f4dc3e"}, "mark": "bar", "encoding": {"x": {"type": "quantitative", "bin": {"maxbins": 100}, "field": "angles"}, "y": {"type": "quantitative", "aggregate": "count"}}, "$schema": "https://vega.github.io/schema/vega-lite/v4.8.1.json", "datasets": {"data-d328bd3433d1153fd29fc7eca1f4dc3e": [{"angles": 276.70093198712885}, {"angles": 180.3009450788653}, {"angles": 177.38720101082023}, {"angles": 90.30132997563453}, {"angles": 178.38171146910946}, {"angles": 93.50781107674497}, {"angles": 177.03302514879076}, {"angles": 172.0269611899371}, {"angles": 61.343091926957506}, {"angles": 178.07231163870608}, {"angles": 189.05405916897521}, {"angles": 177.33473747586504}, {"angles": 107.9589392291565}, {"angles": 181.28596632067132}, {"angles": 188.09972673105224}, {"angles": 170.0479332901609}, {"angles": 207.48479585470523}, {"angles": 190.59393966023325}, {"angles": 132.22696966077606}, {"angles": 191.37838089677504}, {"angles": 198.09562006902829}, {"angles": 202.86385056901605}, {"angles": 197.40683374118998}, {"angles": 140.59631213857577}, {"angles": 190.28122897800702}, {"angles": 222.54458514582396}, {"angles": 185.8329150651609}, {"angles": 157.18947806443188}, {"angles": 177.7787109049958}, {"angles": 154.0152824468879}, {"angles": 204.5466219022282}, {"angles": 172.1679976111839}, {"angles": 191.5887467757793}, {"angles": 199.00368631335962}, {"angles": 154.96023841679514}, {"angles": 180.39338739982043}, {"angles": 73.45010855075655}, {"angles": 180.18344359753664}, {"angles": 179.58916908000012}, {"angles": 177.97254189111086}, {"angles": 181.596891913941}, {"angles": 183.88132788523882}, {"angles": 186.08467620701668}, {"angles": 183.35794989223896}, {"angles": 180.50305075843522}, {"angles": 198.27184270070714}, {"angles": 176.87043848981665}, {"angles": 176.87043848981665}, {"angles": 179.41043334052858}, {"angles": 182.58390876132967}, {"angles": 178.89467931070013}, {"angles": 180.22718712993947}, {"angles": 197.81443461037398}, {"angles": 67.5979855135826}, {"angles": 181.2851857584081}, {"angles": 252.09284766014565}, {"angles": 70.27852418682423}, {"angles": 183.42751638679033}, {"angles": 184.54422721613997}, {"angles": 175.52501746453785}, {"angles": 171.8320147201481}, {"angles": 180.72948098069324}, {"angles": 170.90305626700822}, {"angles": 189.42402073613272}, {"angles": 176.48455249283975}, {"angles": 179.84523243607805}, {"angles": 170.2267081949635}, {"angles": 171.77991741831016}, {"angles": 186.83578090112752}, {"angles": 177.88801212750886}, {"angles": 163.40657905641777}, {"angles": 178.13036265309972}, {"angles": 188.22317412803955}, {"angles": 183.6238602462538}, {"angles": 184.61916537561706}, {"angles": 181.64800855576175}, {"angles": 185.53526063340763}, {"angles": 178.74532871666156}, {"angles": 173.79488199223528}, {"angles": 164.57208329060722}, {"angles": 189.83895639307724}, {"angles": 181.71159983861043}, {"angles": 181.72082404324513}, {"angles": 185.7299414134992}, {"angles": 178.29084032468722}, {"angles": 183.7531271060799}, {"angles": 182.30039129872026}, {"angles": 184.89812106714194}, {"angles": 165.99892741068842}, {"angles": 194.04003824902122}, {"angles": 156.6664578725238}, {"angles": 190.9191367257396}, {"angles": 175.69425206064034}, {"angles": 65.3864382502571}, {"angles": 184.05779626648842}, {"angles": 193.43979466297483}, {"angles": 183.06709864489704}, {"angles": 174.48753344610142}, {"angles": 184.30793952187068}, {"angles": 180.7363553149049}, {"angles": 200.42320441527568}, {"angles": 294.8431277052199}, {"angles": 174.70399956702929}, {"angles": 163.8919024061965}, {"angles": 176.33842843258145}, {"angles": 182.93549996806576}, {"angles": 177.7973099782343}, {"angles": 183.3451535992062}, {"angles": 156.32774862586996}, {"angles": 177.5526215329998}, {"angles": 179.97811553793102}, {"angles": 174.3412117648835}, {"angles": 181.0089620266083}, {"angles": 170.82089122038494}, {"angles": 180.77508410337728}, {"angles": 169.45405287744182}, {"angles": 177.80979758724524}, {"angles": 178.9028820933903}, {"angles": 179.66173594133176}, {"angles": 90.20818264703858}, {"angles": 130.84184155513725}, {"angles": 259.9270240031788}, {"angles": 285.0755075200919}, {"angles": 181.05803026225493}, {"angles": 181.2059584995499}, {"angles": 183.16120690160648}, {"angles": 175.22364644086986}, {"angles": 174.90219298741556}, {"angles": 177.65262734518262}, {"angles": 190.2758425551194}, {"angles": 189.75837029393253}, {"angles": 177.55570881653088}, {"angles": 192.67929791970107}, {"angles": 188.6306249986848}, {"angles": 179.25599447932575}, {"angles": 171.08908337985156}, {"angles": 178.98825077704433}, {"angles": 178.59379854173588}, {"angles": 191.08113294697648}, {"angles": 188.2633046866271}, {"angles": 174.85902510139852}, {"angles": 174.02738186406563}, {"angles": 177.4846671363925}, {"angles": 171.96881543415708}, {"angles": 181.96931141463332}, {"angles": 177.52075144899797}, {"angles": 167.43756441822524}, {"angles": 171.09011621999935}, {"angles": 278.1461845138527}, {"angles": 171.27907947625192}, {"angles": 71.53690894035178}, {"angles": 60.708737192362015}, {"angles": 121.07370813740089}, {"angles": 276.4010474127068}, {"angles": 280.7668459739762}, {"angles": 174.599035580778}, {"angles": 197.76190140598507}, {"angles": 178.0197065229938}, {"angles": 175.52219848776804}, {"angles": 71.90989287356484}, {"angles": 170.9662327517229}, {"angles": 276.3272741720644}, {"angles": 162.4069616331151}, {"angles": 181.1795437030527}, {"angles": 183.76784170878153}, {"angles": 87.49110999719868}, {"angles": 178.9312487511149}, {"angles": 77.76000326364174}, {"angles": 171.84322424064823}, {"angles": 190.73219687037042}, {"angles": 183.67074493284403}, {"angles": 288.14267763749297}, {"angles": 193.69559779913806}, {"angles": 277.07788370194527}, {"angles": 178.68575390649625}, {"angles": 181.4982385381329}, {"angles": 178.69484006637327}, {"angles": 185.17684230164963}, {"angles": 169.84977073095936}, {"angles": 180.03845938227798}, {"angles": 189.85642465836102}, {"angles": 187.8653684078014}, {"angles": 287.1398289063583}, {"angles": 72.93373015836835}, {"angles": 70.74200871363384}, {"angles": 72.13565598675501}, {"angles": 170.8693649317486}, {"angles": 168.40672005692733}, {"angles": 166.95023065917758}, {"angles": 185.67089452863905}, {"angles": 166.71374382302258}, {"angles": 184.86858051290454}, {"angles": 197.23940755570908}, {"angles": 140.79498979016316}, {"angles": 177.3431189152806}, {"angles": 178.96484467742644}, {"angles": 281.5750011926751}, {"angles": 177.1415997414649}, {"angles": 190.8592481630599}, {"angles": 167.0418700504765}, {"angles": 200.4109660347113}, {"angles": 171.06919773942735}, {"angles": 191.93648454839615}, {"angles": 160.53710057946657}, {"angles": 181.74482524588095}, {"angles": 152.09641197991164}, {"angles": 185.85271575378897}, {"angles": 167.67645562222762}, {"angles": 174.38314635312497}, {"angles": 129.08448027788504}, {"angles": 176.46790134406163}, {"angles": 188.1169389809088}, {"angles": 181.0249930879924}, {"angles": 165.16026821974145}, {"angles": 162.035018301851}, {"angles": 158.97232854225834}, {"angles": 297.4320898121836}, {"angles": 265.94488529657633}, {"angles": 183.28589927143025}, {"angles": 264.0640133440114}, {"angles": 174.99611440607654}, {"angles": 265.5406195640712}, {"angles": 185.07445411651022}, {"angles": 170.16806256995463}, {"angles": 179.7368660287531}, {"angles": 178.26826067377394}, {"angles": 175.5362615585457}, {"angles": 180.39288958407812}, {"angles": 158.57232859666414}, {"angles": 180.52128868217227}, {"angles": 198.11576314030748}, {"angles": 183.27738762713787}, {"angles": 173.2544712696419}, {"angles": 191.38415311293585}, {"angles": 171.77580638839976}, {"angles": 180.18591884395826}, {"angles": 184.44744920018783}, {"angles": 176.4186568065409}, {"angles": 183.4348195566569}, {"angles": 178.0465905424917}, {"angles": 177.5807265201175}, {"angles": 180.4690226567923}, {"angles": 174.88157903245397}, {"angles": 175.88220281713743}, {"angles": 179.73652297062355}, {"angles": 173.87991032464313}, {"angles": 169.797213447696}, {"angles": 277.6398437916277}, {"angles": 180.12542768959503}, {"angles": 179.66320095383247}, {"angles": 181.62338595631272}, {"angles": 194.07008883057063}, {"angles": 190.48104066900547}, {"angles": 186.4504178529262}, {"angles": 169.2045486541242}, {"angles": 185.66643567576395}, {"angles": 188.26035914362168}, {"angles": 82.77649589074352}, {"angles": 172.26533464623864}, {"angles": 175.97893121941507}, {"angles": 179.3231182579818}, {"angles": 177.3497480529055}, {"angles": 177.70233536495564}, {"angles": 95.24038358440605}, {"angles": 182.12862288099237}, {"angles": 175.07651364961643}, {"angles": 202.088664888728}, {"angles": 178.14254434339986}, {"angles": 158.38479392356606}, {"angles": 183.23532623397264}, {"angles": 180.94421958896524}, {"angles": 182.00446248266653}, {"angles": 273.3665033903538}, {"angles": 176.84067469964916}, {"angles": 67.07621675734525}, {"angles": 182.14843180919206}, {"angles": 192.03537022304806}, {"angles": 188.95720184201582}, {"angles": 164.92256202691775}, {"angles": 179.84860602428225}, {"angles": 77.34133781849614}, {"angles": 179.66922061054666}, {"angles": 67.07621675734525}, {"angles": 173.09122609150248}, {"angles": 158.1408067159069}, {"angles": 177.15971874889988}, {"angles": 177.282059644837}, {"angles": 178.0618577880429}, {"angles": 182.55276261540092}, {"angles": 174.39024057988948}, {"angles": 204.8021927301914}, {"angles": 175.7489008144026}, {"angles": 187.66865154865752}, {"angles": 168.60610073039481}, {"angles": 173.53275127921475}, {"angles": 74.79290039669803}, {"angles": 180.68713216213814}, {"angles": 168.10973485278961}, {"angles": 203.25254931044233}, {"angles": 206.06293846845287}, {"angles": 190.86280068144407}, {"angles": 221.35099007186903}, {"angles": 191.5143768807046}, {"angles": 185.217985112484}, {"angles": 157.1092317749143}, {"angles": 171.57149372716256}, {"angles": 260.1535544090416}, {"angles": 171.35119833877127}, {"angles": 182.41285315182478}, {"angles": 185.67085309681048}, {"angles": 99.24690167199981}, {"angles": 175.25773316732833}, {"angles": 169.42374140983145}, {"angles": 209.87277885167126}, {"angles": 190.06803103755553}, {"angles": 81.31907507117943}, {"angles": 183.83218012486782}, {"angles": 96.24417181822844}, {"angles": 176.00816387553294}, {"angles": 175.66075805611993}, {"angles": 170.0834056630032}, {"angles": 276.40876386783145}, {"angles": 169.2469558805485}, {"angles": 203.9617739011417}, {"angles": 197.24408271024373}, {"angles": 187.43973622326314}, {"angles": 179.95264605833788}, {"angles": 193.38921475904016}, {"angles": 128.57126266231987}, {"angles": 182.81220267403316}, {"angles": 99.28031763252162}, {"angles": 111.03187905631711}, {"angles": 187.44178548177393}, {"angles": 123.12237615503828}, {"angles": 188.18564902460756}, {"angles": 299.57273796952796}, {"angles": 178.9371158433601}, {"angles": 173.5154931813941}, {"angles": 167.58055431615492}, {"angles": 176.06608335415186}, {"angles": 165.79554621949148}, {"angles": 180.09163200766181}, {"angles": 180.35009988346522}, {"angles": 163.14027212788952}, {"angles": 173.99938520845674}, {"angles": 173.65419153675882}, {"angles": 180.1828149608976}, {"angles": 180.66136566441673}, {"angles": 182.30743357521064}, {"angles": 174.2547363165865}, {"angles": 177.11032340663746}, {"angles": 193.43405958864545}, {"angles": 180.32056382763489}, {"angles": 177.4001012905798}, {"angles": 181.1385544781997}, {"angles": 174.84064059147983}, {"angles": 168.7837263755672}, {"angles": 193.72511738001316}, {"angles": 248.90506088324292}, {"angles": 82.46661438865081}, {"angles": 179.51585410357845}, {"angles": 178.1460879606299}, {"angles": 285.29432269568474}, {"angles": 185.08402404726496}, {"angles": 183.49998753912826}, {"angles": 182.02261533585488}, {"angles": 290.14439073963}, {"angles": 184.40330531011662}, {"angles": 185.68470916918673}, {"angles": 187.71910342944693}, {"angles": 183.77726057977188}, {"angles": 183.92933790776505}, {"angles": 205.5256653726827}, {"angles": 180.79869177260156}, {"angles": 177.15320678344898}, {"angles": 178.1626282149473}, {"angles": 178.68528180320268}, {"angles": 177.90128401409314}, {"angles": 159.62297137145853}, {"angles": 192.38790495285457}, {"angles": 179.04389511046855}, {"angles": 179.38823254703686}, {"angles": 174.98504629241702}, {"angles": 177.3272975929932}, {"angles": 180.0038831590204}, {"angles": 174.75307117771004}, {"angles": 175.48386960644183}, {"angles": 165.61037196407102}, {"angles": 188.18326187764814}, {"angles": 195.11384556303312}, {"angles": 193.3465196061847}, {"angles": 181.03995081750955}, {"angles": 192.9458883346916}, {"angles": 181.18073314041933}, {"angles": 182.70355034929986}, {"angles": 164.7070382415478}, {"angles": 159.6010616343563}, {"angles": 193.78464776605296}, {"angles": 180.92212687290035}, {"angles": 182.2754987549876}, {"angles": 176.57512777299397}, {"angles": 188.80424606359566}, {"angles": 178.22914012347428}, {"angles": 187.83149734125698}, {"angles": 192.113116304739}, {"angles": 179.8603215774857}, {"angles": 184.3459803829409}, {"angles": 175.47415012189214}, {"angles": 181.8668710084489}, {"angles": 183.4355294249693}, {"angles": 176.13665083503156}, {"angles": 140.2516864833424}, {"angles": 167.35409220025267}, {"angles": 193.20422822704361}, {"angles": 223.30962342631756}, {"angles": 178.2474492518243}, {"angles": 178.73293869953517}, {"angles": 176.49912516589617}, {"angles": 181.18795582716197}, {"angles": 198.14584776085914}, {"angles": 167.4528151950598}, {"angles": 162.22276008829988}, {"angles": 179.41626620019883}, {"angles": 180.07078120783729}, {"angles": 178.0638398485339}, {"angles": 180.38927057005128}, {"angles": 171.79268973789507}, {"angles": 65.71944119118719}, {"angles": 188.8761269961836}, {"angles": 174.8528101995264}, {"angles": 188.85211062119464}, {"angles": 279.8346950485231}, {"angles": 167.82444001785416}, {"angles": 182.33543215588105}, {"angles": 149.06528806510786}, {"angles": 168.48744594198575}, {"angles": 139.56831283713484}, {"angles": 148.71476414652082}, {"angles": 192.75871996946157}, {"angles": 179.53437142285662}, {"angles": 198.36967897853563}, {"angles": 203.76381197480495}, {"angles": 202.64853408790813}, {"angles": 278.8659270888925}, {"angles": 74.94302766561965}, {"angles": 194.69742031635118}, {"angles": 284.5420985177409}, {"angles": 171.83221560844333}, {"angles": 173.64265279352608}, {"angles": 174.5396326537975}, {"angles": 174.61170349813446}, {"angles": 185.2678866678203}, {"angles": 174.101958756929}, {"angles": 174.16727257815347}, {"angles": 174.1216274801743}, {"angles": 174.36076675919753}, {"angles": 174.55242569038344}, {"angles": 173.71094102337656}, {"angles": 174.4074561496554}, {"angles": 184.6298806122095}, {"angles": 174.83107533136814}, {"angles": 175.61663771641403}, {"angles": 176.85168546246933}, {"angles": 185.37304878809715}, {"angles": 174.30837667013319}, {"angles": 180.85798372007247}, {"angles": 162.33689089094042}, {"angles": 69.2155045184881}, {"angles": 179.86944748806695}, {"angles": 186.45721679154602}, {"angles": 187.50893986787278}, {"angles": 106.00274301809051}, {"angles": 176.64424328412622}, {"angles": 171.83793322431282}, {"angles": 192.36862054321406}, {"angles": 79.44306586297196}, {"angles": 171.77897691876066}, {"angles": 173.86191722853957}, {"angles": 83.47842737324763}, {"angles": 81.74839516375702}, {"angles": 172.9628066178754}, {"angles": 192.4892399153513}, {"angles": 200.10219360104196}, {"angles": 174.48558756267374}, {"angles": 181.0076505871187}, {"angles": 149.33923163956382}, {"angles": 281.3576017917113}, {"angles": 210.4503849628036}, {"angles": 78.53163979630511}, {"angles": 72.11741773784854}, {"angles": 78.44379769719}, {"angles": 175.52388685063016}, {"angles": 168.5124038663588}, {"angles": 184.1762847589533}, {"angles": 190.0045883600123}, {"angles": 163.55599903496324}, {"angles": 181.38149069906783}, {"angles": 180.85936920390523}, {"angles": 179.8958223367506}, {"angles": 184.97301527884673}, {"angles": 183.88513855866728}, {"angles": 59.740558938100676}, {"angles": 177.18905850130406}, {"angles": 176.9887448785018}, {"angles": 180.8171326207933}, {"angles": 176.54924811385297}, {"angles": 280.06856970902584}, {"angles": 178.0342751772617}, {"angles": 275.5385051640367}, {"angles": 161.82890807426537}, {"angles": 275.8863265916202}, {"angles": 177.93326171080713}, {"angles": 167.26379702712404}, {"angles": 187.84567860783653}, {"angles": 179.73905875255286}, {"angles": 224.05691619366934}, {"angles": 175.3046731850746}, {"angles": 179.521642008054}, {"angles": 180.4711721906666}, {"angles": 174.47513867567244}, {"angles": 170.54845455057665}, {"angles": 187.13509261308286}, {"angles": 170.65738533819635}, {"angles": 79.98111109738345}, {"angles": 183.905770144023}, {"angles": 171.3184333347834}, {"angles": 189.03053967982993}, {"angles": 179.42544312380105}, {"angles": 191.8566753642739}, {"angles": 175.55783578411285}, {"angles": 179.48439191007114}, {"angles": 185.31278897756766}, {"angles": 173.79791787021603}, {"angles": 180.34969131672327}, {"angles": 191.6397568738975}, {"angles": 175.14859652638782}, {"angles": 179.86039876408947}, {"angles": 185.85424412473407}, {"angles": 173.69337767207267}, {"angles": 180.6489469303867}, {"angles": 182.62090257482458}, {"angles": 172.03896711231545}, {"angles": 176.68102927681775}, {"angles": 177.53905037864297}, {"angles": 181.77020518917078}, {"angles": 187.92922781988668}, {"angles": 182.56050374625136}, {"angles": 172.5570212033991}, {"angles": 177.5476746004353}, {"angles": 177.42000291182356}, {"angles": 181.11642694448227}, {"angles": 187.6995812802694}, {"angles": 191.85542203870727}, {"angles": 175.0797508833619}, {"angles": 179.787030290407}, {"angles": 185.67413042069265}, {"angles": 173.13708662711565}, {"angles": 180.57614672958172}, {"angles": 174.99621812444835}, {"angles": 174.61210020948087}, {"angles": 175.03887125905456}, {"angles": 174.02130345593957}, {"angles": 182.3910427227164}, {"angles": 172.24035026497407}, {"angles": 177.205767676325}, {"angles": 177.09542831410988}, {"angles": 182.01233972631454}, {"angles": 187.1544150071571}, {"angles": 176.0838684900964}, {"angles": 181.77272624829422}, {"angles": 172.52201867525287}, {"angles": 177.893986876929}, {"angles": 177.1424694674431}, {"angles": 180.93766400709058}, {"angles": 187.89808039800914}, {"angles": 182.1120659094702}, {"angles": 171.68918610954523}, {"angles": 177.41504491982673}, {"angles": 177.34119176485356}, {"angles": 181.30135099650397}, {"angles": 187.3940321514983}, {"angles": 175.7789936721557}, {"angles": 175.53893995594723}, {"angles": 189.52335503984392}, {"angles": 174.9144978462203}, {"angles": 178.56315722814787}, {"angles": 184.58363478922732}, {"angles": 175.01482940776458}, {"angles": 179.7745259823838}, {"angles": 189.94076227253427}, {"angles": 173.86079733405168}, {"angles": 178.6632688355134}, {"angles": 185.1107051485257}, {"angles": 174.48727566270895}, {"angles": 179.80646211403595}, {"angles": 174.99984237236947}, {"angles": 189.8011652221806}, {"angles": 173.600202508916}, {"angles": 178.75573314202143}, {"angles": 184.11447926308998}, {"angles": 173.8345060629269}, {"angles": 179.97528047379942}, {"angles": 175.3649766891921}, {"angles": 175.22618980285415}, {"angles": 190.10068414438848}, {"angles": 173.8653384845848}, {"angles": 178.85576602335695}, {"angles": 184.4931702134645}, {"angles": 174.3486885385757}, {"angles": 180.46445715619853}, {"angles": 181.52518998944416}, {"angles": 172.41663605015094}, {"angles": 168.2124293572863}, {"angles": 77.34897775101712}, {"angles": 186.68634870983905}, {"angles": 126.41065790804879}, {"angles": 119.65983660664249}, {"angles": 82.29010133471839}, {"angles": 26.751360341766507}, {"angles": 4.778517384136576}, {"angles": 192.60755105989128}, {"angles": 33.106561783006455}, {"angles": 10.30305301561846}, {"angles": 189.68339804665885}, {"angles": 40.815935825570975}, {"angles": 169.60569893771665}, {"angles": 168.19002375910645}, {"angles": 168.45033519601705}, {"angles": 177.14818104431384}, {"angles": 180.64788552862944}, {"angles": 158.12305252426185}, {"angles": 153.79934204689133}, {"angles": 184.00499778746794}, {"angles": 98.42510079655825}, {"angles": 189.74352793036695}, {"angles": 178.3233685575589}, {"angles": 160.14938793695464}, {"angles": 201.29266341307925}, {"angles": 184.26856815506466}, {"angles": 180.51327963085237}, {"angles": 174.7614428409879}, {"angles": 168.0551661402568}, {"angles": 180.42463549746452}, {"angles": 175.88294582800955}, {"angles": 171.30638319819997}, {"angles": 157.51850368123473}, {"angles": 183.30955826321767}, {"angles": 194.51120971749899}, {"angles": 179.90083815811886}, {"angles": 190.0203092584696}, {"angles": 170.96726664074535}, {"angles": 167.86259312116874}, {"angles": 169.53813460360288}, {"angles": 186.19994436212292}, {"angles": 9.818820598950104}, {"angles": 359.0090818282435}, {"angles": 184.87839026038395}, {"angles": 178.1622532801442}, {"angles": 179.47432954193968}, {"angles": 176.51492935918478}, {"angles": 83.78811994604492}, {"angles": 175.34421316309664}, {"angles": 81.74423832566377}, {"angles": 176.9939199307441}, {"angles": 172.8930053522961}, {"angles": 183.05045688574555}, {"angles": 325.05286117617794}, {"angles": 227.91434691018753}, {"angles": 174.9547514447736}, {"angles": 180.2671805849121}, {"angles": 174.05941593402372}, {"angles": 166.6150901896843}, {"angles": 171.83196571227447}, {"angles": 175.01220395310958}, {"angles": 79.67897013130052}, {"angles": 177.22060268227057}, {"angles": 201.55945791130827}, {"angles": 290.8787703818428}, {"angles": 187.47129454927853}, {"angles": 298.5398033562788}, {"angles": 350.5879137870154}, {"angles": 81.43159012646859}, {"angles": 87.908061807076}, {"angles": 160.5114747213111}, {"angles": 63.73562372594829}, {"angles": 294.3405772488046}, {"angles": 195.85672697389373}, {"angles": 165.31115391493267}, {"angles": 195.5007581829366}, {"angles": 182.70528364296712}, {"angles": 178.68988376669503}, {"angles": 188.55821029156527}, {"angles": 173.16394222349805}, {"angles": 279.6068906467876}, {"angles": 74.89971330194761}, {"angles": 203.50243633629626}, {"angles": 222.1227660362124}, {"angles": 181.9853200894336}, {"angles": 165.53087948527605}, {"angles": 245.39352820944737}, {"angles": 286.4165483588014}, {"angles": 102.19673644215716}, {"angles": 170.53377648128978}, {"angles": 241.95847377489184}, {"angles": 271.95335904960814}, {"angles": 185.87985512759764}, {"angles": 182.80831318037264}, {"angles": 196.25148356182387}, {"angles": 286.7915410904602}, {"angles": 183.90333975109414}, {"angles": 190.06463768301964}, {"angles": 185.04425956320927}, {"angles": 344.8016391925499}, {"angles": 166.29138679390925}, {"angles": 267.30120160144116}, {"angles": 122.15554710540603}, {"angles": 182.83387142434796}, {"angles": 89.16077268175145}, {"angles": 185.87985512759764}, {"angles": 182.80831318037264}, {"angles": 198.26094080838087}, {"angles": 275.4691104252304}, {"angles": 25.829610249193994}, {"angles": 358.3606089528575}, {"angles": 138.62104768667862}, {"angles": 182.96502047121956}, {"angles": 90.56486366699211}, {"angles": 170.3490504242463}, {"angles": 173.3662906427688}, {"angles": 186.583968963664}, {"angles": 185.44886116220786}, {"angles": 148.27535126623064}, {"angles": 178.30573283916132}, {"angles": 74.545286400195}, {"angles": 299.18816380276235}, {"angles": 324.0119573406072}, {"angles": 190.85072078663575}, {"angles": 193.84315690882747}, {"angles": 164.85075439812826}, {"angles": 172.48821234025814}, {"angles": 126.27062467029789}, {"angles": 67.76771068955674}, {"angles": 165.2264038050528}, {"angles": 183.6311021365952}, {"angles": 165.11440610465306}, {"angles": 304.1864434788536}, {"angles": 316.16389158156545}, {"angles": 54.95958283663864}, {"angles": 218.73327847398664}, {"angles": 293.5455094342841}, {"angles": 187.56936016809527}, {"angles": 215.821525364618}, {"angles": 166.2089996045878}, {"angles": 284.37515530019846}, {"angles": 120.86850419321605}, {"angles": 171.99991261360097}, {"angles": 210.87087493700477}, {"angles": 170.90243456822412}, {"angles": 159.41549707295957}, {"angles": 183.32940556368644}, {"angles": 192.16392227583384}, {"angles": 175.234471787984}, {"angles": 160.87155384948898}, {"angles": 192.57480080638433}, {"angles": 173.88962688778565}, {"angles": 195.98266956085232}, {"angles": 68.62533816848969}, {"angles": 178.87457518743096}, {"angles": 296.19765444475496}, {"angles": 173.07038232081572}, {"angles": 178.59470963742532}, {"angles": 177.4472111710709}, {"angles": 179.21988946551312}, {"angles": 184.0714384683408}, {"angles": 96.59600813135792}, {"angles": 176.6158090135522}, {"angles": 302.35973156484374}, {"angles": 301.6011451529064}, {"angles": 287.1783986637164}, {"angles": 284.4944474603399}, {"angles": 180.32355372841153}, {"angles": 175.70974256202672}, {"angles": 168.9999091511763}, {"angles": 183.22575138240833}, {"angles": 177.42154665452375}, {"angles": 172.4920317277737}, {"angles": 200.99085235856361}, {"angles": 286.84464571934757}, {"angles": 170.80757042885298}, {"angles": 188.4928541381061}, {"angles": 180.3024024512516}, {"angles": 163.2444960189007}, {"angles": 185.387269135364}, {"angles": 63.48189632316613}, {"angles": 180.22350299315366}, {"angles": 187.8417698842502}, {"angles": 155.48891483768347}, {"angles": 226.22167908763038}, {"angles": 185.88115284136757}, {"angles": 189.43125167340887}, {"angles": 181.84316498121962}, {"angles": 176.6370853640938}, {"angles": 115.75372672382903}, {"angles": 180.3295818328647}, {"angles": 182.58346113102436}, {"angles": 173.30395014222483}, {"angles": 172.09676524684534}, {"angles": 100.49945430698494}, {"angles": 188.86363934912052}, {"angles": 82.12018584927294}, {"angles": 178.16155207355789}, {"angles": 194.9349963127185}, {"angles": 134.0169754873696}, {"angles": 165.31441448722072}, {"angles": 170.38171193874615}, {"angles": 184.45117850621455}, {"angles": 183.31151217663265}, {"angles": 180.06912346802355}, {"angles": 187.34945149241923}, {"angles": 186.43909679013177}, {"angles": 188.14894230102348}, {"angles": 199.1942184893213}, {"angles": 275.1728702316559}, {"angles": 189.765165995825}, {"angles": 179.7880150606218}, {"angles": 259.6870668069946}, {"angles": 73.95578670207183}, {"angles": 187.53095047985974}, {"angles": 277.18483193259266}, {"angles": 170.88273507666935}, {"angles": 276.81207811123033}, {"angles": 276.9429842135991}, {"angles": 184.80910425366523}, {"angles": 168.41792370712247}, {"angles": 179.63594095869024}, {"angles": 177.59457928285957}, {"angles": 202.95775890868038}, {"angles": 195.93020100189867}, {"angles": 160.59008466071967}, {"angles": 181.83163359430628}, {"angles": 180.02830241528503}, {"angles": 184.0295939972004}, {"angles": 184.63918188286198}, {"angles": 186.62496353151107}, {"angles": 189.20349937124058}, {"angles": 27.693179111160656}, {"angles": 182.86853709449136}, {"angles": 175.96715468233728}, {"angles": 170.83577171876559}, {"angles": 229.05533801126418}, {"angles": 131.00138151521404}, {"angles": 120.03666327712297}, {"angles": 6.704212261607803}, {"angles": 158.69130391458503}, {"angles": 288.5060093335998}, {"angles": 158.47548467969347}, {"angles": 226.09947753885484}, {"angles": 294.76905922750404}, {"angles": 184.93410037403237}, {"angles": 286.1407183140798}, {"angles": 140.1369646917346}, {"angles": 185.45993187081663}, {"angles": 185.49111384009638}, {"angles": 179.8947647239287}, {"angles": 175.30117653818365}, {"angles": 146.81616253353653}, {"angles": 184.1675938332322}, {"angles": 267.24207572564177}, {"angles": 120.55062237323055}, {"angles": 285.61659660392246}, {"angles": 282.60724648704155}, {"angles": 181.7096468736181}, {"angles": 321.1002272317271}, {"angles": 186.20730350124742}, {"angles": 62.526443977882934}, {"angles": 186.4877236609755}, {"angles": 170.64862838629196}, {"angles": 173.80407265975512}, {"angles": 171.65892380279564}, {"angles": 75.37105261019128}, {"angles": 253.0508192277387}, {"angles": 220.91200515341976}, {"angles": 184.91140690908773}, {"angles": 177.81844848984392}, {"angles": 168.71920114529652}, {"angles": 176.37795022021066}, {"angles": 184.28289413682313}, {"angles": 173.67708033291754}, {"angles": 93.49847940305666}, {"angles": 186.6448362618891}, {"angles": 188.30789873022582}, {"angles": 174.7288814167385}, {"angles": 268.4375685539386}, {"angles": 191.1445306516489}, {"angles": 186.19677279434586}, {"angles": 176.44275441313175}, {"angles": 177.00918740540166}, {"angles": 352.4252747579854}, {"angles": 175.56234774280495}, {"angles": 69.21075034944597}, {"angles": 125.39702448087777}, {"angles": 66.49230873700702}, {"angles": 88.34941331072116}, {"angles": 274.34167949602465}, {"angles": 202.47959804274348}, {"angles": 148.20293454809996}, {"angles": 93.54731935676101}, {"angles": 358.6319735933563}, {"angles": 189.78364765435106}, {"angles": 190.35704008818283}, {"angles": 194.1557540281622}, {"angles": 267.3583617749155}, {"angles": 180.47968019812993}, {"angles": 208.92512455800616}, {"angles": 191.90174965117538}, {"angles": 77.33867779515428}, {"angles": 175.74595606646602}, {"angles": 169.8726913464215}, {"angles": 74.50596239017774}, {"angles": 181.83938557027292}, {"angles": 165.75447631342982}, {"angles": 176.2363483253577}, {"angles": 119.27741061649301}, {"angles": 239.35116316718327}, {"angles": 184.5484100262605}, {"angles": 180.76391570879096}, {"angles": 176.6831604036052}, {"angles": 122.96538152544251}, {"angles": 180.69341558190186}, {"angles": 172.16024308033565}, {"angles": 291.58302096899286}, {"angles": 189.0746505380444}, {"angles": 110.54044109119842}, {"angles": 240.2818851074698}, {"angles": 183.9864754245916}, {"angles": 277.03239762723666}, {"angles": 289.97759242566065}, {"angles": 297.6201316672198}, {"angles": 107.66782196905358}, {"angles": 292.30309909561237}, {"angles": 288.8527420507337}, {"angles": 298.6194931634022}, {"angles": 207.90911065619284}, {"angles": 66.53262176656763}, {"angles": 157.24025566863241}, {"angles": 143.62049279442584}, {"angles": 291.2277111934079}, {"angles": 166.6297994403845}, {"angles": 93.50852506597953}, {"angles": 325.7155422215703}, {"angles": 7.266930942497114}, {"angles": 178.55118275783926}, {"angles": 183.65881646394644}, {"angles": 187.2773987180187}, {"angles": 187.51020764003607}, {"angles": 192.14674443752097}, {"angles": 188.03226450143129}, {"angles": 185.33039564708173}, {"angles": 186.30039088628905}, {"angles": 183.64631273880462}, {"angles": 225.40655996233863}, {"angles": 303.88882163516735}, {"angles": 191.29766117227308}, {"angles": 64.15966982083246}, {"angles": 70.38404379812425}, {"angles": 160.14826154781483}, {"angles": 175.31330593178419}, {"angles": 134.1978408140991}, {"angles": 174.00406043789266}, {"angles": 183.70867349173167}, {"angles": 177.01711529243437}, {"angles": 173.24651822881185}, {"angles": 239.13346640812094}, {"angles": 120.63253678564854}, {"angles": 196.9837503586853}, {"angles": 177.2547212568905}, {"angles": 177.32418441310327}, {"angles": 175.4611060468921}, {"angles": 180.47785312860373}, {"angles": 199.15416557462714}, {"angles": 295.6932061895644}, {"angles": 131.69802719550873}, {"angles": 57.496392486999646}, {"angles": 340.18534446127615}, {"angles": 141.96885431920646}, {"angles": 308.64706472646054}, {"angles": 0.4802590199324056}, {"angles": 145.5972369723973}, {"angles": 309.25581689996676}, {"angles": 352.6240418526448}, {"angles": 315.2518019703052}, {"angles": 215.431086242976}, {"angles": 48.112524720757044}, {"angles": 6.186774215014628}, {"angles": 188.20802975238342}, {"angles": 187.36669584834937}, {"angles": 281.04010819263016}, {"angles": 169.55892151570336}, {"angles": 184.81332910088}, {"angles": 178.93067882344894}, {"angles": 183.6951025616725}, {"angles": 175.39903813088992}, {"angles": 193.16674767299932}, {"angles": 167.6675253626062}, {"angles": 163.6161887332401}, {"angles": 187.6293177473499}, {"angles": 189.98754540835412}, {"angles": 191.37984903104112}, {"angles": 188.21613418815508}, {"angles": 190.43784548718284}, {"angles": 188.6717835975605}, {"angles": 203.0600026648465}, {"angles": 308.58071690864796}, {"angles": 180.42508742838757}, {"angles": 179.3371220827271}, {"angles": 183.7788726485266}, {"angles": 172.80894451851722}, {"angles": 175.28563984033985}, {"angles": 81.36388837339156}, {"angles": 253.1076319576915}, {"angles": 261.68104039850397}, {"angles": 174.5960268956094}, {"angles": 179.6008239767991}, {"angles": 324.15421195090164}, {"angles": 185.3119226391245}, {"angles": 271.8023018375825}, {"angles": 87.94164607810505}, {"angles": 66.12045366971613}, {"angles": 88.63619398476118}, {"angles": 185.5249686963146}, {"angles": 77.59408934392029}, {"angles": 88.81187448472349}, {"angles": 201.3326544213377}, {"angles": 144.51677342202163}, {"angles": 179.99986669877018}, {"angles": 183.32061596302555}, {"angles": 164.09864128314706}, {"angles": 160.21043716757083}, {"angles": 293.58289278011483}, {"angles": 165.66234497496194}, {"angles": 65.40984213921263}, {"angles": 179.3985958881742}, {"angles": 192.05684313311576}, {"angles": 177.1785444722586}, {"angles": 182.1423320620505}, {"angles": 203.8811591693623}, {"angles": 203.81634276811147}, {"angles": 207.62204490205988}, {"angles": 276.27460755479274}, {"angles": 179.16152281494806}, {"angles": 162.2525025545237}, {"angles": 175.59548456919904}, {"angles": 174.28124770005633}, {"angles": 169.34579329291893}, {"angles": 308.26242889681316}, {"angles": 56.238503159899906}, {"angles": 181.75983288933244}, {"angles": 191.89027950957762}, {"angles": 267.29576772149625}, {"angles": 173.01012935815925}, {"angles": 179.5240307629847}, {"angles": 195.97031585145913}, {"angles": 175.45739050441136}, {"angles": 186.8017415303368}, {"angles": 167.8881259126015}, {"angles": 93.67134312099982}, {"angles": 186.55537833680623}, {"angles": 178.73158755843167}, {"angles": 163.84182505275717}, {"angles": 184.45042517473624}, {"angles": 171.48788202412265}, {"angles": 194.32852173261696}, {"angles": 173.38458707172444}, {"angles": 169.1596530752444}, {"angles": 61.9825289667822}, {"angles": 64.33850359462821}, {"angles": 90.13613435809947}, {"angles": 90.33912151820984}, {"angles": 63.68053577091881}, {"angles": 66.7442517042411}, {"angles": 90.18771951893208}, {"angles": 301.25818775543917}, {"angles": 300.282534784605}, {"angles": 61.20481335005765}, {"angles": 66.34297417213588}, {"angles": 79.68744004134622}, {"angles": 84.42245357833743}, {"angles": 69.62566808005174}, {"angles": 66.51122432964816}, {"angles": 167.27789644975346}, {"angles": 63.51207917366925}, {"angles": 56.13516030356694}, {"angles": 64.86648070188505}, {"angles": 281.78517970019846}, {"angles": 271.29794313054254}, {"angles": 68.88759956984786}, {"angles": 90.14123582224728}, {"angles": 66.576757538118}, {"angles": 63.26570416565402}, {"angles": 289.3801587487318}, {"angles": 303.67601803290415}, {"angles": 300.0503432850518}, {"angles": 298.52379650978014}, {"angles": 296.04604723933386}, {"angles": 298.2259421589444}, {"angles": 299.4678894151174}, {"angles": 301.29001284751786}, {"angles": 279.8638488170721}, {"angles": 294.02040111389215}, {"angles": 298.3416171874199}, {"angles": 300.47334179135277}, {"angles": 56.86546485704209}, {"angles": 57.54113027961336}, {"angles": 67.77514894878374}, {"angles": 64.24330671632512}, {"angles": 66.73501384700354}, {"angles": 61.45338915761722}, {"angles": 90.19111156892852}, {"angles": 65.49006177215733}, {"angles": 62.13734145926152}, {"angles": 184.0441946282753}, {"angles": 169.5939821503053}, {"angles": 169.216597256777}, {"angles": 176.05141417405804}, {"angles": 174.25410046709743}, {"angles": 175.68054925002855}, {"angles": 205.64807606864647}, {"angles": 171.1002111976095}, {"angles": 175.87067501328403}, {"angles": 291.67597193663516}, {"angles": 179.45666555886598}, {"angles": 183.63459689262822}, {"angles": 130.05434338504193}, {"angles": 240.39001605342514}, {"angles": 320.49815805927}, {"angles": 261.95113800601894}, {"angles": 186.73988002350163}, {"angles": 277.9212004747605}, {"angles": 34.852446424099504}, {"angles": 182.16894145684515}, {"angles": 151.80920758784885}, {"angles": 163.70587919586438}, {"angles": 276.35214659506994}, {"angles": 186.96770488939114}, {"angles": 178.52885606921865}, {"angles": 180.4020728867626}, {"angles": 304.54855704613243}, {"angles": 197.96664212835765}, {"angles": 189.79314659312496}, {"angles": 166.67232717087438}, {"angles": 186.44767192857216}, {"angles": 156.5942785368098}, {"angles": 185.2919011100095}, {"angles": 170.56759465089087}, {"angles": 158.8253295128456}, {"angles": 181.3764610794239}, {"angles": 169.66453877476647}, {"angles": 190.26630651742383}, {"angles": 260.5384345442093}, {"angles": 190.56923053286093}, {"angles": 179.40574434535696}, {"angles": 195.32738849785576}, {"angles": 192.53652910346798}, {"angles": 182.0583944721927}, {"angles": 194.95905941476923}, {"angles": 167.3406010798822}, {"angles": 178.02751648051668}, {"angles": 167.2025280260696}, {"angles": 168.06195226486543}, {"angles": 169.55411089797138}, {"angles": 177.11506297254485}, {"angles": 173.41146717223228}, {"angles": 183.72141670310793}, {"angles": 185.92343578648155}, {"angles": 175.013874572826}, {"angles": 192.46796071889364}, {"angles": 188.36399510411928}, {"angles": 191.25522449625046}, {"angles": 179.23740688589024}, {"angles": 170.09252203491167}, {"angles": 178.53707044255717}, {"angles": 166.86570615801475}, {"angles": 173.5210684623831}, {"angles": 173.10756615146582}, {"angles": 178.31644506559155}, {"angles": 154.5240881557201}, {"angles": 176.88903637324313}, {"angles": 85.29425411407817}, {"angles": 69.6780492775412}, {"angles": 66.87916274705552}, {"angles": 64.60535520936986}, {"angles": 67.53366539749862}, {"angles": 227.71769573877958}, {"angles": 299.55075931043564}, {"angles": 296.3920489309094}, {"angles": 196.04534496949077}, {"angles": 205.1770087394105}, {"angles": 158.78269246106393}, {"angles": 177.7257147289597}, {"angles": 175.96906614541888}, {"angles": 187.66593701328176}, {"angles": 185.7543195440294}, {"angles": 178.44032467639084}, {"angles": 225.8467598148359}, {"angles": 183.4749339839633}, {"angles": 183.13143027601464}, {"angles": 186.8524298852491}, {"angles": 175.60316472193978}, {"angles": 175.6726925330934}, {"angles": 187.62541664211543}, {"angles": 186.35783877047885}, {"angles": 178.73772131429413}, {"angles": 227.61163296944457}, {"angles": 183.8977103253794}, {"angles": 183.46575476731758}, {"angles": 186.8404477295871}, {"angles": 175.78776214697734}, {"angles": 186.5794768402903}, {"angles": 179.019739513248}, {"angles": 175.42267987567232}, {"angles": 176.64478817333656}, {"angles": 184.4415333231264}, {"angles": 185.28952804788014}, {"angles": 192.85546303220218}, {"angles": 178.47032326370805}, {"angles": 180.48924003957495}, {"angles": 197.1819541248768}, {"angles": 188.9121518523589}, {"angles": 177.1354831472518}, {"angles": 186.45197855624664}, {"angles": 198.417633049194}, {"angles": 177.80272660169092}, {"angles": 187.7855264272597}, {"angles": 189.92839001089854}, {"angles": 175.5725230810082}, {"angles": 179.52120435606454}, {"angles": 181.9189806469098}, {"angles": 188.34927177732325}, {"angles": 187.71931315746124}, {"angles": 183.9467512133475}, {"angles": 170.17285784720852}, {"angles": 214.4296155884821}, {"angles": 202.37479768461705}, {"angles": 269.51323896856843}, {"angles": 45.983635392607596}, {"angles": 148.1427287150115}, {"angles": 180.71314773975655}, {"angles": 174.6798622833569}, {"angles": 174.29201444380806}, {"angles": 180.8736832392685}, {"angles": 134.10182316273998}, {"angles": 71.94472665873873}, {"angles": 280.47751592218225}, {"angles": 20.54084320491328}, {"angles": 292.77076231244496}, {"angles": 231.97270137350708}, {"angles": 165.3777511123927}, {"angles": 164.093485860435}, {"angles": 77.57924800491573}, {"angles": 134.5524509019392}, {"angles": 172.39478736669219}, {"angles": 181.62221051334413}, {"angles": 263.34371840666165}, {"angles": 161.57258617301264}, {"angles": 172.06965300929096}, {"angles": 68.1519183520462}, {"angles": 62.57702303411352}, {"angles": 62.434465454471805}, {"angles": 59.07249479959701}, {"angles": 60.80193778666974}, {"angles": 284.27089110214246}, {"angles": 174.24274046595806}, {"angles": 180.1264065264345}, {"angles": 180.24208432777434}, {"angles": 208.1442556121682}, {"angles": 171.736935306368}, {"angles": 197.79402378039117}, {"angles": 93.66710874981408}, {"angles": 252.7651399915494}, {"angles": 183.33599415653075}, {"angles": 250.9781749127454}, {"angles": 97.39412953652648}, {"angles": 181.51538464860357}, {"angles": 178.0820972102668}, {"angles": 86.47721978221294}, {"angles": 271.9355654285619}, {"angles": 184.90762264827652}, {"angles": 186.92031269539322}, {"angles": 180.2548689829968}, {"angles": 189.8246884646772}, {"angles": 184.49756994926827}, {"angles": 191.42740788648464}, {"angles": 173.2300624833607}, {"angles": 177.80182644828838}, {"angles": 172.79465284651323}, {"angles": 177.45806661117908}, {"angles": 183.2572283744326}, {"angles": 286.22083490727505}, {"angles": 180.0319518492732}, {"angles": 168.60689703749202}, {"angles": 192.02580694497982}, {"angles": 250.40514833500526}, {"angles": 88.80987242195167}, {"angles": 115.72730888277236}, {"angles": 240.20508400070042}, {"angles": 181.16680241783848}, {"angles": 156.42021951511754}, {"angles": 128.01295560522402}, {"angles": 206.9071561948256}, {"angles": 225.107621558608}, {"angles": 217.53486733817556}, {"angles": 279.78403648474824}, {"angles": 168.91015512630437}, {"angles": 175.31216172765969}, {"angles": 186.38218586650112}, {"angles": 171.79636438892015}, {"angles": 183.00097294243727}, {"angles": 171.11686037180567}, {"angles": 174.25960013227785}, {"angles": 175.4396590669232}, {"angles": 73.87314934089501}, {"angles": 174.40484440119485}, {"angles": 184.1074664956187}, {"angles": 178.41815813421647}, {"angles": 67.98060105235649}, {"angles": 280.7070831832442}, {"angles": 187.68656774392636}, {"angles": 166.05211833737232}, {"angles": 80.49423399096212}, {"angles": 164.8296469359575}, {"angles": 170.38098978455957}, {"angles": 161.94857044698355}, {"angles": 181.59144870586775}, {"angles": 185.70339921145984}, {"angles": 184.983316205197}, {"angles": 182.0989890060733}, {"angles": 186.83775901578022}, {"angles": 189.00669681911714}, {"angles": 186.76114497017912}, {"angles": 161.6403013815172}, {"angles": 87.75741030205707}, {"angles": 184.1998778814465}, {"angles": 179.0520296242453}, {"angles": 265.59291574218673}, {"angles": 178.05619487539514}, {"angles": 159.75379246405592}, {"angles": 184.02300672914498}, {"angles": 183.66396118601298}, {"angles": 163.3943129349469}, {"angles": 176.06350068008638}, {"angles": 171.83837707674826}, {"angles": 172.54686733636763}, {"angles": 185.522110576989}, {"angles": 189.83369892354435}, {"angles": 187.1545606195363}, {"angles": 192.49725612247929}, {"angles": 189.3141746572848}, {"angles": 187.7442595333716}, {"angles": 183.72993111023567}, {"angles": 212.13181585842125}, {"angles": 168.31868586212866}, {"angles": 174.66712566141663}, {"angles": 230.302384205416}, {"angles": 185.26940496988848}, {"angles": 190.61152626580375}, {"angles": 196.1237299081152}, {"angles": 279.44225783866216}, {"angles": 184.98667992982146}, {"angles": 170.8538795987646}, {"angles": 87.6402399146941}, {"angles": 198.55869222335136}, {"angles": 197.41406469467134}, {"angles": 196.87859943203296}, {"angles": 209.8051509802085}, {"angles": 197.13770264165743}, {"angles": 189.59577539923893}, {"angles": 152.6464771023691}, {"angles": 170.7703763821205}, {"angles": 281.21610843241143}, {"angles": 188.76437003492902}, {"angles": 104.99332309528458}, {"angles": 236.84606468867202}, {"angles": 180.8485083611991}, {"angles": 227.21439962710394}, {"angles": 155.9873863376185}, {"angles": 175.06406353743827}, {"angles": 183.0006678016998}, {"angles": 157.92122933898213}, {"angles": 291.0110412936061}, {"angles": 289.2630440334351}, {"angles": 75.87537931285344}, {"angles": 182.71159038349413}, {"angles": 181.13761201227754}, {"angles": 283.83329587294276}, {"angles": 167.4189280038665}, {"angles": 328.8298878868545}, {"angles": 179.2338838377547}, {"angles": 195.78599520614347}, {"angles": 185.3871326158899}, {"angles": 170.1688413210074}, {"angles": 148.0840678583688}, {"angles": 176.67794205218013}, {"angles": 196.22277437508103}, {"angles": 192.8655476626199}, {"angles": 179.35169568987538}, {"angles": 86.60580869862433}, {"angles": 78.06474524499905}, {"angles": 167.24791932856508}, {"angles": 62.79367778181344}, {"angles": 177.52416472443895}, {"angles": 174.99315587199845}, {"angles": 184.60959483755565}, {"angles": 182.06452083398793}, {"angles": 185.11228278180496}, {"angles": 100.11173765610303}, {"angles": 196.70639317436618}, {"angles": 191.26496676038568}, {"angles": 161.30914749405255}, {"angles": 172.44653611390774}, {"angles": 172.92960715419846}, {"angles": 188.2524911329299}, {"angles": 175.01811921739252}, {"angles": 158.59163686259026}, {"angles": 163.2024279259577}, {"angles": 293.34804452275324}, {"angles": 44.71611329187808}, {"angles": 175.69876050112438}, {"angles": 181.75585889487016}, {"angles": 166.44469012145322}, {"angles": 205.03399181510954}, {"angles": 172.52939972230746}, {"angles": 230.74119419450287}, {"angles": 190.79101992879023}, {"angles": 176.27891368105733}, {"angles": 181.27368713542074}, {"angles": 89.35406471082656}, {"angles": 167.5517527843687}, {"angles": 81.01524054904533}, {"angles": 160.50234403922474}, {"angles": 176.07065349604176}, {"angles": 192.94662740696288}, {"angles": 181.4853137854009}, {"angles": 185.194675463531}, {"angles": 177.24647855876586}, {"angles": 165.87455187319685}, {"angles": 177.31313277666266}, {"angles": 173.53847347354633}, {"angles": 175.32695226677325}, {"angles": 183.12304385900669}, {"angles": 183.69668330899023}, {"angles": 181.6072170218114}, {"angles": 175.7053848183559}, {"angles": 160.0691421096745}, {"angles": 174.89350294688978}, {"angles": 184.282997401089}, {"angles": 179.16876247035898}, {"angles": 191.12638280486897}, {"angles": 190.11945040894997}, {"angles": 173.70030380870776}, {"angles": 180.54744489805122}, {"angles": 169.66756402613288}, {"angles": 180.17758294709128}, {"angles": 190.53503886863993}, {"angles": 175.63343272550978}, {"angles": 165.70026330543934}, {"angles": 202.59289142751635}, {"angles": 174.40843598036332}, {"angles": 160.59296864963312}, {"angles": 180.14329476511108}, {"angles": 90.3271229532603}, {"angles": 197.80726069894044}, {"angles": 85.63036989712461}, {"angles": 187.58151987490552}, {"angles": 183.1040200050176}, {"angles": 179.04550955421482}, {"angles": 205.29181232323324}, {"angles": 191.0836453338024}, {"angles": 188.5832882621047}, {"angles": 92.34965977841897}, {"angles": 180.75809625088647}, {"angles": 197.0323385108443}, {"angles": 187.49522393320132}, {"angles": 150.49057052844552}, {"angles": 191.03884728077895}, {"angles": 181.62505481431916}, {"angles": 163.50183057391317}, {"angles": 89.39097597887492}, {"angles": 90.13009775052454}, {"angles": 167.4385973216897}, {"angles": 184.16361125532242}, {"angles": 266.8864558968401}, {"angles": 173.23500895946339}, {"angles": 165.4199999900293}, {"angles": 234.37190462026024}, {"angles": 196.54252483741377}, {"angles": 169.3147604713333}, {"angles": 220.6274346391213}, {"angles": 172.85431666374768}, {"angles": 176.5167336622454}, {"angles": 182.00971489484974}, {"angles": 182.25397438416738}, {"angles": 191.7074708834579}, {"angles": 193.411887058087}, {"angles": 184.6483083424346}, {"angles": 176.5836124154416}, {"angles": 158.22732827478924}, {"angles": 164.07786362608095}, {"angles": 187.4829400581987}, {"angles": 184.1972408693505}, {"angles": 175.35278125543218}, {"angles": 191.90641948679254}, {"angles": 194.68893057256346}, {"angles": 168.7790578981777}, {"angles": 186.7297617759353}, {"angles": 280.3476610903556}, {"angles": 185.87641540796855}, {"angles": 188.82931850579996}, {"angles": 172.0012174520016}, {"angles": 192.4256785687069}, {"angles": 281.3737582660085}, {"angles": 198.94323456503258}, {"angles": 176.9077189468213}, {"angles": 185.03587316817973}, {"angles": 167.5979233020644}, {"angles": 180.56285232342753}, {"angles": 181.13222668868326}, {"angles": 137.99632351843823}, {"angles": 214.45407155875398}, {"angles": 188.32167504146986}, {"angles": 144.05243793916014}, {"angles": 178.56500836011713}, {"angles": 140.64635781928303}, {"angles": 194.77608020257938}, {"angles": 244.39795158690083}, {"angles": 181.07990091831712}, {"angles": 187.83117218337554}, {"angles": 183.1732050222081}, {"angles": 101.89841611059212}, {"angles": 293.69264844045546}, {"angles": 157.16389174380294}, {"angles": 158.12295008703725}, {"angles": 183.31071131591366}, {"angles": 157.45385116510312}, {"angles": 78.10599756184662}, {"angles": 162.8720189409694}, {"angles": 246.48982754319798}, {"angles": 168.73242243976472}, {"angles": 197.99496357236447}, {"angles": 186.04764356016298}, {"angles": 289.73027627213366}, {"angles": 189.43056146851748}, {"angles": 9.116560037828256}, {"angles": 278.0556510645118}, {"angles": 233.01426755430194}, {"angles": 169.06843958396274}, {"angles": 262.33393067074854}, {"angles": 156.0153859875495}, {"angles": 174.66030183229498}, {"angles": 106.54747795837048}, {"angles": 283.26140937369894}, {"angles": 40.477596014904115}, {"angles": 135.40112673817825}, {"angles": 252.3344546563075}, {"angles": 278.18052390322123}, {"angles": 177.54561648021667}, {"angles": 173.8403810165826}, {"angles": 182.6990323469491}, {"angles": 274.63536320944644}, {"angles": 272.9046339366624}, {"angles": 293.2878001823535}, {"angles": 164.6878601489727}, {"angles": 175.94626011327452}, {"angles": 176.57559293976146}, {"angles": 189.99806048073586}, {"angles": 267.3420646364275}, {"angles": 181.1661623931819}, {"angles": 188.1440763400787}, {"angles": 191.3229988130279}, {"angles": 175.12616711544166}, {"angles": 68.48215707932837}, {"angles": 76.5615910950442}, {"angles": 191.03884728077895}, {"angles": 181.62505481431916}, {"angles": 163.50183057391317}, {"angles": 89.39097597887492}, {"angles": 90.13009775052454}, {"angles": 167.4385973216897}, {"angles": 234.37190462026024}, {"angles": 196.54252483741377}, {"angles": 169.3147604713333}, {"angles": 220.6274346391213}, {"angles": 173.23500895946339}, {"angles": 165.4199999900293}, {"angles": 184.16361125532242}, {"angles": 266.8864558968401}, {"angles": 284.21285309715597}, {"angles": 168.39838130096706}, {"angles": 149.1582341802359}, {"angles": 188.07148774230208}, {"angles": 174.44713951302955}, {"angles": 177.48581416313002}, {"angles": 180.580815955616}, {"angles": 296.63264621322463}, {"angles": 179.81111518912482}, {"angles": 180.348176344838}, {"angles": 174.00047802284115}, {"angles": 185.22755518338425}, {"angles": 186.61752914227907}, {"angles": 171.53989445510746}, {"angles": 83.40482696845973}, {"angles": 185.45109121112384}, {"angles": 267.7284806844733}, {"angles": 170.16971308889848}, {"angles": 106.71391861526445}, {"angles": 169.06950614519567}, {"angles": 108.64482790573112}, {"angles": 280.88479562190304}, {"angles": 188.56863737558666}, {"angles": 181.05645538081217}, {"angles": 177.34870666603652}, {"angles": 183.25869095905531}, {"angles": 173.09641488003777}, {"angles": 202.70632530395605}, {"angles": 170.3825387257017}, {"angles": 190.97721599280186}, {"angles": 212.9177767543813}, {"angles": 270.99643388925875}, {"angles": 174.46132200149228}, {"angles": 81.29368065125412}, {"angles": 183.98218716355288}, {"angles": 67.08973660639367}, {"angles": 177.60266266845113}, {"angles": 182.47113339841783}, {"angles": 187.5599256682413}, {"angles": 73.0733659667289}, {"angles": 65.01848801865098}, {"angles": 286.24203396584556}, {"angles": 198.36410693566938}, {"angles": 191.02613998262544}, {"angles": 286.5720994889782}, {"angles": 278.9053983934896}, {"angles": 80.78969126797398}, {"angles": 191.16537296569174}, {"angles": 224.25368324465467}, {"angles": 274.3497726602659}, {"angles": 165.46249157262324}, {"angles": 187.0769840370058}, {"angles": 205.13814953401493}, {"angles": 185.08136299458957}, {"angles": 285.72688520197596}, {"angles": 190.7271103464991}, {"angles": 190.8081760002409}, {"angles": 283.70563211629644}, {"angles": 189.3177389966793}, {"angles": 145.69832455581727}, {"angles": 177.13745322585743}, {"angles": 187.78519236720877}, {"angles": 179.78292353367948}, {"angles": 182.13428478645298}, {"angles": 182.06881895667112}, {"angles": 204.1014427531858}, {"angles": 77.15792988593532}, {"angles": 277.8817336116572}, {"angles": 178.77817391118165}, {"angles": 174.10249763440683}, {"angles": 169.70763743962925}, {"angles": 196.57687369244363}, {"angles": 347.7286740109747}, {"angles": 189.3083028401177}, {"angles": 185.6937967595064}, {"angles": 247.97967502231404}, {"angles": 184.06107181370652}, {"angles": 103.32280041281948}, {"angles": 352.9895706452421}, {"angles": 87.54842530680025}, {"angles": 99.23686189523261}, {"angles": 184.98245827132254}, {"angles": 195.50505885704945}, {"angles": 289.5911079789634}, {"angles": 173.9739355572157}, {"angles": 178.798608873716}, {"angles": 253.18280320675018}, {"angles": 113.17708257837745}, {"angles": 104.00020485641028}, {"angles": 257.74364227234804}, {"angles": 219.02292182194063}, {"angles": 86.95749795976543}, {"angles": 9.197983018236235}, {"angles": 257.0555747646934}, {"angles": 164.71691361077322}, {"angles": 181.92423434623402}, {"angles": 200.55638658562444}, {"angles": 181.25498728902969}, {"angles": 19.130219095552416}, {"angles": 175.32253609341655}, {"angles": 187.03873227643638}, {"angles": 183.80011023136012}, {"angles": 176.01979150542545}, {"angles": 183.39377139469562}, {"angles": 176.90168131506033}, {"angles": 239.1813106253124}, {"angles": 181.74273598731102}, {"angles": 199.04685769732572}, {"angles": 68.92408823998316}, {"angles": 70.16872763873906}, {"angles": 179.8215020016454}, {"angles": 190.40996954257346}, {"angles": 179.07597663754814}, {"angles": 273.5779286341823}, {"angles": 67.7496167698346}, {"angles": 131.45445644198165}, {"angles": 191.6823700808426}, {"angles": 41.07556273193703}, {"angles": 78.81774504648436}, {"angles": 324.38115469355023}, {"angles": 75.57607308231417}, {"angles": 321.28314525298595}, {"angles": 169.46130412101925}, {"angles": 150.49174969420451}, {"angles": 283.4360898981891}, {"angles": 343.9296710378287}, {"angles": 316.014680682061}, {"angles": 114.25841109387332}, {"angles": 348.8473307463839}, {"angles": 45.75632001121276}, {"angles": 261.3407324418965}, {"angles": 243.20550690661315}, {"angles": 89.95986896785202}, {"angles": 149.92241081324332}, {"angles": 300.9402513468143}, {"angles": 66.27446661041907}, {"angles": 105.23239364307854}, {"angles": 245.34697098008755}, {"angles": 56.503356527887476}, {"angles": 55.46319966872304}, {"angles": 64.38639419285761}, {"angles": 151.55877292739797}, {"angles": 121.33000418829225}, {"angles": 76.32867151338726}, {"angles": 285.0107457832429}, {"angles": 180.53041316415863}, {"angles": 282.4462221611769}, {"angles": 165.2600181145803}, {"angles": 90.55026788477879}, {"angles": 34.142892328404066}, {"angles": 180.88323271930977}, {"angles": 259.17422473906487}, {"angles": 173.06313196806732}, {"angles": 295.66572903969353}, {"angles": 179.21967867483676}, {"angles": 267.518869191966}, {"angles": 263.4037760284637}, {"angles": 152.6522109180488}, {"angles": 147.987988801985}, {"angles": 302.8499571457531}, {"angles": 71.80189433418691}, {"angles": 83.99926592289685}, {"angles": 203.51324364564536}, {"angles": 165.05241153648296}, {"angles": 275.7458044052797}, {"angles": 69.7471411706772}, {"angles": 186.81174323615883}, {"angles": 184.17112219093042}, {"angles": 167.42087962219438}, {"angles": 172.00456586969895}, {"angles": 144.10046806816376}, {"angles": 201.4388987408405}, {"angles": 176.6169700839794}, {"angles": 288.94480116594207}, {"angles": 78.61553843266366}, {"angles": 269.5936652951217}, {"angles": 270.662080714222}, {"angles": 275.39689360456384}, {"angles": 275.01921104866017}, {"angles": 278.76658446744017}, {"angles": 134.27103228337694}, {"angles": 273.1304361483541}, {"angles": 283.16205201563747}, {"angles": 185.4157410641359}, {"angles": 185.5741662273937}, {"angles": 185.28685070355442}, {"angles": 183.39079416951867}, {"angles": 186.66779292909175}, {"angles": 196.7358606420897}, {"angles": 164.07671505620877}, {"angles": 81.63376549262627}, {"angles": 183.68059451916557}, {"angles": 54.02414657279492}, {"angles": 319.13800950495767}, {"angles": 79.44290836854451}, {"angles": 197.6872279537861}, {"angles": 149.70751234698957}, {"angles": 269.3264569369201}, {"angles": 32.79907745944091}, {"angles": 204.61662288993486}, {"angles": 324.6791093278141}, {"angles": 87.76849545241862}, {"angles": 315.3827354200025}, {"angles": 197.2576096430315}, {"angles": 78.594413961338}, {"angles": 282.05191245232993}, {"angles": 45.3927014918927}, {"angles": 162.4468225401438}, {"angles": 35.2698579589513}, {"angles": 161.36521959143215}, {"angles": 278.58727570503345}, {"angles": 203.56611937014506}, {"angles": 324.2639284798866}, {"angles": 85.47411990795054}, {"angles": 282.7718838085805}, {"angles": 41.03788673757214}, {"angles": 164.20990875576223}, {"angles": 33.25792330013925}, {"angles": 274.9080176470026}, {"angles": 153.78219853856754}, {"angles": 312.42513298746894}, {"angles": 191.3418063237224}, {"angles": 72.32438296284147}, {"angles": 331.3641605551609}, {"angles": 209.53929730977055}, {"angles": 92.68068888497695}, {"angles": 308.4758845800802}, {"angles": 188.34001901240617}, {"angles": 68.93067673849247}, {"angles": 205.53801431087857}, {"angles": 322.15506194958897}, {"angles": 85.51199381512022}, {"angles": 73.67088370119205}, {"angles": 312.19077902435924}, {"angles": 190.78909910371965}, {"angles": 309.31957985567294}, {"angles": 189.32444739806897}, {"angles": 71.76048294336996}, {"angles": 178.94345998678892}, {"angles": 60.14359839606119}, {"angles": 297.6714650319137}, {"angles": 206.23528212363854}, {"angles": 326.12049264718587}, {"angles": 88.26142874663556}, {"angles": 86.45780924031008}, {"angles": 325.1113933250493}, {"angles": 206.156181790465}, {"angles": 194.58085302638457}, {"angles": 77.2220354506901}, {"angles": 314.39378293675543}, {"angles": 88.08593737520145}, {"angles": 328.35732216048547}, {"angles": 205.5881441932689}, {"angles": 284.86461741256016}, {"angles": 46.27565613758381}, {"angles": 166.12459469512532}, {"angles": 307.69026688218065}, {"angles": 68.67917861403262}, {"angles": 188.3453806319382}, {"angles": 325.25144795808495}, {"angles": 87.72391671028316}, {"angles": 205.40896852800006}, {"angles": 311.9286336788903}, {"angles": 191.58844110734304}, {"angles": 75.08626439065789}, {"angles": 284.1486007834179}, {"angles": 165.30142221432348}, {"angles": 46.21348342703135}, {"angles": 45.969248181923156}, {"angles": 166.1567030088457}, {"angles": 284.38767789866716}, {"angles": 78.98301738363826}, {"angles": 316.6371645303961}, {"angles": 194.91340251883776}, {"angles": 151.5187937565212}, {"angles": 271.18075043183387}, {"angles": 30.85612654193145}, {"angles": 199.1443069125814}, {"angles": 81.43608022330947}, {"angles": 317.77754179478114}, {"angles": 325.2071118757939}, {"angles": 206.21150342804248}, {"angles": 88.39913682565651}, {"angles": 38.910056488735016}, {"angles": 156.90848305281406}, {"angles": 274.42859039194394}, {"angles": 314.01753982601764}, {"angles": 78.41215006780271}, {"angles": 199.85057154991645}, {"angles": 162.9101416761094}, {"angles": 277.42938540112004}, {"angles": 38.06007390194793}, {"angles": 311.4987512350658}, {"angles": 74.7164399051575}, {"angles": 195.1097239441758}, {"angles": 47.05811058163019}, {"angles": 283.9719743919239}, {"angles": 161.42037173579104}, {"angles": 292.6213581825299}, {"angles": 54.05961799700358}, {"angles": 169.89498137005657}, {"angles": 293.32137128541353}, {"angles": 177.70743494077905}, {"angles": 147.08165367551774}, {"angles": 268.64648615227554}, {"angles": 216.63072844993624}, {"angles": 94.10504843582466}, {"angles": 167.60115252822453}, {"angles": 284.63963494455965}, {"angles": 43.80332442410431}, {"angles": 162.9026284901247}, {"angles": 38.55678118342682}, {"angles": 279.5446872592787}, {"angles": 76.28452312198507}, {"angles": 197.7591380124755}, {"angles": 106.083380758898}, {"angles": 228.58988316905854}, {"angles": 107.87766591205066}, {"angles": 229.47073157097395}, {"angles": 283.57421590308417}, {"angles": 160.6601957458859}, {"angles": 129.65400804570294}, {"angles": 249.7638635638853}, {"angles": 109.71868309998132}, {"angles": 231.8768046388067}, {"angles": 88.16556473095285}, {"angles": 209.39079778145037}, {"angles": 250.68206027492073}, {"angles": 128.81381306457715}, {"angles": 7.303366213684969}, {"angles": 97.88407028668877}, {"angles": 190.60169527688998}, {"angles": 183.4057620908503}, {"angles": 104.91142314553566}, {"angles": 6.383581894051519}, {"angles": 285.10169118596275}, {"angles": 47.06741116496026}, {"angles": 165.51707605982673}, {"angles": 64.31604828783554}, {"angles": 186.136485563763}, {"angles": 303.8013762956673}, {"angles": 250.4216913780486}, {"angles": 137.01732757914093}, {"angles": 157.38351170344268}, {"angles": 84.32040849291924}, {"angles": 77.678707742572}, {"angles": 150.21979112288759}, {"angles": 355.1440471578447}, {"angles": 177.3080637711407}, {"angles": 50.50431410912332}, {"angles": 89.00879516451326}, {"angles": 207.21964348520336}, {"angles": 329.4921353690272}, {"angles": 216.83896023344911}, {"angles": 170.2060779660969}, {"angles": 289.7488592640111}, {"angles": 96.15632822770966}, {"angles": 120.21155024679}, {"angles": 2.6399145724307}, {"angles": 241.7271932599223}, {"angles": 261.6736469580229}, {"angles": 19.485719134206118}, {"angles": 141.58121312351648}, {"angles": 317.11051655590484}, {"angles": 82.49657944532113}, {"angles": 203.67582951224037}, {"angles": 230.7191604412575}, {"angles": 350.2636785883439}, {"angles": 110.41984720751057}, {"angles": 123.4410009545931}, {"angles": 4.367785682763042}, {"angles": 241.01491709916272}, {"angles": 214.65746230130122}, {"angles": 332.59368907874983}, {"angles": 92.27009998437968}, {"angles": 88.98389123349928}, {"angles": 328.04974316750105}, {"angles": 206.85901383605201}, {"angles": 162.55276203120604}, {"angles": 280.03419190143694}, {"angles": 41.91650119236027}, {"angles": 116.6332032026252}, {"angles": 234.8661603848533}, {"angles": 358.817324684114}, {"angles": 147.2452265956261}, {"angles": 266.9318116502063}, {"angles": 33.61458021020537}, {"angles": 122.13611782477165}, {"angles": 242.1883598844151}, {"angles": 1.3649567037094}, {"angles": 0.08532912296049905}, {"angles": 119.72514024126727}, {"angles": 240.00151692921781}, {"angles": 160.76824176474994}, {"angles": 40.929857426279455}, {"angles": 279.5989785312651}, {"angles": 5.650243027972849}, {"angles": 245.19532442550047}, {"angles": 127.23212904079254}, {"angles": 113.68305216702386}, {"angles": 354.92884983275195}, {"angles": 235.08642289533773}, {"angles": 200.00130259644163}, {"angles": 323.0333195153777}, {"angles": 81.57310283314621}, {"angles": 252.3816466887189}, {"angles": 11.835340519254883}, {"angles": 133.95345206339826}, {"angles": 276.58336465604873}, {"angles": 35.83321352922699}, {"angles": 156.20965340565073}, {"angles": 140.1248618974224}, {"angles": 19.284490563520837}, {"angles": 258.75408400427375}, {"angles": 28.165177781744795}, {"angles": 268.0287405435163}, {"angles": 146.81999999468744}, {"angles": 117.9859653951825}, {"angles": 241.9180471890951}, {"angles": 268.41269621663184}, {"angles": 32.31070756504856}, {"angles": 116.66182523148976}, {"angles": 244.7829424111507}, {"angles": 120.66395395093085}, {"angles": 239.74214377250007}, {"angles": 116.10625914813954}, {"angles": 240.92840596045755}, {"angles": 219.67042912942054}, {"angles": 97.4623770575844}, {"angles": 320.23975614827845}, {"angles": 197.08938114947588}, {"angles": 291.5139557083879}, {"angles": 171.7682809301955}, {"angles": 52.64467934768189}, {"angles": 249.30249045213844}, {"angles": 129.17735424302745}, {"angles": 9.279873863714817}, {"angles": 231.45040708172368}, {"angles": 350.7683569508305}, {"angles": 111.31295123332227}, {"angles": 24.07192395908814}, {"angles": 146.23323200968525}, {"angles": 347.8374075097208}, {"angles": 223.35805831727885}, {"angles": 338.1475012980461}, {"angles": 215.83931190948098}, {"angles": 7.707180954699677}, {"angles": 129.94678111442232}, {"angles": 265.9388595333682}, {"angles": 143.88459197254622}, {"angles": 172.8976645804695}, {"angles": 225.59013635512326}, {"angles": 283.8277749951979}, {"angles": 292.9601859605932}, {"angles": 104.11556403816728}, {"angles": 159.4174302119086}, {"angles": 64.58875824681445}, {"angles": 256.9196124020248}, {"angles": 187.73048069304184}, {"angles": 133.3707264579016}, {"angles": 66.36323782732286}, {"angles": 218.41111757910417}, {"angles": 189.10011552710108}, {"angles": 94.92696388932907}, {"angles": 77.50061342673983}, {"angles": 197.50575389529095}, {"angles": 209.28787647443878}, {"angles": 86.51818215005743}, {"angles": 67.64639951920395}, {"angles": 254.41847880814203}, {"angles": 189.0222888392906}, {"angles": 133.73651505542622}, {"angles": 71.01835216275082}, {"angles": 208.05802055788175}, {"angles": 194.31374700919295}, {"angles": 86.11873557152295}, {"angles": 202.29955715753687}, {"angles": 78.85591375954687}, {"angles": 282.63222521028604}, {"angles": 143.02681819126184}, {"angles": 163.3229138715226}, {"angles": 266.63275404540934}, {"angles": 227.99416470835564}, {"angles": 175.23694456374113}, {"angles": 105.9915248898342}, {"angles": 296.9782655496931}, {"angles": 290.109559771768}, {"angles": 159.71574937121324}, {"angles": 166.58725775619115}, {"angles": 282.92120016023085}, {"angles": 195.55775649423134}, {"angles": 75.01948522698721}, {"angles": 312.2496817408521}, {"angles": 142.0927310718114}, {"angles": 262.7648861729667}, {"angles": 24.574125179000987}, {"angles": 358.2742269004943}, {"angles": 237.07691803174572}, {"angles": 341.01920379881835}, {"angles": 218.6936412828947}, {"angles": 198.91003319737646}, {"angles": 74.08751379585387}, {"angles": 61.32793861476619}, {"angles": 296.38395251826336}, {"angles": 178.90372276314508}, {"angles": 69.65391435870878}, {"angles": 186.1108285523674}, {"angles": 304.1861918659697}, {"angles": 64.34721893526192}, {"angles": 299.5354053528686}, {"angles": 181.490809655662}, {"angles": 298.2228538770499}, {"angles": 58.13042847253591}, {"angles": 181.99819532919767}, {"angles": 59.463071641923015}, {"angles": 177.3913891212342}, {"angles": 305.57178153668036}, {"angles": 305.084086461155}, {"angles": 184.73640934752473}, {"angles": 65.42916138250187}, {"angles": 190.51242125503708}, {"angles": 302.4383933570754}, {"angles": 53.765336226300114}, {"angles": 132.91191467762877}, {"angles": 16.983854067103806}, {"angles": 253.65149405996178}, {"angles": 76.30672408201924}, {"angles": 313.9886061500383}, {"angles": 194.67129929687084}, {"angles": 323.6134994645438}, {"angles": 201.11543231339107}, {"angles": 84.95896566649523}, {"angles": 305.9034727465125}, {"angles": 68.2093748337436}, {"angles": 186.6035579940784}, {"angles": 90.85024941420848}, {"angles": 214.3118580718572}, {"angles": 335.9455198596688}, {"angles": 183.45734305806982}, {"angles": 302.50983130231504}, {"angles": 64.22421860614766}, {"angles": 46.80643578518699}, {"angles": 284.0483229661172}, {"angles": 166.49740496553275}, {"angles": 313.10624904570545}, {"angles": 195.9228906329443}, {"angles": 77.48099164710835}, {"angles": 309.8754002307691}, {"angles": 191.02327698977436}, {"angles": 73.49085106921582}, {"angles": 50.36341163011514}, {"angles": 166.857078711393}, {"angles": 286.2236279913857}, {"angles": 12.454137448221589}, {"angles": 194.37609844311834}, {"angles": 57.26702564007726}, {"angles": 333.0248190583933}, {"angles": 196.87740399592258}, {"angles": 152.077222321479}, {"angles": 151.36947911430175}, {"angles": 273.5917493589431}, {"angles": 274.1717627132316}, {"angles": 325.8569514654304}, {"angles": 89.01222916925165}, {"angles": 209.36223178012526}, {"angles": 207.3438949612625}, {"angles": 86.97311485238296}, {"angles": 323.33088011422774}, {"angles": 324.9257736325685}, {"angles": 205.17365172170108}, {"angles": 87.93518439966044}, {"angles": 204.00391611403063}, {"angles": 83.87385207601487}, {"angles": 321.0822888379648}, {"angles": 206.9115856077165}, {"angles": 86.4204735880809}, {"angles": 322.91363036405266}, {"angles": 266.30718570094325}, {"angles": 146.64479443738864}, {"angles": 30.347432630237446}, {"angles": 218.30629270867163}, {"angles": 99.9016303872048}, {"angles": 336.00891742145717}, {"angles": 202.89749975892582}, {"angles": 84.81270330045729}, {"angles": 320.66387248486217}, {"angles": 224.86884125592758}, {"angles": 106.40699429434103}, {"angles": 342.5327966185317}, {"angles": 197.1209564498905}, {"angles": 79.38398169738979}, {"angles": 314.823988064387}, {"angles": 320.3984647190923}, {"angles": 208.00558315560738}, {"angles": 83.09379544709479}, {"angles": 37.20416325727602}, {"angles": 150.2859623951543}, {"angles": 273.93708660340235}, {"angles": 129.88316605139553}, {"angles": 17.159224026082292}, {"angles": 251.32750446471283}, {"angles": 211.50570179399355}, {"angles": 97.97892230387123}, {"angles": 328.524896556611}, {"angles": 218.90287524960019}, {"angles": 90.40942491518194}, {"angles": 336.0767230798422}, {"angles": 36.53335396749676}, {"angles": 274.31206534939525}, {"angles": 155.56782921010375}, {"angles": 330.58671508701224}, {"angles": 91.97467877220257}, {"angles": 208.66967007594502}, {"angles": 171.58004092007798}, {"angles": 55.11823717720439}, {"angles": 293.47405432017126}, {"angles": 182.4335419257791}, {"angles": 65.53893869197277}, {"angles": 301.4571440102164}, {"angles": 78.16870396433451}, {"angles": 315.4753856306447}, {"angles": 194.37398514113198}, {"angles": 152.44316678498734}, {"angles": 30.307072762349197}, {"angles": 269.9169263554401}, {"angles": 159.70485574797203}, {"angles": 281.5837728365587}, {"angles": 41.76895341424923}, {"angles": 160.71416703383017}, {"angles": 43.523002710665644}, {"angles": 284.4129027108929}, {"angles": 27.921314463286773}, {"angles": 265.7401464135894}, {"angles": 28.165134404701696}, {"angles": 266.0760296240672}, {"angles": 62.90048790552538}, {"angles": 298.4648230396201}, {"angles": 180.57829581406216}, {"angles": 181.3279910344926}, {"angles": 61.341907005545664}, {"angles": 299.8634220458192}, {"angles": 43.274054428771144}, {"angles": 281.82884542672554}, {"angles": 164.48573763006056}, {"angles": 173.9755829169654}, {"angles": 55.344547388521555}, {"angles": 290.88771939178406}, {"angles": 208.44004027370147}, {"angles": 89.98667318790984}, {"angles": 330.4590770815935}, {"angles": 9.045823878642642}, {"angles": 249.170027340751}, {"angles": 129.38737949660165}, {"angles": 160.56993296045007}, {"angles": 277.812008745055}, {"angles": 39.8620159520282}, {"angles": 284.1319965475433}, {"angles": 45.09399899941602}, {"angles": 161.79922258255664}, {"angles": 166.8462800370785}, {"angles": 284.4915924008363}, {"angles": 47.38970752674661}, {"angles": 182.82512279245822}, {"angles": 64.71017604298517}, {"angles": 300.3287722741753}, {"angles": 161.2282115531212}, {"angles": 280.4840748162588}, {"angles": 42.758197764761626}, {"angles": 163.9837200136553}, {"angles": 281.8998064264654}, {"angles": 44.325997628571706}, {"angles": 215.66339123085945}, {"angles": 93.47493385131551}, {"angles": 333.82678479104146}, {"angles": 155.20216006515858}, {"angles": 275.8214605835496}, {"angles": 37.2670997724363}, {"angles": 164.92603994162434}, {"angles": 47.33899879481559}, {"angles": 287.61707091302947}, {"angles": 290.4175028322984}, {"angles": 48.00038608447015}, {"angles": 164.4233082462102}, {"angles": 62.29153382789475}, {"angles": 301.3088876467823}, {"angles": 177.27553332125038}, {"angles": 158.78404083668565}, {"angles": 277.31214472808716}, {"angles": 38.06829363699886}, {"angles": 307.20235962120427}, {"angles": 69.64510585150147}, {"angles": 184.41251195660365}, {"angles": 63.984517997315834}, {"angles": 180.9354750969146}, {"angles": 301.7702026983091}, {"angles": 198.28759894076788}, {"angles": 318.29145065775856}, {"angles": 80.81851497421655}, {"angles": 79.30004506174886}, {"angles": 317.9240532967142}, {"angles": 193.40595310710233}, {"angles": 315.99271738970083}, {"angles": 77.16920993658613}, {"angles": 197.1671741411628}, {"angles": 200.47712959680356}, {"angles": 83.11756625243986}, {"angles": 319.54726630657717}, {"angles": 306.97966050138245}, {"angles": 69.7575223397541}, {"angles": 187.55221128780278}, {"angles": 318.5480910614961}, {"angles": 196.8680876494871}, {"angles": 79.12390077375748}, {"angles": 194.24525940301314}, {"angles": 313.15253065970904}, {"angles": 74.98837566523332}, {"angles": 299.56016457673707}, {"angles": 181.58826706615568}, {"angles": 62.56386591800096}, {"angles": 36.82476239269537}, {"angles": 156.33807189588214}, {"angles": 274.3511909340295}, {"angles": 272.458337263179}, {"angles": 155.6131816195784}, {"angles": 34.330394053345096}, {"angles": 272.08070310281556}, {"angles": 34.41201437128843}, {"angles": 155.95833344476918}, {"angles": 88.53926884228105}, {"angles": 328.20533459632355}, {"angles": 205.74537502476346}, {"angles": 296.16481488747394}, {"angles": 56.61566792465289}, {"angles": 177.96553241489133}, {"angles": 166.91731825502646}, {"angles": 47.87599352266215}, {"angles": 287.38300884107935}, {"angles": 71.41692186399658}, {"angles": 193.724117015904}, {"angles": 310.9526213656029}, {"angles": 212.5732311791254}, {"angles": 333.7991004390886}, {"angles": 97.26983971473102}, {"angles": 159.59798369914915}, {"angles": 42.166490338563534}, {"angles": 281.99785466380473}, {"angles": 53.09710424582614}, {"angles": 164.56546361623134}, {"angles": 283.36438872656174}, {"angles": 65.78780494152554}, {"angles": 301.9389353919937}, {"angles": 184.54225172036988}, {"angles": 22.784192014783617}, {"angles": 268.74902676352605}, {"angles": 151.75875212835754}, {"angles": 192.84721991109885}, {"angles": 315.3736256318608}, {"angles": 79.944881782712}, {"angles": 35.63145917397182}, {"angles": 152.02624272224816}, {"angles": 272.2439029474698}, {"angles": 202.17712636561012}, {"angles": 326.01482896165084}, {"angles": 87.22647891311418}, {"angles": 203.1439461792945}, {"angles": 84.11371547346316}, {"angles": 325.466094705775}, {"angles": 274.7776056430237}, {"angles": 160.69279965981755}, {"angles": 40.70277468135145}, {"angles": 204.5218609824919}, {"angles": 335.26308715604847}, {"angles": 91.27904688167432}, {"angles": 207.61051901819553}, {"angles": 336.8059623930144}, {"angles": 100.02845776873508}, {"angles": 277.27759493099734}, {"angles": 155.6148944718649}, {"angles": 39.21976638743466}, {"angles": 262.1580777269404}, {"angles": 149.37190361100494}, {"angles": 23.567040794642335}, {"angles": 190.15447988954773}, {"angles": 312.47905237309703}, {"angles": 74.55669453333623}, {"angles": 288.9413611357827}, {"angles": 172.9687001851623}, {"angles": 48.91263065890592}, {"angles": 79.47113209368149}, {"angles": 321.23223973363565}, {"angles": 198.15172422305253}, {"angles": 295.2426528618605}, {"angles": 180.71697104301924}, {"angles": 55.543085453935525}, {"angles": 53.786854324790944}, {"angles": 293.57406459486106}, {"angles": 174.68054211308151}, {"angles": 150.91058148744423}, {"angles": 30.152367836356895}, {"angles": 273.3738461184691}, {"angles": 82.68580275860063}, {"angles": 196.82113230252912}, {"angles": 318.6934099410378}, {"angles": 36.241743824504496}, {"angles": 158.71058753457058}, {"angles": 277.72668568009493}, {"angles": 151.99753348163378}, {"angles": 194.4579096746578}, {"angles": 215.3813538146117}, {"angles": 98.35044358830845}, {"angles": 337.3494626969859}, {"angles": 153.72066566123272}, {"angles": 271.5977438453466}, {"angles": 33.964125364493746}, {"angles": 269.73214264763726}, {"angles": 31.74386744516242}, {"angles": 314.22357375279984}, {"angles": 76.55637670675864}, {"angles": 154.09449370922513}, {"angles": 272.2521273738215}, {"angles": 33.76513896321345}, {"angles": 311.03772170425106}, {"angles": 73.52977205546384}, {"angles": 191.95060440625696}, {"angles": 42.816984240769706}, {"angles": 162.36001024437647}, {"angles": 283.7934498582571}, {"angles": 185.66278313654152}, {"angles": 64.78940085473161}, {"angles": 303.1978270872994}, {"angles": 201.24444401049}, {"angles": 83.06910575061146}, {"angles": 320.7050319471945}, {"angles": 160.19906008313382}, {"angles": 278.30679294739434}, {"angles": 40.114469323433454}, {"angles": 35.22753952637794}, {"angles": 272.29392020275594}, {"angles": 155.8700659060258}, {"angles": 154.47009480737535}, {"angles": 34.70386436281129}, {"angles": 274.46741593051524}, {"angles": 281.9016975848662}, {"angles": 44.815885489454956}, {"angles": 163.1116239527332}, {"angles": 90.94543418127246}, {"angles": 212.3059107813928}, {"angles": 333.9863671701247}, {"angles": 157.3676874593972}, {"angles": 276.64814288541004}, {"angles": 37.9614353683447}, {"angles": 5.142455004887595}, {"angles": 125.90723669778596}, {"angles": 248.24367327466376}, {"angles": 45.21752862087888}, {"angles": 283.8349573386659}, {"angles": 164.68902100126627}, {"angles": 192.21419871103436}, {"angles": 73.49592794634732}, {"angles": 311.03439726513494}, {"angles": 77.49266272951996}, {"angles": 194.75257163439503}, {"angles": 314.1262397688378}, {"angles": 72.4990382236461}, {"angles": 309.95042748410276}, {"angles": 190.49853360129617}, {"angles": 152.4318535426958}, {"angles": 33.11155011818284}, {"angles": 271.3299716007767}, {"angles": 82.669162208902}, {"angles": 202.12718882877144}, {"angles": 321.23831853806917}, {"angles": 44.164632070370665}, {"angles": 282.1165802450191}, {"angles": 163.2827389355457}, {"angles": 89.98820228845679}, {"angles": 209.7637337128043}, {"angles": 328.7865796397825}, {"angles": 278.5377128969916}, {"angles": 41.17158723304906}, {"angles": 159.69435953680912}, {"angles": 160.00963556362305}, {"angles": 41.78065666056803}, {"angles": 278.49923291610105}, {"angles": 84.15561205671054}, {"angles": 202.91284111529515}, {"angles": 322.432327733003}, {"angles": 315.39552421123983}, {"angles": 195.36948243301458}, {"angles": 76.74531876714168}, {"angles": 300.50017406681036}, {"angles": 181.27530278918664}, {"angles": 61.34091761833212}, {"angles": 300.31026345207624}, {"angles": 180.63667964197734}, {"angles": 61.73077424905784}, {"angles": 32.22789734309993}, {"angles": 151.61091085203444}, {"angles": 272.2230716572607}, {"angles": 318.2277512660616}, {"angles": 197.46430481861898}, {"angles": 84.91847461048586}, {"angles": 272.27344535983934}, {"angles": 34.114427710057704}, {"angles": 155.25273068443312}, {"angles": 153.0266380148483}, {"angles": 31.545618491744833}, {"angles": 272.07835956670476}, {"angles": 36.82590965873845}, {"angles": 155.15276208505955}, {"angles": 275.6932847760558}, {"angles": 80.35310043502395}, {"angles": 199.79670437157853}, {"angles": 318.37641139810944}, {"angles": 202.35587614223496}, {"angles": 327.4953444705761}, {"angles": 84.26725885726528}, {"angles": 40.42115006429382}, {"angles": 159.5469139739869}, {"angles": 279.0690090985119}, {"angles": 196.67663574546265}, {"angles": 313.97423884419}, {"angles": 75.40010755655399}, {"angles": 299.89447755090254}, {"angles": 64.1099204200053}, {"angles": 309.8544504824863}, {"angles": 182.42463478748923}, {"angles": 24.899403830690325}, {"angles": 261.4399691098717}, {"angles": 143.0488384293882}, {"angles": 297.8578970631283}, {"angles": 179.7862165148253}, {"angles": 59.84624736241619}, {"angles": 296.82742063765}, {"angles": 176.83963295833806}, {"angles": 60.13127795613186}, {"angles": 295.72448602652844}, {"angles": 57.99351953314014}, {"angles": 177.6962155524247}, {"angles": 306.77989873896945}, {"angles": 186.99881001456885}, {"angles": 64.78553900548897}, {"angles": 206.61716637180896}, {"angles": 142.37710448086145}, {"angles": 186.469053018185}, {"angles": 306.12696157717346}, {"angles": 68.1886259174484}, {"angles": 44.93863450516336}, {"angles": 164.01587509887662}, {"angles": 282.5914084384558}, {"angles": 187.7806716337009}, {"angles": 307.637230398776}, {"angles": 69.5552484266447}, {"angles": 44.51650722747144}, {"angles": 163.62314469202923}, {"angles": 282.1468514993751}, {"angles": 173.24756449859}, {"angles": 54.33331399082263}, {"angles": 291.88565241590516}, {"angles": 296.52322097973274}, {"angles": 177.31989572510656}, {"angles": 58.520084241785895}, {"angles": 169.82963372556037}, {"angles": 51.2971486215333}, {"angles": 288.4895535527133}, {"angles": 302.79005084078983}, {"angles": 183.64860025034858}, {"angles": 64.64934728157789}, {"angles": 247.05349472480788}, {"angles": 184.26496804798168}, {"angles": 180.49386255149201}, {"angles": 298.05168360019354}, {"angles": 63.882053201910644}, {"angles": 297.5677022522764}, {"angles": 63.42582948868249}, {"angles": 180.28289449605626}, {"angles": 63.092752145267994}, {"angles": 297.5396620197934}, {"angles": 180.15632336435718}, {"angles": 180.77196854614598}, {"angles": 62.99737680593116}, {"angles": 297.29428168919486}, {"angles": 294.27638490228594}, {"angles": 176.66319001187895}, {"angles": 59.22985703174322}, {"angles": 62.78437809266304}, {"angles": 180.58705908303332}, {"angles": 297.4378252080334}, {"angles": 8.911417291707314}, {"angles": 166.30234397145276}, {"angles": 89.6827584685712}, {"angles": 281.2828127653646}, {"angles": 157.90269737933033}, {"angles": 77.95380173801053}, {"angles": 202.6674248084085}, {"angles": 14.923000586804237}, {"angles": 250.7459845098083}, {"angles": 137.75507078626413}, {"angles": 44.60549253040528}, {"angles": 281.3265699263946}, {"angles": 156.44694168251846}, {"angles": 2.4886965294892502}, {"angles": 241.51220116100927}, {"angles": 134.78690457635332}, {"angles": 121.45409804483923}, {"angles": 251.43322339294383}, {"angles": 13.209847956902196}, {"angles": 24.388145874591455}, {"angles": 195.02280419810046}, {"angles": 121.18041948460102}, {"angles": 35.2689773594274}, {"angles": 200.57072067411298}, {"angles": 276.3525193738451}, {"angles": 72.17346191792578}, {"angles": 194.43999508031595}, {"angles": 182.64681997089136}, {"angles": 302.8869383512166}, {"angles": 62.766509388634475}, {"angles": 211.8357471424587}, {"angles": 90.15229345997264}, {"angles": 327.2174793134531}, {"angles": 337.58973291935814}, {"angles": 99.33491301849367}, {"angles": 218.03619424027963}, {"angles": 204.294233734788}, {"angles": 92.98290827697872}, {"angles": 331.4801286451465}, {"angles": 120.38238407010925}, {"angles": 243.79664685298962}, {"angles": 50.04089712232984}, {"angles": 285.4823385359935}, {"angles": 126.09451074073293}, {"angles": 250.7247946558002}, {"angles": 252.68690124153272}, {"angles": 128.67679423809238}, {"angles": 265.4519212683208}, {"angles": 21.04485907732434}, {"angles": 325.05627269768473}, {"angles": 201.85317401067266}, {"angles": 84.51870801897321}, {"angles": 278.06887574647243}, {"angles": 158.95192938863272}, {"angles": 36.19603442222459}, {"angles": 155.5403123684822}, {"angles": 36.01436010743803}, {"angles": 273.0637876237005}, {"angles": 330.88327986297935}, {"angles": 210.00373117943127}, {"angles": 93.1508350798535}, {"angles": 83.5337805182753}, {"angles": 324.49609818923466}, {"angles": 204.89177923292962}, {"angles": 31.18841493907038}, {"angles": 272.14086995182595}, {"angles": 151.71313736912495}, {"angles": 151.2362679690839}, {"angles": 32.18232715448355}, {"angles": 271.8460701424327}, {"angles": 105.45771661568733}, {"angles": 14.675978353384375}, {"angles": 2.960392853699646}, {"angles": 99.56763310676997}, {"angles": 206.85903505190748}, {"angles": 86.66347794845555}, {"angles": 206.79309301405092}, {"angles": 88.24053204148349}, {"angles": 200.520655020392}, {"angles": 212.5343183715772}, {"angles": 331.5894482581425}, {"angles": 319.21564907726315}, {"angles": 91.30647346879972}, {"angles": 80.81708331689977}, {"angles": 66.79623256299783}, {"angles": 185.62707012921126}, {"angles": 304.4323750782827}, {"angles": 302.81963251443864}, {"angles": 65.91871209071564}, {"angles": 182.15595762567057}, {"angles": 60.94690446054844}, {"angles": 180.6621514211751}, {"angles": 300.12359124055007}, {"angles": 279.6011483833624}, {"angles": 158.52828775469928}, {"angles": 285.2655859253432}, {"angles": 164.39239941614198}, {"angles": 228.5416136399852}, {"angles": 107.38440697083563}, {"angles": 170.0886784070186}, {"angles": 51.57108170380692}, {"angles": 288.9287809950068}, {"angles": 162.5963054406724}, {"angles": 45.27584646538526}, {"angles": 282.7183023388033}, {"angles": 178.75793825764802}, {"angles": 298.30157740861637}, {"angles": 60.46572420251631}, {"angles": 71.13357870727143}, {"angles": 257.01486794823415}, {"angles": 335.1715101255493}, {"angles": 356.3964539762191}, {"angles": 166.6131461566291}, {"angles": 51.61968695642686}, {"angles": 3.5595565303164536}, {"angles": 193.7200792055388}, {"angles": 306.7710841976857}, {"angles": 67.92653658581429}, {"angles": 305.89291966437736}, {"angles": 189.19799197745456}, {"angles": 93.26334123652626}, {"angles": 303.361973085831}, {"angles": 95.61957381287326}, {"angles": 298.5742598424364}, {"angles": 250.69037305262836}, {"angles": 151.76130778717356}, {"angles": 27.43472573040898}, {"angles": 147.37457417980136}, {"angles": 266.2973941302907}, {"angles": 141.42894299928813}, {"angles": 264.20050433542883}, {"angles": 72.56509930629262}, {"angles": 191.65727994004232}, {"angles": 311.04258841652126}, {"angles": 139.13438832971897}, {"angles": 256.93214987851434}, {"angles": 18.392350444454262}, {"angles": 222.63509685253663}, {"angles": 342.9664097661676}, {"angles": 103.96594704472676}, {"angles": 60.02481332176088}, {"angles": 298.9572373805724}, {"angles": 179.88571544606566}, {"angles": 299.84756328292934}, {"angles": 179.77507568874069}, {"angles": 61.52884866581223}, {"angles": 260.77318736449627}, {"angles": 141.99111099871632}, {"angles": 21.59996668114121}, {"angles": 171.1977665408176}, {"angles": 51.9273303943887}, {"angles": 290.27679740993506}, {"angles": 226.04253498321918}, {"angles": 107.20814859975515}, {"angles": 346.4652429736948}, {"angles": 173.30766126485156}, {"angles": 267.7713066849152}, {"angles": 91.11457953549734}, {"angles": 215.68277274157202}, {"angles": 162.27535284048915}, {"angles": 281.617491018996}, {"angles": 105.36407105748323}, {"angles": 229.346205919007}, {"angles": 78.752571202524}, {"angles": 200.78305761911503}, {"angles": 172.76034815774946}, {"angles": 284.6751265981472}, {"angles": 182.12399961583716}, {"angles": 65.11151192581478}, {"angles": 299.5686786154321}, {"angles": 299.86180705273534}, {"angles": 182.52026667923215}, {"angles": 65.00229956459305}, {"angles": 207.48711393508293}, {"angles": 91.3168936179947}, {"angles": 61.03653758850991}, {"angles": 297.4926187063837}, {"angles": 179.01172676788002}, {"angles": 59.39998780811557}, {"angles": 177.94752435594538}, {"angles": 294.8749507509057}, {"angles": 33.80943589731036}, {"angles": 283.46652894176094}, {"angles": 167.13349178541253}, {"angles": 61.092492032304534}, {"angles": 179.3957665624635}, {"angles": 299.4302466202717}, {"angles": 310.4391171985445}, {"angles": 188.98622925678484}, {"angles": 69.88325538899176}, {"angles": 353.5594435938772}, {"angles": 277.60236313019016}, {"angles": 62.86588777175016}, {"angles": 298.24466870112377}, {"angles": 181.00092845946537}, {"angles": 175.28283796909594}, {"angles": 292.7301030127519}, {"angles": 56.51142557625434}, {"angles": 60.160344888020084}, {"angles": 295.0377037102049}, {"angles": 177.51097875426024}, {"angles": 183.26420170504963}, {"angles": 65.18470692892987}, {"angles": 301.0303547717259}, {"angles": 232.60208656687274}, {"angles": 105.00780516417257}, {"angles": 278.3501222639027}, {"angles": 154.983438996003}, {"angles": 6.8766425864602505}, {"angles": 127.30539842213594}, {"angles": 246.5009793452718}, {"angles": 2.638247208638962}, {"angles": 123.79563731610608}, {"angles": 245.72769317052186}, {"angles": 120.30803264960244}, {"angles": 232.27210396552803}, {"angles": 357.50510201752365}, {"angles": 119.12117487018969}, {"angles": 238.25940848227427}, {"angles": 10.681388822287794}, {"angles": 249.16768831173317}, {"angles": 131.75563502928756}, {"angles": 354.2340858835212}, {"angles": 114.49562042422488}, {"angles": 233.95781927716118}, {"angles": 157.04161680398985}, {"angles": 280.90793226721826}, {"angles": 187.92429702813718}, {"angles": 68.1288619581976}, {"angles": 189.8112067149547}, {"angles": 63.7502580160571}, {"angles": 46.269652142317675}, {"angles": 285.95143471429554}, {"angles": 272.3134868522527}, {"angles": 34.0120256113647}, {"angles": 154.30468403998867}, {"angles": 318.6014983050678}, {"angles": 80.74035526793234}, {"angles": 199.7396153440519}, {"angles": 155.66875315993266}, {"angles": 34.52943284961381}, {"angles": 272.64046250834906}, {"angles": 72.92837773179224}, {"angles": 193.12095914759172}, {"angles": 312.09126453628465}, {"angles": 150.62646735598915}, {"angles": 31.796630349441305}, {"angles": 268.2596652588227}, {"angles": 95.42679085236614}, {"angles": 214.18978043724866}, {"angles": 332.7886572765492}, {"angles": 322.15189777576524}, {"angles": 202.56125492404}, {"angles": 83.4700793239004}, {"angles": 160.10320138807646}, {"angles": 40.8621987869076}, {"angles": 278.53046488014826}, {"angles": 224.96885720531742}, {"angles": 100.52776394406906}, {"angles": 162.4670569344379}, {"angles": 120.06032387868333}, {"angles": 273.6049108979949}, {"angles": 230.78536216345938}, {"angles": 304.7155060773036}, {"angles": 59.34456983830472}, {"angles": 175.29653329172038}, {"angles": 231.16998124071665}, {"angles": 274.2728687364095}, {"angles": 109.83572156865242}, {"angles": 152.5361728946735}, {"angles": 291.20543316571275}, {"angles": 291.24236985541995}, {"angles": 178.80671547907025}, {"angles": 178.83527995027876}, {"angles": 50.80483489173269}, {"angles": 51.03436752912438}, {"angles": 58.63627572726569}, {"angles": 176.4342518265719}, {"angles": 294.55075920261726}, {"angles": 73.53899643823397}, {"angles": 232.18536428872582}, {"angles": 210.54813018778108}, {"angles": 119.78761453151716}, {"angles": 245.1298544386427}, {"angles": 204.57829392097162}, {"angles": 77.24511194876291}, {"angles": 114.91140815840971}, {"angles": 241.53919180189718}, {"angles": 283.92074138813535}, {"angles": 157.6534276692984}, {"angles": 120.60738672662443}, {"angles": 246.3144921797218}, {"angles": 201.22198266786057}, {"angles": 71.75123917938775}, {"angles": 114.51362031917553}, {"angles": 241.22512872994577}, {"angles": 299.88759664917455}, {"angles": 174.44092916980804}, {"angles": 69.39302621454783}, {"angles": 192.3158779620855}, {"angles": 81.35820114504577}, {"angles": 203.37174785069828}, {"angles": 66.86818488538255}, {"angles": 190.60106981543038}, {"angles": 83.03670185577276}, {"angles": 204.43010300112635}, {"angles": 127.47603009831684}, {"angles": 250.4304878119427}, {"angles": 200.1059782333837}, {"angles": 78.4559140243551}, {"angles": 117.85579048683697}, {"angles": 241.55558124967325}, {"angles": 200.44989355407535}, {"angles": 80.6320427243298}, {"angles": 126.93391206115685}, {"angles": 249.98190929943217}, {"angles": 196.12951081204747}, {"angles": 68.67556618622083}, {"angles": 65.4497361694819}, {"angles": 235.6549876384027}, {"angles": 117.60081014332611}, {"angles": 184.0637759997115}, {"angles": 301.980085423913}, {"angles": 184.4242009718889}, {"angles": 67.70987705639277}, {"angles": 297.8830225339554}, {"angles": 62.74684108242721}, {"angles": 180.66513132054234}, {"angles": 63.946806007642486}, {"angles": 299.5218337832629}, {"angles": 180.53411130901935}, {"angles": 291.33128291242303}, {"angles": 173.96307563923742}, {"angles": 56.66069988890479}, {"angles": 23.051724185616223}, {"angles": 95.22267986368058}, {"angles": 287.019942798779}, {"angles": 175.5666986035048}, {"angles": 281.81771098214506}, {"angles": 170.8361006420086}, {"angles": 204.44733888538866}, {"angles": 200.21971446360058}, {"angles": 91.70288396396823}, {"angles": 88.73222784846709}, {"angles": 181.38525999056085}, {"angles": 63.30217190083473}, {"angles": 298.69795708857436}, {"angles": 231.16998124071665}, {"angles": 274.2728687364095}, {"angles": 109.83572156865242}, {"angles": 152.5361728946735}, {"angles": 190.4791563436155}, {"angles": 69.84083683974795}, {"angles": 288.63293310438627}, {"angles": 166.90899948583663}, {"angles": 169.67786075018296}, {"angles": 289.9192216606965}, {"angles": 71.00198110383607}, {"angles": 193.22537945743147}, {"angles": 80.83720682231422}, {"angles": 201.86419141083553}, {"angles": 150.9770086153363}, {"angles": 275.3188068343431}, {"angles": 157.31908964556357}, {"angles": 280.4377953469481}, {"angles": 85.49081186233416}, {"angles": 207.2506559705584}, {"angles": 178.52883610437382}, {"angles": 57.226472604838285}, {"angles": 295.2625311020121}, {"angles": 182.49864708923633}, {"angles": 299.3633865433869}, {"angles": 60.58667825913254}, {"angles": 302.4926016137357}, {"angles": 66.55175275991155}, {"angles": 184.98295635445413}, {"angles": 63.12175663980379}, {"angles": 297.67448364820035}, {"angles": 180.415375643955}, {"angles": 304.7499041174953}, {"angles": 187.1142932545684}, {"angles": 70.07247180147206}, {"angles": 302.77258100155535}, {"angles": 185.2583561058233}, {"angles": 66.56725998264444}, {"angles": 91.40064463522867}, {"angles": 212.72567130067162}, {"angles": 303.53730252613525}, {"angles": 186.368747363388}, {"angles": 68.18233482318756}, {"angles": 297.26172473797567}, {"angles": 62.99283937713439}, {"angles": 179.94256849910366}, {"angles": 296.8554110618942}, {"angles": 60.477837361626015}, {"angles": 172.20908542567412}, {"angles": 293.0692128794522}, {"angles": 168.95444542142326}, {"angles": 56.456940644223174}, {"angles": 59.97140841637716}, {"angles": 296.42942003152854}, {"angles": 176.8387496615114}, {"angles": 232.9489838631713}, {"angles": 109.59197885959676}, {"angles": 102.28873633871945}, {"angles": 223.32403897820592}, {"angles": 51.89048211135986}, {"angles": 173.35521131618847}, {"angles": 84.37615871071614}, {"angles": 319.9160176561288}, {"angles": 81.62156018246662}, {"angles": 317.08725812002365}, {"angles": 72.36180220025582}, {"angles": 306.9160997801328}, {"angles": 62.81891072333761}, {"angles": 298.0871401770345}, {"angles": 38.805810160139934}, {"angles": 271.2479775022016}, {"angles": 42.80233850529111}, {"angles": 277.89731276206993}, {"angles": 99.08655722557118}, {"angles": 225.33957803935542}, {"angles": 106.84723044851512}, {"angles": 232.8363735515082}, {"angles": 123.70395798469544}, {"angles": 248.48565611131994}, {"angles": 65.64371134882755}, {"angles": 300.41627148336977}, {"angles": 62.77798197803228}, {"angles": 296.63600869756107}, {"angles": 180.30960960807982}, {"angles": 192.04265332849147}, {"angles": 311.97675081980026}, {"angles": 78.42093295925454}, {"angles": 199.68210182513394}, {"angles": 79.22189690930256}, {"angles": 199.9082168664585}, {"angles": 78.75539522263053}, {"angles": 356.39689455203376}, {"angles": 236.44903679488888}, {"angles": 114.5376267604934}, {"angles": 348.14160027347253}, {"angles": 108.80941894744915}, {"angles": 230.11072408751568}, {"angles": 292.9193601160706}, {"angles": 64.01096565244453}, {"angles": 172.83306854690258}, {"angles": 304.4912273182871}, {"angles": 51.78456510294971}, {"angles": 184.0405831678675}, {"angles": 8.504859857144387}, {"angles": 249.77161887637672}, {"angles": 43.685215755349944}, {"angles": 160.07215197747118}, {"angles": 282.2676707516214}, {"angles": 131.13373090150301}, {"angles": 202.85789840934683}, {"angles": 78.89314135674782}, {"angles": 203.14744300995184}, {"angles": 77.91210034885691}, {"angles": 278.28260343741493}, {"angles": 157.20567793824273}, {"angles": 73.398887413042}, {"angles": 196.93303188801784}, {"angles": 284.14171935218803}, {"angles": 162.8398016559605}, {"angles": 78.97663981959488}, {"angles": 202.4901555076109}, {"angles": 79.8556120730538}, {"angles": 80.18575358696138}, {"angles": 72.63547504276814}, {"angles": 200.79943692220544}, {"angles": 195.47247056365697}, {"angles": 205.2737530241085}, {"angles": 82.0981649912311}, {"angles": 202.21573506258596}, {"angles": 73.87938487172666}, {"angles": 284.04184023675185}, {"angles": 164.0083864435711}, {"angles": 193.86023925236273}, {"angles": 179.80935560251865}, {"angles": 67.28662321697604}, {"angles": 301.19692904288354}, {"angles": 180.1105449661535}, {"angles": 62.94278434512053}, {"angles": 297.5524042562525}, {"angles": 312.6076493964752}, {"angles": 77.77437533856539}, {"angles": 195.95146621624554}, {"angles": 303.454709888096}, {"angles": 68.56973340949472}, {"angles": 186.94107675336272}, {"angles": 178.23266263672417}, {"angles": 61.743971755233844}, {"angles": 297.5280060947368}, {"angles": 62.089550108111716}, {"angles": 297.3334106807537}, {"angles": 180.81007130524802}, {"angles": 178.73962417346212}, {"angles": 60.7961947608014}, {"angles": 295.38297543038357}, {"angles": 62.79522111343469}, {"angles": 298.6284348052351}, {"angles": 180.20424392445827}, {"angles": 302.68889791757664}, {"angles": 181.9488686632093}, {"angles": 180.8792624787058}, {"angles": 295.0258499527635}, {"angles": 61.81353915905815}, {"angles": 66.08038457438265}, {"angles": 299.9463870979688}, {"angles": 64.67009734268754}, {"angles": 180.21243531490825}, {"angles": 183.70486238016963}, {"angles": 302.0052029987325}, {"angles": 66.97410576499166}, {"angles": 60.951843609091526}, {"angles": 295.45040672767584}, {"angles": 178.47766252681149}]}}, {"mode": "vega-lite"});
+</script>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">codangles</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">cut</span><span class="p">(</span><span class="n">angles</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">36</span><span class="p">)</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">dfall</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;angle&#39;</span><span class="p">:</span><span class="n">angle</span><span class="p">,</span> <span class="s1">&#39;xtb&#39;</span><span class="p">:</span><span class="n">xtbenergy</span><span class="p">,</span><span class="s1">&#39;MMFF&#39;</span><span class="p">:</span><span class="n">dfrdkit</span><span class="p">[</span><span class="s2">&quot;energy&quot;</span><span class="p">],</span><span class="s1">&#39;cod&#39;</span><span class="p">:</span><span class="n">codangles</span><span class="p">})</span>
+<span class="c1">#data = dfxtb.melt(&#39;angle&#39;)</span>
+
+<span class="n">base</span> <span class="o">=</span> <span class="n">alt</span><span class="o">.</span><span class="n">Chart</span><span class="p">(</span><span class="n">dfxtb</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span>
+    <span class="n">alt</span><span class="o">.</span><span class="n">X</span><span class="p">(</span><span class="s1">&#39;angle:Q&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="n">alt</span><span class="o">.</span><span class="n">Axis</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="kc">None</span><span class="p">),</span><span class="n">scale</span><span class="o">=</span><span class="n">alt</span><span class="o">.</span><span class="n">Scale</span><span class="p">(</span><span class="n">domain</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">360</span><span class="p">,</span><span class="mi">350</span><span class="p">]))</span>
+<span class="p">)</span>
+<span class="n">line1</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">mark_line</span><span class="p">(</span><span class="n">stroke</span><span class="o">=</span><span class="s1">&#39;#5276A7&#39;</span><span class="p">,</span> <span class="n">interpolate</span><span class="o">=</span><span class="s1">&#39;natural&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span>
+    <span class="n">alt</span><span class="o">.</span><span class="n">Y</span><span class="p">(</span><span class="s1">&#39;xtb:Q&#39;</span><span class="p">,</span>
+          <span class="n">axis</span><span class="o">=</span><span class="n">alt</span><span class="o">.</span><span class="n">Axis</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;xtb energy&#39;</span><span class="p">,</span> <span class="n">titleColor</span><span class="o">=</span><span class="s1">&#39;#5276A7&#39;</span><span class="p">),</span><span class="n">scale</span><span class="o">=</span><span class="n">alt</span><span class="o">.</span><span class="n">Scale</span><span class="p">(</span><span class="n">zero</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+<span class="p">)</span>
+<span class="n">line2</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">mark_line</span><span class="p">(</span><span class="n">stroke</span><span class="o">=</span><span class="s1">&#39;#57A44C&#39;</span><span class="p">,</span> <span class="n">interpolate</span><span class="o">=</span><span class="s1">&#39;natural&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span>
+    <span class="n">alt</span><span class="o">.</span><span class="n">Y</span><span class="p">(</span><span class="s1">&#39;MMFF:Q&#39;</span><span class="p">,</span>
+          <span class="n">axis</span><span class="o">=</span><span class="n">alt</span><span class="o">.</span><span class="n">Axis</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;MMFF energy&#39;</span><span class="p">,</span> <span class="n">titleColor</span><span class="o">=</span><span class="s1">&#39;#57A44C&#39;</span><span class="p">),</span><span class="n">scale</span><span class="o">=</span><span class="n">alt</span><span class="o">.</span><span class="n">Scale</span><span class="p">(</span><span class="n">zero</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+<span class="p">)</span>
+<span class="n">line3</span> <span class="o">=</span> <span class="n">base</span><span class="o">.</span><span class="n">mark_line</span><span class="p">(</span><span class="n">stroke</span><span class="o">=</span><span class="s1">&#39;#57A44C&#39;</span><span class="p">,</span> <span class="n">interpolate</span><span class="o">=</span><span class="s1">&#39;natural&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span>
+    <span class="n">alt</span><span class="o">.</span><span class="n">Y</span><span class="p">(</span><span class="s1">&#39;cod:Q&#39;</span><span class="p">,</span>
+          <span class="n">axis</span><span class="o">=</span><span class="n">alt</span><span class="o">.</span><span class="n">Axis</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;COD angles&#39;</span><span class="p">,</span> <span class="n">titleColor</span><span class="o">=</span><span class="s1">&#39;#57A44C&#39;</span><span class="p">),</span><span class="n">scale</span><span class="o">=</span><span class="n">alt</span><span class="o">.</span><span class="n">Scale</span><span class="p">(</span><span class="n">zero</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
+<span class="p">)</span>
+<span class="n">alt</span><span class="o">.</span><span class="n">layer</span><span class="p">(</span><span class="n">line1</span><span class="p">,</span> <span class="n">line2</span><span class="p">,</span><span class="n">line3</span><span class="p">)</span><span class="o">.</span><span class="n">resolve_scale</span><span class="p">(</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="s1">&#39;independent&#39;</span>
+<span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+</div>
+
+
+
+  </div><a class="u-url" href="/blog/2021/02/16/torsion-angle-scans-xtb.html" hidden></a>
+</article>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/blog/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/blog/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/blog/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <p>A personal tech / science blog on subjects around molecular modelling, cheminformatics and code.</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/pschmidtke" title="pschmidtke"><svg class="svg-icon grey"><use xlink:href="/blog/assets/minima-social-icons.svg#github"></use></svg></a></li><li><a rel="me" href="https://twitter.com/pschmidtke" title="pschmidtke"><svg class="svg-icon grey"><use xlink:href="/blog/assets/minima-social-icons.svg#twitter"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
