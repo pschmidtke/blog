@@ -49,9 +49,23 @@ jobs:
         sudo chmod -R 777 _site/
         cp CNAME _site/ 2>/dev/null || :
 
-    - name: Deploy
-      if: github.event_name == 'push'
-      uses: peaceiris/actions-gh-pages@v3
+    # - name: Deploy
+    #   if: github.event_name == 'push'
+    #   uses: peaceiris/actions-gh-pages@v3
+    #   with:
+    #     github_token: ${{ secrets.SSH_DEPLOY_KEY }}
+    #     publish_dir: ./_site
+    
+    - name: Install SSH Client 🔑
+      uses: webfactory/ssh-agent@v0.4.0
       with:
-        github_token: ${{ secrets.SSH_DEPLOY_KEY }}
-        publish_dir: ./_site
+        ssh-private-key: ${{ secrets.SSH_DEPLOY_KEY }}
+
+    - name: Deploy 🚀
+      uses: JamesIves/github-pages-deploy-action@3.5.9
+      with:
+        BASE_BRANCH: master
+        BRANCH: gh-pages
+        CLEAN: false
+        FOLDER: ./_site
+        SSH: true
