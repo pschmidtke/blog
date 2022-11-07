@@ -84,7 +84,7 @@ window.onload = wrap_img;
        • <span class="read-time" title="Estimated read time">
     
     
-      30 min read
+      21 min read
     
 </span></p>
 
@@ -300,13 +300,16 @@ And there are many more. Interestingly, this statement has been the basis to est
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 <span class="kn">from</span> <span class="nn">rdkit</span> <span class="kn">import</span> <span class="n">Chem</span>
+<span class="kn">from</span> <span class="nn">rdkit</span> <span class="kn">import</span> <span class="n">RDLogger</span>
+<span class="n">lg</span> <span class="o">=</span> <span class="n">RDLogger</span><span class="o">.</span><span class="n">logger</span><span class="p">()</span>
+<span class="n">lg</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">RDLogger</span><span class="o">.</span><span class="n">CRITICAL</span><span class="p">)</span>
 
-<span class="n">positiveList</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">"/Users/peter/Work/subpocket/datasets/toughM1/TOUGH-M1_positive.list"</span><span class="p">,</span><span class="n">delim_whitespace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">positiveList</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s2">"/Users/peter/Downloads/TOUGH-M1_positive.list"</span><span class="p">,</span><span class="n">delim_whitespace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">uniquePdbCodes</span><span class="o">=</span><span class="n">positiveList</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">"Number of distinct PDB structures: </span><span class="si">{}</span><span class="s2">"</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">uniquePdbCodes</span><span class="p">)))</span>
 <span class="n">molecules</span><span class="o">=</span><span class="p">[]</span>
 <span class="k">for</span> <span class="n">pdbCode</span> <span class="ow">in</span> <span class="n">uniquePdbCodes</span><span class="p">:</span>
-    <span class="n">sdFilePath</span><span class="o">=</span><span class="s1">'/Users/peter/Work/subpocket/datasets/toughM1/TOUGH-M1_dataset/'</span><span class="o">+</span><span class="n">pdbCode</span><span class="o">+</span><span class="s1">'/'</span><span class="o">+</span><span class="n">pdbCode</span><span class="o">+</span><span class="s1">'00.sdf'</span>
+    <span class="n">sdFilePath</span><span class="o">=</span><span class="s1">'/Users/peter/Downloads/TOUGH-M1_dataset/'</span><span class="o">+</span><span class="n">pdbCode</span><span class="o">+</span><span class="s1">'/'</span><span class="o">+</span><span class="n">pdbCode</span><span class="o">+</span><span class="s1">'00.sdf'</span>
     <span class="k">for</span> <span class="n">mol</span> <span class="ow">in</span> <span class="n">Chem</span><span class="o">.</span><span class="n">SDMolSupplier</span><span class="p">(</span><span class="n">sdFilePath</span><span class="p">,</span><span class="n">removeHs</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span><span class="n">sanitize</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">mol</span><span class="p">:</span>
             <span class="n">mol</span><span class="o">.</span><span class="n">RemoveAllConformers</span><span class="p">()</span>
@@ -327,165 +330,7 @@ And there are many more. Interestingly, this statement has been the basis to est
 
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>Number of distinct PDB structures: 5965
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stderr output_text">
-<pre>[11:41:57] Explicit valence for atom # 42 N, 4, is greater than permitted
-[11:41:57] ERROR: Could not sanitize molecule ending on line 96
-[11:41:57] ERROR: Explicit valence for atom # 42 N, 4, is greater than permitted
-[11:41:57] Explicit valence for atom # 41 C, 5, is greater than permitted
-[11:41:57] ERROR: Could not sanitize molecule ending on line 94
-[11:41:57] ERROR: Explicit valence for atom # 41 C, 5, is greater than permitted
-[11:42:07] Explicit valence for atom # 9 N, 4, is greater than permitted
-[11:42:07] ERROR: Could not sanitize molecule ending on line 25
-[11:42:07] ERROR: Explicit valence for atom # 9 N, 4, is greater than permitted
-[11:42:07] Explicit valence for atom # 9 N, 4, is greater than permitted
-[11:42:07] ERROR: Could not sanitize molecule ending on line 25
-[11:42:07] ERROR: Explicit valence for atom # 9 N, 4, is greater than permitted
-[11:42:07] Explicit valence for atom # 9 N, 4, is greater than permitted
-[11:42:07] ERROR: Could not sanitize molecule ending on line 25
-[11:42:07] ERROR: Explicit valence for atom # 9 N, 4, is greater than permitted
-[11:42:07] Explicit valence for atom # 50 N, 4, is greater than permitted
-[11:42:07] ERROR: Could not sanitize molecule ending on line 108
-[11:42:07] ERROR: Explicit valence for atom # 50 N, 4, is greater than permitted
-[11:42:07] Explicit valence for atom # 50 N, 4, is greater than permitted
-[11:42:07] ERROR: Could not sanitize molecule ending on line 108
-[11:42:07] ERROR: Explicit valence for atom # 50 N, 4, is greater than permitted
-[11:42:07] Explicit valence for atom # 52 N, 4, is greater than permitted
-[11:42:07] ERROR: Could not sanitize molecule ending on line 112
-[11:42:07] ERROR: Explicit valence for atom # 52 N, 4, is greater than permitted
-[11:42:07] Explicit valence for atom # 6 N, 4, is greater than permitted
-[11:42:07] ERROR: Could not sanitize molecule ending on line 18
-[11:42:07] ERROR: Explicit valence for atom # 6 N, 4, is greater than permitted
-[11:42:07] Explicit valence for atom # 6 N, 4, is greater than permitted
-[11:42:07] ERROR: Could not sanitize molecule ending on line 18
-[11:42:07] ERROR: Explicit valence for atom # 6 N, 4, is greater than permitted
-[11:42:07] Explicit valence for atom # 6 N, 4, is greater than permitted
-[11:42:07] ERROR: Could not sanitize molecule ending on line 18
-[11:42:07] ERROR: Explicit valence for atom # 6 N, 4, is greater than permitted
-[11:42:07] Explicit valence for atom # 6 N, 4, is greater than permitted
-[11:42:07] ERROR: Could not sanitize molecule ending on line 18
-[11:42:07] ERROR: Explicit valence for atom # 6 N, 4, is greater than permitted
-[11:42:07] Explicit valence for atom # 6 N, 4, is greater than permitted
-[11:42:07] ERROR: Could not sanitize molecule ending on line 18
-[11:42:07] ERROR: Explicit valence for atom # 6 N, 4, is greater than permitted
-[11:42:07] Explicit valence for atom # 6 N, 4, is greater than permitted
-[11:42:07] ERROR: Could not sanitize molecule ending on line 18
-[11:42:07] ERROR: Explicit valence for atom # 6 N, 4, is greater than permitted
-[11:42:07] Explicit valence for atom # 7 N, 4, is greater than permitted
-[11:42:07] ERROR: Could not sanitize molecule ending on line 20
-[11:42:07] ERROR: Explicit valence for atom # 7 N, 4, is greater than permitted
-[11:42:07] Explicit valence for atom # 7 N, 4, is greater than permitted
-[11:42:07] ERROR: Could not sanitize molecule ending on line 20
-[11:42:07] ERROR: Explicit valence for atom # 7 N, 4, is greater than permitted
-[11:42:07] Explicit valence for atom # 7 N, 4, is greater than permitted
-[11:42:07] ERROR: Could not sanitize molecule ending on line 20
-[11:42:07] ERROR: Explicit valence for atom # 7 N, 4, is greater than permitted
-[11:42:07] Explicit valence for atom # 7 N, 4, is greater than permitted
-[11:42:07] ERROR: Could not sanitize molecule ending on line 20
-[11:42:07] ERROR: Explicit valence for atom # 7 N, 4, is greater than permitted
-[11:42:07] Explicit valence for atom # 19 N, 4, is greater than permitted
-[11:42:07] ERROR: Could not sanitize molecule ending on line 44
-[11:42:07] ERROR: Explicit valence for atom # 19 N, 4, is greater than permitted
-[11:42:07] Explicit valence for atom # 15 N, 4, is greater than permitted
-[11:42:07] ERROR: Could not sanitize molecule ending on line 36
-[11:42:07] ERROR: Explicit valence for atom # 15 N, 4, is greater than permitted
-[11:42:07] Explicit valence for atom # 15 N, 4, is greater than permitted
-[11:42:07] ERROR: Could not sanitize molecule ending on line 36
-[11:42:07] ERROR: Explicit valence for atom # 15 N, 4, is greater than permitted
-[11:42:07] Explicit valence for atom # 15 N, 4, is greater than permitted
-[11:42:07] ERROR: Could not sanitize molecule ending on line 36
-[11:42:07] ERROR: Explicit valence for atom # 15 N, 4, is greater than permitted
-[11:42:07] Explicit valence for atom # 15 N, 4, is greater than permitted
-[11:42:07] ERROR: Could not sanitize molecule ending on line 36
-[11:42:07] ERROR: Explicit valence for atom # 15 N, 4, is greater than permitted
-[11:42:07] Explicit valence for atom # 15 N, 4, is greater than permitted
-[11:42:07] ERROR: Could not sanitize molecule ending on line 36
-[11:42:07] ERROR: Explicit valence for atom # 15 N, 4, is greater than permitted
-[11:42:07] Explicit valence for atom # 15 N, 4, is greater than permitted
-[11:42:07] ERROR: Could not sanitize molecule ending on line 36
-[11:42:07] ERROR: Explicit valence for atom # 15 N, 4, is greater than permitted
-[11:42:07] Explicit valence for atom # 15 N, 4, is greater than permitted
-[11:42:07] ERROR: Could not sanitize molecule ending on line 36
-[11:42:07] ERROR: Explicit valence for atom # 15 N, 4, is greater than permitted
-[11:42:07] Explicit valence for atom # 15 N, 4, is greater than permitted
-[11:42:07] ERROR: Could not sanitize molecule ending on line 36
-[11:42:07] ERROR: Explicit valence for atom # 15 N, 4, is greater than permitted
-[11:42:07] Explicit valence for atom # 15 N, 4, is greater than permitted
-[11:42:07] ERROR: Could not sanitize molecule ending on line 36
-[11:42:07] ERROR: Explicit valence for atom # 15 N, 4, is greater than permitted
-[11:42:07] Explicit valence for atom # 50 N, 4, is greater than permitted
-[11:42:07] ERROR: Could not sanitize molecule ending on line 106
-[11:42:07] ERROR: Explicit valence for atom # 50 N, 4, is greater than permitted
-[11:42:07] Explicit valence for atom # 50 N, 4, is greater than permitted
-[11:42:07] ERROR: Could not sanitize molecule ending on line 106
-[11:42:07] ERROR: Explicit valence for atom # 50 N, 4, is greater than permitted
-[11:42:07] Explicit valence for atom # 55 N, 4, is greater than permitted
-[11:42:07] ERROR: Could not sanitize molecule ending on line 116
-[11:42:07] ERROR: Explicit valence for atom # 55 N, 4, is greater than permitted
-[11:42:07] Explicit valence for atom # 55 N, 4, is greater than permitted
-[11:42:07] ERROR: Could not sanitize molecule ending on line 116
-[11:42:07] ERROR: Explicit valence for atom # 55 N, 4, is greater than permitted
-[11:42:07] Explicit valence for atom # 43 N, 4, is greater than permitted
-[11:42:07] ERROR: Could not sanitize molecule ending on line 92
-[11:42:07] ERROR: Explicit valence for atom # 43 N, 4, is greater than permitted
-[11:42:08] Explicit valence for atom # 56 N, 4, is greater than permitted
-[11:42:08] ERROR: Could not sanitize molecule ending on line 122
-[11:42:08] ERROR: Explicit valence for atom # 56 N, 4, is greater than permitted
-[11:42:08] Explicit valence for atom # 81 N, 4, is greater than permitted
-[11:42:08] ERROR: Could not sanitize molecule ending on line 168
-[11:42:08] ERROR: Explicit valence for atom # 81 N, 4, is greater than permitted
-[11:42:08] Explicit valence for atom # 75 N, 4, is greater than permitted
-[11:42:08] ERROR: Could not sanitize molecule ending on line 156
-[11:42:08] ERROR: Explicit valence for atom # 75 N, 4, is greater than permitted
-[11:42:08] Explicit valence for atom # 66 N, 4, is greater than permitted
-[11:42:08] ERROR: Could not sanitize molecule ending on line 138
-[11:42:08] ERROR: Explicit valence for atom # 66 N, 4, is greater than permitted
-[11:42:08] Explicit valence for atom # 28 N, 4, is greater than permitted
-[11:42:08] ERROR: Could not sanitize molecule ending on line 68
-[11:42:08] ERROR: Explicit valence for atom # 28 N, 4, is greater than permitted
-[11:42:08] Explicit valence for atom # 28 N, 4, is greater than permitted
-[11:42:08] ERROR: Could not sanitize molecule ending on line 68
-[11:42:08] ERROR: Explicit valence for atom # 28 N, 4, is greater than permitted
-[11:42:08] Explicit valence for atom # 28 N, 4, is greater than permitted
-[11:42:08] ERROR: Could not sanitize molecule ending on line 68
-[11:42:08] ERROR: Explicit valence for atom # 28 N, 4, is greater than permitted
-[11:42:08] Explicit valence for atom # 11 N, 4, is greater than permitted
-[11:42:08] ERROR: Could not sanitize molecule ending on line 28
-[11:42:08] ERROR: Explicit valence for atom # 11 N, 4, is greater than permitted
-[11:42:08] Explicit valence for atom # 61 C, 5, is greater than permitted
-[11:42:08] ERROR: Could not sanitize molecule ending on line 135
-[11:42:08] ERROR: Explicit valence for atom # 61 C, 5, is greater than permitted
-[11:42:08] Explicit valence for atom # 60 N, 4, is greater than permitted
-[11:42:08] ERROR: Could not sanitize molecule ending on line 136
-[11:42:08] ERROR: Explicit valence for atom # 60 N, 4, is greater than permitted
-[11:42:08] Explicit valence for atom # 58 C, 5, is greater than permitted
-[11:42:08] ERROR: Could not sanitize molecule ending on line 129
-[11:42:08] ERROR: Explicit valence for atom # 58 C, 5, is greater than permitted
-[11:42:08] Explicit valence for atom # 9 N, 4, is greater than permitted
-[11:42:08] ERROR: Could not sanitize molecule ending on line 26
-[11:42:08] ERROR: Explicit valence for atom # 9 N, 4, is greater than permitted
-[11:42:08] Explicit valence for atom # 9 N, 4, is greater than permitted
-[11:42:08] ERROR: Could not sanitize molecule ending on line 26
-[11:42:08] ERROR: Explicit valence for atom # 9 N, 4, is greater than permitted
-[11:42:09] Explicit valence for atom # 10 N, 4, is greater than permitted
-[11:42:09] ERROR: Could not sanitize molecule ending on line 26
-[11:42:09] ERROR: Explicit valence for atom # 10 N, 4, is greater than permitted
-[11:42:09] Explicit valence for atom # 10 N, 4, is greater than permitted
-[11:42:09] ERROR: Could not sanitize molecule ending on line 26
-[11:42:09] ERROR: Explicit valence for atom # 10 N, 4, is greater than permitted
-</pre>
-</div>
-</div>
-
-<div class="output_area">
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>Read 5917 molecules
+Read 5917 molecules
 </pre>
 </div>
 </div>
@@ -850,7 +695,7 @@ Working with lists of residues would also help to add protein protein interfaces
 <p>For example, HSP90, DNA topoisomerase II &amp; histidine kinases are all in the same <a href="https://scop.berkeley.edu/sunid=55873&amp;ver=1.73">SCOP family</a> and they all share a common fold on the ATP binding site, even though there are local dissimilarities.</p>
 <p><img src="/blog/images/copied_from_nb/../images/binding_site_comparison_benchmark/3decision_3dviewer_image.png" alt="Example of similarities between HSP90, histidine kinase PrrB &amp; DNA gyrase B" title="Example of similarities between HSP90, histidine kinase PrrB &amp; DNA gyrase B">
 <em>Example of a superimposition done with 3decision between three unrelated proteins but similar folds (HSP90 holo structure 4cwr, histidine kinase apo 1ys3 and a DNA gyrase B holo structure 4hz5) - typically difficult to superpose with i.e. PyMOL</em></p>
-<p>Here the local similarities are obvious: beta-sheet no the bottom of the ATP binding site with a very well conserved aspartate, three binding site lining helices. However, the actual conformations, breaks &amp; extent of the helices differs a lot between the three structures taken as an example here.</p>
+<p>Here the local similarities are obvious: beta-sheet at the bottom of the ATP binding site with a very well conserved aspartate, three binding site lining helices. However, the actual conformations, breaks &amp; extent of the helices differs a lot between the three structures taken as an example here.</p>
 <h1 id="Perspective">
 <a class="anchor" href="#Perspective" aria-hidden="true"><span class="octicon octicon-link"></span></a>Perspective<a class="anchor-link" href="#Perspective"> </a>
 </h1>
