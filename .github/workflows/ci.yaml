@@ -12,9 +12,6 @@ jobs:
     if: ( github.event.commits[0].message != 'Initial commit' ) || github.run_number > 1
     runs-on: ubuntu-latest
     steps:
-    - name: ssh key there
-      run: |
-        echo "${{ secrets.SSH_DEPLOY_KEY }}"
     - name: Check if secret exists
       if: github.event_name == 'push'
       run: |
@@ -55,6 +52,8 @@ jobs:
     - name: Deploy
       if: github.event_name == 'push'
       uses: peaceiris/actions-gh-pages@v3
+      permissions:
+        contents: write
       with:
         deploy_key: ${{ secrets.SSH_DEPLOY_KEY }}
         publish_dir: ./_site
