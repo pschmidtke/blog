@@ -42,6 +42,11 @@ minima:
     - { platform: github,  user_url: "https://github.com/pschmidtke" }
     - { platform: twitter, user_url: "https://twitter.com/pschmidtke" }
 
+
+mastodon:
+- username: pschmidtke
+  instance: masto.ai
+
 # Set this to true to get LaTeX math equation support
 use_math: 
 
