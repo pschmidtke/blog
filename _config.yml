@@ -41,11 +41,9 @@ minima:
   social_links:
     - { platform: github,  user_url: "https://github.com/pschmidtke" }
     - { platform: twitter, user_url: "https://twitter.com/pschmidtke" }
+    - { platform: mastodon, user_url: "https://masto.ai/@pschmidtke"}
 
 
-mastodon:
-- username: pschmidtke
-  instance: masto.ai
 
 # Set this to true to get LaTeX math equation support
 use_math: 
