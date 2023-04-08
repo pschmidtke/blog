@@ -7,11 +7,12 @@ dependencies:
   - pandas
   - rdkit
   - jupyter
-  - py3dmol
+  - nglview
   - networkx
   - ipywidgets
   - ipycytoscape
   - ipython-sql
+  - jupyterlab
   - matplotlib
   - openbabel
   - altair
