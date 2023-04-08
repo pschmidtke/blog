@@ -1,0 +1,19 @@
+project:
+  type: website
+
+website:
+  title: "Spinning coral"
+  navbar:
+    right:
+      - about.qmd
+      - icon: github
+        href: https://github.com/pschmidtke
+      - icon: mastodon
+        href: https://masto.ai/@pschmidtke
+format:
+  html:
+    theme: slate
+    css: styles.css
+
+
+

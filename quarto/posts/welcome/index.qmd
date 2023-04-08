@@ -1,0 +1,15 @@
+---
+title: "Forced revamp ongoing"
+author: "Peter Schmidtke"
+date: "2023-04-08"
+categories: [news]
+---
+
+This blog is under migration to quarto.
+
+![](migration.png)
+
+I initially used fastai's fastpages framework to run & expose jupyter notebooks as blog posts here. Unfortunately fastpages was discontinued a while ago and I got a bit fed up investigating & fixing github actions etc everytime I want to post an article. As suggested by the fastpages author, I'm thus discovering & migrating to quarto. which looks indeed very nice. 
+
+While doing that i also noticed that the 3D rendering py3dmol library I was using doesn't work as well anymore - so will switch also gradually. 
+So please do not be alarmed if you see dramatic changes in layout etc during the next days ;) 
