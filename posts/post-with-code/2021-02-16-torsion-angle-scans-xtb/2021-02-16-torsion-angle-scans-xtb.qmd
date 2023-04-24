@@ -1,0 +1,375 @@
+---
+aliases:
+  - /torsion/dihedral/oss/opensource/rdkit/xtb/energy/2021/02/16/torsion-angle-scans-xtb
+author: Peter Schmidtke
+badges: true
+branch: master
+categories:
+  - torsion
+  - dihedral
+  - oss
+  - opensource
+  - rdkit
+  - xtb
+  - energy
+date: '2021-02-16'
+description: Log of the hassle doing torsion angle scans with rdkit & xtb - ultimately comparing results to the crystallography open database
+image: xtb_torsion_scan.png
+output-file: 2021-02-16-torsion-angle-scans-xtb.html
+title: Torsion angle scan with rdkit & xtb
+toc: true
+execute: 
+  keep-ipynb: false
+  freeze: auto
+jupyter: python3
+
+---
+
+Post #4 will be along the lines of dihedral / torsion angle analysis again. The aim is to log some of the hurdles I had to overcome to run a torsion angle analysis with [xtb](https://github.com/grimme-lab/xtb) and / or [rdkit](https://www.rdkit.org/).
+
+What I'm trying to accomplish here is mainly to see how torsion angle scans can be performed - easily and robustly - using open source tools available. This is in preparation of a larger work track on analysing the data from the [COD](http://www.crystallography.net/cod/), where [first steps have already been set here](https://pschmidtke.github.io/blog/rdkit/crystallography/small%20molecule%20xray/xray/database/2021/01/25/cod-and-torsion-angles.html).
+
+
+## Aim
+
+Given an input molecule and a particular torsion angle I'd like to see what the energy langscape of the molecule looks like when rotating around that torsion angle. I'd like to know how easy/complicated this is using two different tools: 
+
+1. __rdkit__ with the integrated MMFF 
+2. __xtb__ from the Grimme lab
+
+The post is also inspired by an older [post done by iwatobipen](https://iwatobipen.wordpress.com/2020/09/06/visualize-the-torsion-drive-with-different-approach-openff-torchani-chemoinformatics-quantum_chemistry/) analyzing openforcefield with Ani2 on some torsion energy predictions using the [torsion drive dataset from the openforcefield initiative](https://qcarchivetutorials.readthedocs.io/en/latest/basic_examples/torsiondrive_datasets.html)
+
+All code used for this post is available on [this separate repo](https://github.com/pschmidtke/dihedral_scans/tree/main/notebooks), as it uses a slightly different environment (you'll see why).
+
+## Dihedral scan with rdkit
+
+I don't really know why, but I started out with this molecule here: 
+
+
+```{python}
+#| code-fold: true
+
+from rdkit import Chem
+from rdkit.Chem import AllChem
+from rdkit.Chem import Draw
+mol=Chem.AddHs(Chem.MolFromSmiles('CCCOC1=CC=C(Cl)C(C)=C1'))
+for i, a in enumerate(mol.GetAtoms()):
+        a.SetAtomMapNum(i)
+AllChem.EmbedMolecule(mol,randomSeed=10)    #generate an initial random conformation (randomSeed is fixed to have something reproducible)
+#mol
+Draw.MolToFile(mol,"mol.png",includeAtomNumbers=True,highlightAtoms=(1,2,3,4))        #sorry - rdkit 2019.03 issues with newer python versions (I guess)
+```
+
+![](mol.png)
+
+The torsion angle I'm interested in is highlighted in red and situated between carbons 1,2,3 & 4. Now let's try to set up a torsion angle scan in rdkit using MMFF (UFF should be similar procedure ... )
+
+```{python}
+
+from rdkit.Chem import rdMolTransforms
+import copy
+import pandas as pd
+from rdkit.Chem import rdForceFieldHelpers
+from rdkit.Chem import ChemicalForceFields
+from rdkit.Chem import rdMolTransforms
+
+
+conformer=mol.GetConformer(0)
+
+m2=copy.deepcopy(mol)
+mp2 = AllChem.MMFFGetMoleculeProperties(m2)
+
+energy=[]
+confid=0
+angles=range(-180,182,2)
+
+print("Initial angle:")
+print(rdMolTransforms.GetDihedralDeg(conformer,1,2,3,4))
+for angle in angles:
+    confid+=1
+    ff2 = AllChem.MMFFGetMoleculeForceField(m2, mp2)
+    ff2.MMFFAddTorsionConstraint(1,2,3,4, False, angle - .2, angle + .2, 1000.0)
+    ff2.Minimize()
+    energy.append(ff2.CalcEnergy())
+
+    xyz=ff2.Positions()
+    new_conf = Chem.Conformer(mol.GetNumAtoms())
+    for i in range(mol.GetNumAtoms()):
+        new_conf.SetAtomPosition(i, (m2.GetConformer(-1).GetAtomPosition(i)))
+    new_conf.SetId(confid)
+    mol.AddConformer(new_conf)
+
+
+dfrdkit = pd.DataFrame({'angle':angles, 'energy':energy})
+```
+
+
+```{python}
+#| code-fold: true
+#! echo: false
+import seaborn as sns
+
+sns.lineplot(
+    data=dfrdkit,
+    x="angle", y="energy",
+    markers=True, dashes=False
+)
+
+```
+[](!energyplot.png)
+
+I'm printing the angle of the initial conformation here as well & start the scan from around that angle. Before I didn't and obviously it created a lot of issues with the minimization of the subsequent conformers. 
+Here is the plot from iwatobipen's post on the same molecule & same torsion scan: 
+
+![](https://iwatobipen.files.wordpress.com/2020/09/mol3.png?w=920)
+
+
+
+Let's first have a look at the minimized conformers. Here's a bit of code to browse through them. I collected all conformations generated with the torsion scan before. 
+
+```{python}
+#| code-fold: true
+
+
+patt = Chem.MolFromSmarts('c1ccccc1');patt
+match = mol.GetSubstructMatch(patt)
+
+AllChem.AlignMolConformers(mol,atomIds=match)
+
+conformerIds=[conf.GetId() for conf in mol.GetConformers()]
+w = Chem.SDWriter("conformers.sdf")
+for cid in range(mol.GetNumConformers()):
+    w.write(mol, confId=cid)
+w.close()
+
+ojs_define(conformerIds=list(conformerIds))
+
+```
+
+
+
+```{ojs}
+//| code-fold: true
+//| panel: input
+//| echo: false
+// Create input slider
+NGL=require("ngl@next")
+viewof trajInput = Inputs.range([1, conformerIds.length], {value: 1, step: 1, label: "Conformer ID"});
+md`Conformer ID: ${conformerIds[trajInput - 1]}`
+```
+
+```{ojs}
+//| code-fold: true
+//| echo: false
+// Create drawing area
+divNGLConf = html`<div style="width:500px;height:400px;position:relative"></div>`;
+```
+
+```{ojs}
+//| code-fold: true
+//| output: false
+//| echo: false
+
+// Create trajectory object
+
+trajPDB = {
+  let stage = new NGL.Stage(divNGLConf, {clipDist: 0.0, backgroundColor: "black"});
+  let pdbString = await FileAttachment("conformers.sdf").blob();
+  let structure = await stage.loadFile(pdbString, {ext: "sdf", asTrajectory: true})
+  let traj = structure.addTrajectory().trajectory
+  structure.addRepresentation("licorice");
+  structure.autoView();
+  return traj;
+};
+
+// Create function to update trajectory
+update_traj = function(traj, id){
+  traj.setFrame(id)
+};
+
+// Update trajectory based on slider
+update_traj(trajPDB, trajInput - 1);
+```
+
+
+
+You can use the slider above to browse through the first conformers. They look fairly reasonable to me so far. 
+
+Even though we can observe a peak around 0° that is common between what I have here & iwatobipens post. The wells around -75° and 75° are not that easily distinguishible unfortunately.
+
+## Dihedral scan with xtb
+
+XTB is a toolkit implementing semiempirical quantum mechanics and you can do quite a lot of things. Among these: energy optimization, dihedral scans, constrained optimizations, metadynamics etc...It's conda packaged, so easy to deploy anywhere. 
+In contrary to things like Gaussian, Jaguar etc, it's:
+
+1. free
+2. opensource
+3. actually quite fast
+
+Running an energy optimization with xtb is rather straightforward and would work like this: 
+
+`xtb mol.sdf --opt --charge 0`
+
+This will write the optimized molecule in an SD file, together with the energy (in hartree). 
+
+XTB also supports dihedral scans as described in the documentation and the [examples work well on ethane](https://xtb-docs.readthedocs.io/en/latest/scan.html#ethane). The thing is, as usual ... we are not working with ethane or 1-Bromo-2-chloroethane (the other example). 
+
+Long story short, I tried to integrate a dihedral scan as described in the documentation, but on my molecule above (which still remains rather simple)
+
+This resulted in a ton of segmentation faults (fond memories of Gaussian came back to me) after a few dihedral scan cycles. My suspicion is that the xtb optimizer is not robust enough to allow to resolve really ugly clashes generated during the scan (I'm just guessing here).
+
+So here's the workaround I came up with: preparing "good enough" starting conformations with rdkit and constrained optimizing with xtb and last, gathering the final energy values.
+
+
+```{python}
+#| code-fold: true
+#| echo: true
+#| warning: false
+#| error: false
+import os
+# angles=range(-180,180,5)
+xtbenergy=[]
+w = Chem.SDWriter('mol.sdf')
+w.write(mol,confId=1)
+w.close()
+#loop over the previous conformations we obtained with rdkit
+for idx,deg in enumerate(angles):
+#   Chem.MolToMolFile(mol,'molecule.mol')
+  atoms = '2,3,4,5' #set atoms to define the dihedral - NB: xtb indexes start at 1, rdkit at 0
+  # Now write the xtb input file:
+  fh = open("dihedral_constraint.inp","w")
+  fh.write("""$constrain
+    force constant=1.0
+    dihedral: {},{}
+  $end""".format(atoms,float(deg)))
+  fh.close()
+  # run xtb
+  if idx==1: 
+    inputfilename="mol.sdf"
+  else:
+    inputfilename="xtbopt.sdf"
+  os.popen("obabel -isdf "+inputfilename+" -osdf -Oobabelmol.sdf && export OMP_STACKSIZE=48G && export OMP_NUM_THREADS=12 && xtb obabelmol.sdf --opt vtight --charge 0 --input dihedral_constraint.inp").read()
+  with open('xtbopt.sdf') as f:
+    first_line = f.readline()
+    xtbenergy.append(float(first_line.split("gnorm")[0].split(":")[1]))
+
+print(xtbenergy)
+print(angles)
+print(dfrdkit["energy"])
+
+sns.lineplot(
+    data=dfrdkit,
+    x="angle", y="energy",
+    markers=True, dashes=False
+)
+```
+
+This runs for a while, but it's still reasonably fast. Also, you might have noticed that I specified an argument to the `--opt` flag. This argument allows you to tweak how loose or precise the optimisation should be. More information on that can be found in the [xtb documentation here](https://xtb-docs.readthedocs.io/en/latest/optimization.html). In this example I specified a rather precise method. Feel free to play around with them and check the outcome (rather interesting as well). 
+
+
+
+
+```{python}
+import numpy as np
+# angle=np.array(range(180,-180,-1))
+
+dfxtb = pd.DataFrame({'angle':angles, 'xtb':xtbenergy,'MMFF':dfrdkit["energy"]})
+# dfxtb = pd.DataFrame({'angle':angles, 'xtb':xtbenergy})
+
+import matplotlib.pyplot as plt
+sns.lineplot(x="angle",y="xtb",data=dfxtb, color="g")
+ax2 = plt.twinx()
+sns.lineplot(x="angle",y="MMFF",data=dfxtb, color="b", ax=ax2)
+
+```
+
+On this plot we can see both results, from rdkit's MMFF implementation and xtb. Good news...at least they agree on the maximum around 0°. Other than that there are quite important discrepancies on the location of the global minimum and the importance & extent of the energy barriers between them. Interestingly, openFF and ani2 also predict 180° as a global minimum.
+
+## Comparing vs COD
+
+Let's double check these results now [with the initial work done on the COD](https://pschmidtke.github.io/blog/rdkit/crystallography/small%20molecule%20xray/xray/database/2021/01/25/cod-and-torsion-angles.html) (not yet cleaned and curated - so there will be some noise in here still). This is for sure not the only experimental data-source one should use, but I'll define it as my golden source of truth here within the scope of this post. 
+First I'll try to identify the smarts patterns from the torsion library that match the dihedral under investigation here: 
+
+```{python}
+patterns=pd.read_table("list_torsion_patterns.txt",header=None,usecols=[1])
+selectedPatterns=[]
+for torsionSmarts in patterns[1]:
+    torsionQuery = Chem.MolFromSmarts(torsionSmarts)
+    matches = mol.GetSubstructMatches(torsionQuery)
+    if(len(matches)>0):
+        if (matches==((1,2,3,4),)):
+            selectedPatterns.append(torsionQuery)
+            print("selected: ",torsionSmarts)
+```
+
+
+Now we have the selected patterns, let's run these through the prepared [COD molecules (a huge local sd file right now)](https://pschmidtke.github.io/blog/rdkit/crystallography/small%20molecule%20xray/xray/database/2021/01/25/cod-and-torsion-angles.html) and gather statistics on angles. NB: the smart patterns used here might be redundant and map the same molecules. So here I'm keeping track of which molecule was previously selected and don't include it in a subsequent calculation anymore:
+
+```{python}
+#| tags: []
+#| eval: true
+#| echo: false
+suppl = Chem.SDMolSupplier('../2021-01-25-cod-and-torsion-angles/out.sdf',removeHs=False)    #load the COD sd
+codangles=[]
+matchingmols=[]
+
+for pattern in selectedPatterns:
+    print(Chem.MolToSmarts(pattern))
+    # based on the gist from Geoff Hutchison: https://gist.github.com/ghutchis/b388dd83ddcd7dc0be11f1ed72309da2
+    index_map = {}
+    for atom in pattern.GetAtoms() :
+        map_num = atom.GetAtomMapNum()
+        if map_num:
+            index_map[map_num-1] = atom.GetIdx()
+    map_list = [index_map[x] for x in sorted(index_map)]
+
+    #i=0
+    #suppl.reset()
+    nMols = len(suppl)
+    for i in range(nMols):
+        mol=suppl[i]
+    #for mol in suppl:
+    #    i+=1
+        if mol is None: continue
+        
+        if (i not in matchingmols) :
+            conf=mol.GetConformer(0)
+            matches = mol.GetSubstructMatches(pattern)
+            if(len(matches)>0):
+                matchingmols.append(i)
+                for match in matches:
+                    mapped = [match[x] for x in map_list]
+                    angle = rdMolTransforms.GetDihedralDeg(conf, mapped[0],mapped[1],mapped[2],mapped[3])
+                    # if (angle < 0.0):
+                    #     angle += 360.0
+                    codangles.append(angle)
+```
+
+This runs again for quite some time...so patience is needed. Once this is done, you should see something like that:
+
+```{python}
+#| eval: true
+#lets convert that to numbers we show in the line-plot together with the previous results
+import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
+angles=range(-180,182,2)
+intervals=pd.interval_range(start=-180, end=180,periods=181)
+binangles=pd.cut(angles, bins=intervals).value_counts()
+
+dfall = pd.DataFrame({'angle':angles, 'xtb':xtbenergy,'MMFF':dfrdkit["energy"],'cod':np.array(binangles)})
+
+fig, ax = plt.subplots()
+sns.histplot(codangles)
+ax.set(xlabel='Angle',ylabel= 'Count')
+ax2 = ax.twinx()
+sns.lineplot(x="angle",y="xtb",data=dfall, color="g")
+```
+
+So here we have in blue the results from the COD, in green xtb. Good news is that the positions of the wells seem to be estimated rather well with xtb. MMFF seems slightly off for the preference on 280°. Analysing relative energy differences between local minima, xtb doesn't follow the trend observed using MMFF & results from the COD here. 
+
+## Conclusion
+
+Initially I wanted to run this on a larger set of molecules, but as usual things turn out to be much less robust than anticipated. So more to come in an upcoming post, on other torsion angles - especially the challenging ones. 
+
+The encouraging aspect here is, that despite all difficulties, one could potentially use this on a larger set of molecules. The instability of xtb on the integrated dihedral scan should be investigated a bit further as well ... essentially to make sure that this is not only due to my totally "noob" use of the toolkit - which is very likely.

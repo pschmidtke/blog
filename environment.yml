@@ -1,19 +1,20 @@
-name: py38_rdkit_blog
+name: py310_rdkit_blog
 channels:
   - defaults
   - conda-forge
 dependencies:
-  - python=3.8
+  - python>=3.10
+  - seaborn
   - pandas
   - rdkit
   - jupyter
   - nglview
   - networkx
   - ipywidgets
+  - ipykernel
   - ipycytoscape
   - ipython-sql
   - jupyterlab
   - matplotlib
   - openbabel
-  - altair
   - requests

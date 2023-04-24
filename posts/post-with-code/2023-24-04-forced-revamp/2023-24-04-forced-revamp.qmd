@@ -1,0 +1,22 @@
+---
+title: "Forced revamp ongoing"
+author: "Peter Schmidtke"
+date: "2023-04-08"
+categories: [news]
+---
+
+This blog is under migration to quarto.
+
+![](migration.png)
+
+Initially I used fastai's fastpages framework to run & expose jupyter notebooks as blog posts here. Unfortunately fastpages was discontinued a while ago and I got a bit fed up investigating & fixing github actions etc everytime I want to post an article. As suggested by the fastpages author, I'm thus discovering & migrating to quarto. which looks indeed very nice. 
+
+During this migration process I had to redo most of the graphing & interactive display bits, switching from altair & 3dmoljs's python bindings to ngl & ojs (observable js) supported by quarto. If you are interested in seeing in more detail how I integrated that, feel free to check out the source code of the blog posts of interest (look out for qmd files). 
+
+Quarto brings a bunch of nice improvements over fastpages for me, notably proper citation management & reference lists at the end of posts, which is great.
+
+Furthermore, quarto allows me to locally preview what I write. For markdown that's not really important, but for the coding bits & interactive viz things that should work it's really nice to have that possibility. 
+
+During the rewrite of some of the posts, obviously some things weren't reproducible anymore or I found mistakes I made on my own. I tried to correct everything & adapt even the old posts, notably the torsion angle scan part with xtb. I also had to rerun the COD to sdf transformation, so I have a fresh COD version locally now with that as well :tada: 
+
+Anyway, I really hope that quarto will stick around a bit longer & will be less tedious to maintain, but I'm mildly optimistic!
