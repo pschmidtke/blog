@@ -1,39 +1,39 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-<url>
-<loc>https://pschmidtke.github.io/blog/rdkit/3d-editor/2021/01/23/grafting-fragments.html</loc>
-<lastmod>2021-01-23T00:00:00-06:00</lastmod>
-</url>
-<url>
-<loc>https://pschmidtke.github.io/blog/rdkit/crystallography/small%20molecule%20xray/xray/database/2021/01/25/cod-and-torsion-angles.html</loc>
-<lastmod>2021-01-25T00:00:00-06:00</lastmod>
-</url>
-<url>
-<loc>https://pschmidtke.github.io/blog/fpocket/pockets/cavity/ppi/protein/epitope/dna/rna/antibody/2021/02/02/fpocket-towards-biologics.html</loc>
-<lastmod>2021-02-02T00:00:00-06:00</lastmod>
-</url>
-<url>
-<loc>https://pschmidtke.github.io/blog/torsion/dihedral/oss/opensource/rdkit/xtb/energy/2021/02/16/torsion-angle-scans-xtb.html</loc>
-<lastmod>2021-02-16T00:00:00-06:00</lastmod>
-</url>
-<url>
-<loc>https://pschmidtke.github.io/blog/binding%20site/pocket/cavity/pocket%20comparison/structure-based%20drug%20design/2022/11/07/binding-site-comparison-benchmark.html</loc>
-<lastmod>2022-11-07T00:00:00-06:00</lastmod>
-</url>
-<url>
-<loc>https://pschmidtke.github.io/blog/binding%20site/pocket/cavity/pocket%20comparison/structure-based%20drug%20design/2023/04/03/binding-site-comparison-benchmark-I.html</loc>
-<lastmod>2023-04-03T00:00:00-05:00</lastmod>
-</url>
-<url>
-<loc>https://pschmidtke.github.io/blog/about/</loc>
-</url>
-<url>
-<loc>https://pschmidtke.github.io/blog/</loc>
-</url>
-<url>
-<loc>https://pschmidtke.github.io/blog/search/</loc>
-</url>
-<url>
-<loc>https://pschmidtke.github.io/blog/categories/</loc>
-</url>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://pschmidtke.github.io/blog/posts/post-with-code/2023-24-04-forced-revamp/2023-24-04-forced-revamp.html</loc>
+    <lastmod>2023-04-24T21:32:07.935Z</lastmod>
+  </url>
+  <url>
+    <loc>https://pschmidtke.github.io/blog/posts/post-with-code/2022-11-07-binding-site-comparison-benchmark/2022-11-07-binding-site-comparison-benchmark.html</loc>
+    <lastmod>2023-04-24T21:32:10.172Z</lastmod>
+  </url>
+  <url>
+    <loc>https://pschmidtke.github.io/blog/posts/post-with-code/2021-01-25-cod-and-torsion-angles/2021-01-25-cod-and-torsion-angles.html</loc>
+    <lastmod>2023-04-24T21:32:16.282Z</lastmod>
+  </url>
+  <url>
+    <loc>https://pschmidtke.github.io/blog/posts/post-with-code/2021-02-02-fpocket-towards-biologics/2021-02-02-fpocket-towards-biologics.html</loc>
+    <lastmod>2023-04-24T21:32:17.937Z</lastmod>
+  </url>
+  <url>
+    <loc>https://pschmidtke.github.io/blog/posts/post-with-code/2021-02-16-torsion-angle-scans-xtb/2021-02-16-torsion-angle-scans-xtb.html</loc>
+    <lastmod>2023-04-24T21:32:19.590Z</lastmod>
+  </url>
+  <url>
+    <loc>https://pschmidtke.github.io/blog/posts/post-with-code/2021-01-23-grafting-fragments/2021-01-23-grafting-fragments.html</loc>
+    <lastmod>2023-04-24T21:32:21.110Z</lastmod>
+  </url>
+  <url>
+    <loc>https://pschmidtke.github.io/blog/index.html</loc>
+    <lastmod>2023-04-24T21:32:22.978Z</lastmod>
+  </url>
+  <url>
+    <loc>https://pschmidtke.github.io/blog/about.html</loc>
+    <lastmod>2023-04-24T21:32:23.511Z</lastmod>
+  </url>
+  <url>
+    <loc>https://pschmidtke.github.io/blog/wip/2023-04-03-binding-site-comparison-benchmark-I/2023-04-03-binding-site-comparison-benchmark-i.html</loc>
+    <lastmod>2023-04-24T21:32:25.077Z</lastmod>
+  </url>
 </urlset>

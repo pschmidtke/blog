@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.3.313">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Peter Schmidtke">
+<meta name="dcterms.date" content="2021-02-02">
+<meta name="description" content="A quick demo of all the new fpocket features with special focus on protein-peptide interfaces">
+
+<title>Spinning coral - fpocket 4.0 - Towards biologics</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<script src="../../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-bootstrap" data-mode="light">
+<link href="../../../site_libs/bootstrap/bootstrap-dark.min.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-bootstrap" data-mode="dark">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 20,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit"
+  }
+}</script>
+<script type="module" src="../../../site_libs/quarto-ojs/quarto-ojs-runtime.js"></script>
+<link href="../../../site_libs/quarto-ojs/quarto-ojs.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="../../../styles.scss">
+</head>
+
+<body class="nav-fixed">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg navbar-dark ">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container">
+    <a class="navbar-brand" href="../../../index.html">
+    <span class="navbar-title">Spinning coral</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll ms-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="../../../about.html" rel="" target="">
+ <span class="menu-text">About</span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://github.com/pschmidtke" rel="" target=""><i class="bi bi-github" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+  <li class="nav-item compact">
+    <a class="nav-link" href="https://masto.ai/@pschmidtke" rel="" target=""><i class="bi bi-mastodon" role="img">
+</i> 
+ <span class="menu-text"></span></a>
+  </li>  
+</ul>
+            <div class="quarto-navbar-tools">
+  <a href="" class="quarto-color-scheme-toggle quarto-navigation-tool  px-1" onclick="window.quartoToggleColorScheme(); return false;" title="Toggle dark mode"><i class="bi"></i></a>
+</div>
+          </div> <!-- /navcollapse -->
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<header id="title-block-header" class="quarto-title-block default page-columns page-full">
+  <div class="quarto-title-banner page-columns page-full">
+    <div class="quarto-title column-body">
+      <h1 class="title">fpocket 4.0 - Towards biologics</h1>
+                  <div>
+        <div class="description">
+          A quick demo of all the new fpocket features with special focus on protein-peptide interfaces
+        </div>
+      </div>
+                          <div class="quarto-categories">
+                <div class="quarto-category">fpocket</div>
+                <div class="quarto-category">pockets</div>
+                <div class="quarto-category">cavity</div>
+                <div class="quarto-category">PPI</div>
+                <div class="quarto-category">protein</div>
+                <div class="quarto-category">epitope</div>
+                <div class="quarto-category">DNA</div>
+                <div class="quarto-category">RNA</div>
+                <div class="quarto-category">antibody</div>
+              </div>
+                  </div>
+  </div>
+    
+  
+  <div class="quarto-title-meta">
+
+      <div>
+      <div class="quarto-title-meta-heading">Author</div>
+      <div class="quarto-title-meta-contents">
+               <p>Peter Schmidtke </p>
+            </div>
+    </div>
+      
+      <div>
+      <div class="quarto-title-meta-heading">Published</div>
+      <div class="quarto-title-meta-contents">
+        <p class="date">February 2, 2021</p>
+      </div>
+    </div>
+    
+      
+    </div>
+    
+  
+  </header><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#mmcif-support" id="toc-mmcif-support" class="nav-link active" data-scroll-target="#mmcif-support">MMCIF support</a></li>
+  <li><a href="#new-command-line-flags" id="toc-new-command-line-flags" class="nav-link" data-scroll-target="#new-command-line-flags">New command line flags</a></li>
+  <li><a href="#miscellaneous" id="toc-miscellaneous" class="nav-link" data-scroll-target="#miscellaneous">Miscellaneous</a></li>
+  <li><a href="#detecting-binding-epitopes" id="toc-detecting-binding-epitopes" class="nav-link" data-scroll-target="#detecting-binding-epitopes">Detecting binding epitopes</a>
+  <ul class="collapse">
+  <li><a href="#a-word-on-druggability" id="toc-a-word-on-druggability" class="nav-link" data-scroll-target="#a-word-on-druggability">A word on druggability</a></li>
+  <li><a href="#extracting-descriptors-with-fpocket" id="toc-extracting-descriptors-with-fpocket" class="nav-link" data-scroll-target="#extracting-descriptors-with-fpocket">Extracting descriptors with fpocket</a>
+  <ul class="collapse">
+  <li><a href="#why-would-i-ever-want-to-extract-descriptors" id="toc-why-would-i-ever-want-to-extract-descriptors" class="nav-link" data-scroll-target="#why-would-i-ever-want-to-extract-descriptors">Why would I ever want to extract descriptors?</a></li>
+  </ul></li>
+  <li><a href="#perspectives" id="toc-perspectives" class="nav-link" data-scroll-target="#perspectives">Perspectives</a></li>
+  </ul></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content quarto-banner-title-block" id="quarto-document-content">
+
+
+
+
+<p>I just released the last version of fpocket (4.0) which contains quite a few new features. Most of the work was done by Mael Shorkar, an eager summer intern we took in at Discngine during last year’s COVID-mess summer. He did a great job under these circumstances (remote work in a new company etc). So kudos to him for these new additions.</p>
+<section id="mmcif-support" class="level2">
+<h2 class="anchored" data-anchor-id="mmcif-support">MMCIF support</h2>
+<p>First of all, fpocket now supports mmCIF. Yay … yet another very painful task to integrate for yet another painfully crappy molecular file format (I admire the openbabel folks … ;) ). Same as for the PDB format we forked essentially an integration from the VMD molfile plugin and extended that a bit further. Mael also integrated mmCIF writers so all output files can be written in this new crappy format as well. Essentially you now have the choice to write either only pdb or cif or both. So everybody should be happy (nah … that’s never going to be case anyway).</p>
+</section>
+<section id="new-command-line-flags" class="level2">
+<h2 class="anchored" data-anchor-id="new-command-line-flags">New command line flags</h2>
+<p>The most interesting part (for me) of this release are additional command line flags and behind these several use cases that can be addressed now. These command line arguments enable mainly to work in a more controlled way with multi chain protein structures. This can be particularly useful if: 1. you want to study only one domain of one of these novel gigantic cryoEM structures 2. you want to study in detail a protein - biomolecule binding site (so other than small molecule) 3. you want to learn key characteristics of peptide/protein binding sites vs RNA/DNA binding sites vs drug binding sites</p>
+<pre><code>    -c char : (Default is none): Use this flag to choose which chains you want to delete before running fpocket. The selected chains can be specified with ',' or ':' delimiters, for example you can use it '-c B,D' or '-c B:D'. You can delete up to 20 different chains.</code></pre>
+<p>This flag essentially allows you to explicitly delete particular chain(s) before doing the fpocket run. This allows you to identify (without any bias) clefts that might occur on the PPI that were inaccessible before for pocket prediction.</p>
+<pre><code>    -k char : (Default is none): Use this flag to choose which chains you want to keep before running fpocket. The selected chains can be specified with ',' or ':' delimiters, for example you can use it '-k A,B,E' or '-k A:B:E'. You can keep up to 20 different chains.</code></pre>
+<p>This is essentially the inverse operator of the previous flag. If you do not want to list n chains, you can decide to keep only the relevant ones here.</p>
+<pre><code>    -a char : (Default is none): With this flag you can select a chain you want to be considered as a ligand. Works the same way as the "-r" flag but with a whole chain. Only a single chain can be chosen, for example '-a D'.</code></pre>
+<p>This flag essentially allows you to target for only one particular binding epitope. If you want to extract descriptors for only that binding site where the select chain is located then you can use the <code>-a</code> flag. Fpocket will hide the chain specified via the flag. Run vertice detection and then will choose all vertices overlapping with the chain you specified in <code>-a</code>. These will then be clustered together into a final “pocket”. This is rather generic and can be applied on protein chains, RNA, DNA … whatever you like given that it is defined in a seperate chain. It is so generic, that in theory you can do even very nasty stuff, but let’s see if you can find that out yourselves.</p>
+<p>This argument is particularly interesting when you want to extract examples (3D patches) or numerical descriptors (polar/apolar ASA, curvature, buriedness …) for other binding sites than classical small molecule binding sites. It essentially lies out the basics for training &amp; learning what such other binding epitopes look like. You can use that for a fancy model, or to characterize binding epitopes ultimately.</p>
+</section>
+<section id="miscellaneous" class="level2">
+<h2 class="anchored" data-anchor-id="miscellaneous">Miscellaneous</h2>
+<p>Seperately, several things were added to the <a href="https://github.com/Discngine/fpocket">github repo of fpocket</a>, namely the old documentation was ported to markdown (that was painful). There’s also a tiny testing environment, CI/CD pipes finally set up to check compilation and unit tests upon PR’s.</p>
+<p>Last, an official fpocket docker image is also available on <a href="https://hub.docker.com/r/fpocket/fpocket/">dockerhub</a>.</p>
+</section>
+<section id="detecting-binding-epitopes" class="level1">
+<h1>Detecting binding epitopes</h1>
+<p>Enough text now. Let’s check what you can do with that now. Here we have a nice example of a <a href="https://www.rcsb.org/structure/6HIK">TEAD4 / YAP complex</a>. I’m interested in studying the clefts covered by YAP on the TEAD4 structure. Before I essentially had to drop YAP from the PDB run fpocket and put back in YAP to see where it is located. Here YAP corresponds to chain L (the red one) and TEAD4 (the grey one).</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4" data-startfrom="72" data-source-offset="0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 71;"><span id="cb4-72"><a href="#cb4-72" aria-hidden="true" tabindex="-1"></a><span class="co">// Create drawing area</span></span>
+<span id="cb4-73"><a href="#cb4-73" aria-hidden="true" tabindex="-1"></a>divNGL <span class="op">=</span> <span class="fu">html</span><span class="vs">`&lt;div style="width:800px;height:600px;position:relative"&gt;&lt;/div&gt;`</span><span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-1" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell">
+<details class="hidden">
+<summary>Code</summary>
+<div class="sourceCode cell-code hidden" id="cb5" data-startfrom="82" data-source-offset="-0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 81;"><span id="cb5-82"><a href="#cb5-82" aria-hidden="true" tabindex="-1"></a>NGL <span class="op">=</span> <span class="pp">require</span>(<span class="st">"ngl@next"</span>)<span class="op">;</span></span>
+<span id="cb5-83"><a href="#cb5-83" aria-hidden="true" tabindex="-1"></a><span class="co">// Create trajectory object</span></span>
+<span id="cb5-84"><a href="#cb5-84" aria-hidden="true" tabindex="-1"></a>stage <span class="op">=</span> <span class="kw">new</span> NGL<span class="op">.</span><span class="fu">Stage</span>(divNGL<span class="op">,</span> { <span class="dt">backgroundColor</span><span class="op">:</span> <span class="st">"black"</span><span class="op">,</span><span class="dt">cameraType</span><span class="op">:</span> <span class="st">"orthographic"</span>})<span class="op">;</span></span>
+<span id="cb5-85"><a href="#cb5-85" aria-hidden="true" tabindex="-1"></a>pdbString <span class="op">=</span> <span class="cf">await</span> <span class="fu">FileAttachment</span>(<span class="st">"6hik.pdb"</span>)<span class="op">.</span><span class="fu">blob</span>()<span class="op">;</span></span>
+<span id="cb5-86"><a href="#cb5-86" aria-hidden="true" tabindex="-1"></a>structure <span class="op">=</span> <span class="cf">await</span> stage<span class="op">.</span><span class="fu">loadFile</span>(pdbString<span class="op">,</span> {<span class="dt">ext</span><span class="op">:</span> <span class="st">"pdb"</span><span class="op">,</span> <span class="dt">asTrajectory</span><span class="op">:</span> <span class="kw">false</span>})</span>
+<span id="cb5-87"><a href="#cb5-87" aria-hidden="true" tabindex="-1"></a>structure<span class="op">.</span><span class="fu">addRepresentation</span>(<span class="st">"cartoon"</span><span class="op">,</span>{ <span class="st">"sele"</span><span class="op">:</span> <span class="st">":L"</span><span class="op">,</span> <span class="st">"color"</span><span class="op">:</span> <span class="st">"red"</span>})<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display hidden">
+<div>
+<div id="ojs-cell-2-1" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display hidden">
+<div>
+<div id="ojs-cell-2-2" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display hidden">
+<div>
+<div id="ojs-cell-2-3" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display hidden">
+<div>
+<div id="ojs-cell-2-4" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display hidden">
+<div>
+<div id="ojs-cell-2-5" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<details class="hidden">
+<summary>Code</summary>
+<div class="sourceCode cell-code hidden" id="cb6" data-startfrom="88" data-source-offset="-346"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 87;"><span id="cb6-88"><a href="#cb6-88" aria-hidden="true" tabindex="-1"></a>structure<span class="op">.</span><span class="fu">addRepresentation</span>(<span class="st">"cartoon"</span><span class="op">,</span>{ <span class="st">"sele"</span><span class="op">:</span> <span class="st">":A"</span><span class="op">,</span> <span class="st">"color"</span><span class="op">:</span> <span class="st">"grey"</span>})<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display hidden">
+<div>
+<div id="ojs-cell-2-6" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<details class="hidden">
+<summary>Code</summary>
+<div class="sourceCode cell-code hidden" id="cb7" data-startfrom="89" data-source-offset="-419"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 88;"><span id="cb7-89"><a href="#cb7-89" aria-hidden="true" tabindex="-1"></a>structure<span class="op">.</span><span class="fu">autoView</span>()<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display hidden">
+<div>
+<div id="ojs-cell-2-7" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+</div>
+<p>We can now for instance launch fpocket on TEAD4 by either dropping YAP or by keeping TEAD4 explicitly. Whatever mindset you prefer ;) Let’s be in a positive mood and keep TEAD4:</p>
+<pre><code>fpocket -f 6hik.pdb -k A</code></pre>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9" data-startfrom="105" data-source-offset="0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 104;"><span id="cb9-105"><a href="#cb9-105" aria-hidden="true" tabindex="-1"></a><span class="co">// Create drawing area</span></span>
+<span id="cb9-106"><a href="#cb9-106" aria-hidden="true" tabindex="-1"></a>divNGL2 <span class="op">=</span> <span class="fu">html</span><span class="vs">`&lt;div style="width:800px;height:600px;position:relative"&gt;&lt;/div&gt;`</span><span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-3" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell">
+<details class="hidden">
+<summary>Code</summary>
+<div class="sourceCode cell-code hidden" id="cb10" data-startfrom="116" data-source-offset="-28"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 115;"><span id="cb10-116"><a href="#cb10-116" aria-hidden="true" tabindex="-1"></a>stage2 <span class="op">=</span> <span class="kw">new</span> NGL<span class="op">.</span><span class="fu">Stage</span>(divNGL2<span class="op">,</span> { <span class="dt">backgroundColor</span><span class="op">:</span> <span class="st">"black"</span><span class="op">,</span><span class="dt">cameraType</span><span class="op">:</span> <span class="st">"orthographic"</span>})<span class="op">;</span></span>
+<span id="cb10-117"><a href="#cb10-117" aria-hidden="true" tabindex="-1"></a>pdbString2 <span class="op">=</span> <span class="cf">await</span> <span class="fu">FileAttachment</span>(<span class="st">"6hik_out.pdb"</span>)<span class="op">.</span><span class="fu">blob</span>()<span class="op">;</span></span>
+<span id="cb10-118"><a href="#cb10-118" aria-hidden="true" tabindex="-1"></a>structure2 <span class="op">=</span> <span class="cf">await</span> stage2<span class="op">.</span><span class="fu">loadFile</span>(pdbString2<span class="op">,</span> {<span class="dt">ext</span><span class="op">:</span> <span class="st">"pdb"</span><span class="op">,</span> <span class="dt">asTrajectory</span><span class="op">:</span> <span class="kw">false</span>})</span>
+<span id="cb10-119"><a href="#cb10-119" aria-hidden="true" tabindex="-1"></a>structure2<span class="op">.</span><span class="fu">addRepresentation</span>(<span class="st">"cartoon"</span><span class="op">,</span>{ <span class="st">"sele"</span><span class="op">:</span> <span class="st">":L"</span><span class="op">,</span> <span class="st">"color"</span><span class="op">:</span> <span class="st">"red"</span>})<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display hidden">
+<div>
+<div id="ojs-cell-4-1" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display hidden">
+<div>
+<div id="ojs-cell-4-2" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display hidden">
+<div>
+<div id="ojs-cell-4-3" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display hidden">
+<div>
+<div id="ojs-cell-4-4" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<details class="hidden">
+<summary>Code</summary>
+<div class="sourceCode cell-code hidden" id="cb11" data-startfrom="120" data-source-offset="-330"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 119;"><span id="cb11-120"><a href="#cb11-120" aria-hidden="true" tabindex="-1"></a>structure2<span class="op">.</span><span class="fu">addRepresentation</span>(<span class="st">"cartoon"</span><span class="op">,</span>{ <span class="st">"sele"</span><span class="op">:</span> <span class="st">":A"</span><span class="op">,</span> <span class="st">"color"</span><span class="op">:</span> <span class="st">"grey"</span>})<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display hidden">
+<div>
+<div id="ojs-cell-4-5" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<details class="hidden">
+<summary>Code</summary>
+<div class="sourceCode cell-code hidden" id="cb12" data-startfrom="121" data-source-offset="-404"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 120;"><span id="cb12-121"><a href="#cb12-121" aria-hidden="true" tabindex="-1"></a>structure2<span class="op">.</span><span class="fu">addRepresentation</span>(<span class="st">"hyperball"</span><span class="op">,</span>{ <span class="st">"sele"</span><span class="op">:</span> <span class="st">":C"</span><span class="op">,</span><span class="st">"colorScheme"</span><span class="op">:</span><span class="st">"residueindex"</span>})<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display hidden">
+<div>
+<div id="ojs-cell-4-6" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<details class="hidden">
+<summary>Code</summary>
+<div class="sourceCode cell-code hidden" id="cb13" data-startfrom="122" data-source-offset="-492"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 121;"><span id="cb13-122"><a href="#cb13-122" aria-hidden="true" tabindex="-1"></a>structure2<span class="op">.</span><span class="fu">autoView</span>()<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display hidden">
+<div>
+<div id="ojs-cell-4-7" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+</div>
+<p>When doing this in an automatic way, so with classical fpocket parameters, you’ll now be able to identify pockets that overlap with YAP. That’s kind of nice, but what if I want to study really in detail all the binding interface itself between YAP and TEAD4? In order to instruct fpocket to define a pocket only on the interface itself you can now do something like that:</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="ex">fpocket</span> <span class="at">-f</span> 6hik.pdb <span class="at">-a</span> L</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb15" data-startfrom="140" data-source-offset="0"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 139;"><span id="cb15-140"><a href="#cb15-140" aria-hidden="true" tabindex="-1"></a><span class="co">// Create drawing area</span></span>
+<span id="cb15-141"><a href="#cb15-141" aria-hidden="true" tabindex="-1"></a>divNGL3 <span class="op">=</span> <span class="fu">html</span><span class="vs">`&lt;div style="width:800px;height:600px;position:relative"&gt;&lt;/div&gt;`</span><span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display">
+<div id="ojs-cell-5" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell">
+<details class="hidden">
+<summary>Code</summary>
+<div class="sourceCode cell-code hidden" id="cb16" data-startfrom="151" data-source-offset="-28"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 150;"><span id="cb16-151"><a href="#cb16-151" aria-hidden="true" tabindex="-1"></a>stage3 <span class="op">=</span> <span class="kw">new</span> NGL<span class="op">.</span><span class="fu">Stage</span>(divNGL3<span class="op">,</span> { <span class="dt">backgroundColor</span><span class="op">:</span> <span class="st">"black"</span><span class="op">,</span><span class="dt">cameraType</span><span class="op">:</span> <span class="st">"orthographic"</span>})<span class="op">;</span></span>
+<span id="cb16-152"><a href="#cb16-152" aria-hidden="true" tabindex="-1"></a>pdbString3 <span class="op">=</span> <span class="cf">await</span> <span class="fu">FileAttachment</span>(<span class="st">"6hik_out_explicit.pdb"</span>)<span class="op">.</span><span class="fu">blob</span>()<span class="op">;</span></span>
+<span id="cb16-153"><a href="#cb16-153" aria-hidden="true" tabindex="-1"></a>structure3 <span class="op">=</span> <span class="cf">await</span> stage3<span class="op">.</span><span class="fu">loadFile</span>(pdbString3<span class="op">,</span> {<span class="dt">ext</span><span class="op">:</span> <span class="st">"pdb"</span><span class="op">,</span> <span class="dt">asTrajectory</span><span class="op">:</span> <span class="kw">false</span>})</span>
+<span id="cb16-154"><a href="#cb16-154" aria-hidden="true" tabindex="-1"></a>structure3<span class="op">.</span><span class="fu">addRepresentation</span>(<span class="st">"cartoon"</span><span class="op">,</span>{ <span class="st">"sele"</span><span class="op">:</span> <span class="st">":L"</span><span class="op">,</span> <span class="st">"color"</span><span class="op">:</span> <span class="st">"red"</span>})<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display hidden">
+<div>
+<div id="ojs-cell-6-1" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display hidden">
+<div>
+<div id="ojs-cell-6-2" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display hidden">
+<div>
+<div id="ojs-cell-6-3" data-nodetype="declaration">
+
+</div>
+</div>
+</div>
+<div class="cell-output cell-output-display hidden">
+<div>
+<div id="ojs-cell-6-4" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<details class="hidden">
+<summary>Code</summary>
+<div class="sourceCode cell-code hidden" id="cb17" data-startfrom="155" data-source-offset="-339"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 154;"><span id="cb17-155"><a href="#cb17-155" aria-hidden="true" tabindex="-1"></a>structure3<span class="op">.</span><span class="fu">addRepresentation</span>(<span class="st">"cartoon"</span><span class="op">,</span>{ <span class="st">"sele"</span><span class="op">:</span> <span class="st">":A"</span><span class="op">,</span> <span class="st">"color"</span><span class="op">:</span> <span class="st">"grey"</span>})<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display hidden">
+<div>
+<div id="ojs-cell-6-5" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<details class="hidden">
+<summary>Code</summary>
+<div class="sourceCode cell-code hidden" id="cb18" data-startfrom="156" data-source-offset="-413"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 155;"><span id="cb18-156"><a href="#cb18-156" aria-hidden="true" tabindex="-1"></a>structure3<span class="op">.</span><span class="fu">addRepresentation</span>(<span class="st">"hyperball"</span><span class="op">,</span>{ <span class="st">"sele"</span><span class="op">:</span> <span class="st">":C"</span><span class="op">,</span><span class="st">'color'</span><span class="op">:</span><span class="st">"orange"</span>})<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display hidden">
+<div>
+<div id="ojs-cell-6-6" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+<details class="hidden">
+<summary>Code</summary>
+<div class="sourceCode cell-code hidden" id="cb19" data-startfrom="157" data-source-offset="-489"><pre class="sourceCode js code-with-copy"><code class="sourceCode javascript" style="counter-reset: source-line 156;"><span id="cb19-157"><a href="#cb19-157" aria-hidden="true" tabindex="-1"></a>structure3<span class="op">.</span><span class="fu">autoView</span>()<span class="op">;</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output cell-output-display hidden">
+<div>
+<div id="ojs-cell-6-7" data-nodetype="expression">
+
+</div>
+</div>
+</div>
+</div>
+<p>You can now get the full orange blob as the interacting epitope. Together with that you get the usual statistics etc. The cool thing is, this can be very well used on protein RNA interfaces as well.</p>
+<section id="a-word-on-druggability" class="level3">
+<h3 class="anchored" data-anchor-id="a-word-on-druggability">A word on druggability</h3>
+<p>If you want to assess druggability, please use the default fpocket parameters and not a guided pocket detection or other pocket detection parameters. The druggability assessment intends to estimate a pockets tractability for small molecule binding sites. Applying this to such larger surfaces is out of the applicability domain here in my opinion.</p>
+</section>
+<section id="extracting-descriptors-with-fpocket" class="level2">
+<h2 class="anchored" data-anchor-id="extracting-descriptors-with-fpocket">Extracting descriptors with fpocket</h2>
+<p>Ok running these things on individual examples is nice. You can automate things with fpocket quite easily and extract descriptors on a larger scale using the fancy <code>-d</code> flag (oh yes, yet another flag) if the only thing you’re after is descriptor extraction.</p>
+<section id="why-would-i-ever-want-to-extract-descriptors" class="level3">
+<h3 class="anchored" data-anchor-id="why-would-i-ever-want-to-extract-descriptors">Why would I ever want to extract descriptors?</h3>
+<p>Calculating descriptors on binding epitopes is generating the basis for using these to derive several potential applications afterwards. For instance, to derive the druggability prediction in fpocket, first we extracted descriptors of known druggable and supposed non-druggable (no religious debate here) pockets, second we determined the most relevant descriptors and last we trained a scoring function based on these descriptors.</p>
+<p>You can very well imagine to do the same on other types of binding epitopes (there are a few papers out there on that already I guess), like protein protein interfaces, antibody / antigene interfaces more specifically, crystal contacts, protein DNA/RNA interfaces etc…</p>
+<p>Ultimately these characterisations will allow you to train functions or super fancy <strong>deep</strong> learning models (if you really need that).</p>
+<p>In order to do that on a larger scale you could use dpocket (a less well-known sibling of fpocket), but it currently still doesn’t fully integrate the logic with selecting chains as ligands (still a bit of work needed here). So let’s stick to fpocket on a larger scale example for descriptor extraction which will work just fine:</p>
+<pre><code>data/peptide_data/3uqp.pdb B
+data/peptide_data/3uri.pdb B
+data/peptide_data/4rcp.pdb B
+data/peptide_data/4tpg.pdb E
+data/peptide_data/5jxh.pdb H</code></pre>
+<p>Let’s suppose we have a csv file like this one above. It defines a set of PDB files and the chain we want to consider as a ligand explicitly during the fpocket run to assess the binding epitope this chain is making with the “receptor”. You could run this in a very geeky way using this here:</p>
+<p><code>awk '{ print "fpocket -f " $1 " -a "$2 " -d"}' list.txt</code> | sh</p>
+<p>This will output a messy thing like this:</p>
+<pre class="csv"><code>cav_id drug_score volume nb_asph inter_chain apol_asph_proportion mean_asph_radius as_density mean_asph_solv_acc mean_loc_hyd_dens flex hydrophobicity_score volume_score charge_score polarity_score a0_apol a0_pol af_apol af_pol n_abpa ala cys asp glu phe gly his ile lys leu met asn pro gln arg ser thr val trp tyr chain_1_type chain_2_type num_res_chain_1 num_res_chain_2 lig_het_tag name_chain_1 name_chain_2
+1 0.0021 4091.2471 213 0 0.1831 4.3624 10.8343 0.5065 10.3590 0.0000 17.6957 4.1304 3 31 176.3137 207.7781 91.7446 196.2307 21 1 4 2 3 0 3 1 4 0 4 1 3 0 1 1 6 4 2 3 3 0 0 457 457 PSA A A
+cav_id drug_score volume nb_asph inter_chain apol_asph_proportion mean_asph_radius as_density mean_asph_solv_acc mean_loc_hyd_dens flex hydrophobicity_score volume_score charge_score polarity_score a0_apol a0_pol af_apol af_pol n_abpa ala cys asp glu phe gly his ile lys leu met asn pro gln arg ser thr val trp tyr chain_1_type chain_2_type num_res_chain_1 num_res_chain_2 lig_het_tag name_chain_1 name_chain_2
+1 0.1847 4801.9624 204 0 0.3529 4.4814 10.8531 0.5450 22.0000 0.0000 27.5882 3.4706 -8 26 183.5595 226.1442 124.2374 226.0680 11 1 0 0 7 0 2 1 7 0 8 4 0 0 4 0 9 5 0 2 1 0 0 328 328 NULL A A
+cav_id drug_score volume nb_asph inter_chain apol_asph_proportion mean_asph_radius as_density mean_asph_solv_acc mean_loc_hyd_dens flex hydrophobicity_score volume_score charge_score polarity_score a0_apol a0_pol af_apol af_pol n_abpa ala cys asp glu phe gly his ile lys leu met asn pro gln arg ser thr val trp tyr chain_1_type chain_2_type num_res_chain_1 num_res_chain_2 lig_het_tag name_chain_1 name_chain_2
+1 1.0000 2998.7053 187 0 0.5241 4.3207 11.5341 0.5341 48.6735 0.0000 34.3462 5.0769 3 16 107.4789 84.2598 47.7836 96.3200 8 1 2 1 2 0 0 1 1 1 1 3 3 0 3 0 1 0 1 4 1 0 0 238 238 NULL A A
+cav_id drug_score volume nb_asph inter_chain apol_asph_proportion mean_asph_radius as_density mean_asph_solv_acc mean_loc_hyd_dens flex hydrophobicity_score volume_score charge_score polarity_score a0_apol a0_pol af_apol af_pol n_abpa ala cys asp glu phe gly his ile lys leu met asn pro gln arg ser thr val trp tyr chain_1_type chain_2_type num_res_chain_1 num_res_chain_2 lig_het_tag name_chain_1 name_chain_2
+1 0.9998 1552.9973 110 0 0.4182 4.5201 6.7627 0.4934 36.8261 0.0000 34.2593 4.8519 0 17 105.0637 48.2599 82.1878 27.8238 12 1 1 2 0 0 3 2 0 0 2 1 1 0 3 1 2 0 0 6 2 0 0 594 594 NULL A A
+cav_id drug_score volume nb_asph inter_chain apol_asph_proportion mean_asph_radius as_density mean_asph_solv_acc mean_loc_hyd_dens flex hydrophobicity_score volume_score charge_score polarity_score a0_apol a0_pol af_apol af_pol n_abpa ala cys asp glu phe gly his ile lys leu met asn pro gln arg ser thr val trp tyr chain_1_type chain_2_type num_res_chain_1 num_res_chain_2 lig_het_tag name_chain_1 name_chain_2
+1 0.0044 3875.7029 152 0 0.1513 4.4958 9.8519 0.5972 9.5652 0.0000 -7.5946 3.4865 -7 27 114.7247 187.8280 70.7198 141.5900 15 2 3 2 8 0 0 4 4 2 0 1 0 0 0 2 2 4 1 1 1 0 0 499 499 NULL A A
+
+</code></pre>
+<p>Let’s clean this up the geeky way:</p>
+<p><code>awk '{ print "fpocket -f " $1 " -a "$2 " -d"}' list.txt | sh | awk '{if(NR%2==0)print}'</code></p>
+<p>This should only give the descriptors:</p>
+<pre><code>1 0.0021 3972.3301 213 0 0.1831 4.3624 10.8343 0.5065 10.3590 0.0000 17.6957 4.1304 3 31 176.3137 207.7781 91.7446 196.2307 21 1 4 2 3 0 3 1 4 0 4 1 3 0 1 1 6 4 2 3 3 0 0 457 457 PSA A A
+1 0.1847 4604.5068 204 0 0.3529 4.4814 10.8531 0.5450 22.0000 0.0000 27.5882 3.4706 -8 26 183.5595 226.1442 124.2374 226.0680 11 1 0 0 7 0 2 1 7 0 8 4 0 0 4 0 9 5 0 2 1 0 0 328 328 NULL A A
+1 1.0000 2895.7646 187 0 0.5241 4.3207 11.5341 0.5341 48.6735 0.0000 34.3462 5.0769 3 16 107.4789 84.2598 47.7836 96.3200 8 1 2 1 2 0 0 1 1 1 1 3 3 0 3 0 1 0 1 4 1 0 0 238 238 NULL A A
+1 0.9998 1574.4559 110 0 0.4182 4.5201 6.7627 0.4934 36.8261 0.0000 34.2593 4.8519 0 17 105.0637 48.2599 82.1878 27.8238 12 1 1 2 0 0 3 2 0 0 2 1 1 0 3 1 2 0 0 6 2 0 0 594 594 NULL A A
+1 0.0044 3794.7029 152 0 0.1513 4.4958 9.8519 0.5972 9.5652 0.0000 -7.5946 3.4865 -7 27 114.7247 187.8280 70.7198 141.5900 15 2 3 2 8 0 0 4 4 2 0 1 0 0 0 2 2 4 1 1 1 0 0 499 499 NULL A A</code></pre>
+<p>I did this on a larger list of peptide binding structures and this is typically a good way to start studying some of the properties of these epitopes compared to drug binding sites or others.</p>
+<div class="cell" data-execution_count="1">
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> seaborn <span class="im">as</span> sns</span>
+<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
+<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
+<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>sns.set_context(<span class="st">'notebook'</span>)</span>
+<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>sns.set_style(<span class="st">'dark'</span>)</span>
+<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>df<span class="op">=</span>pd.read_table(<span class="st">'peptide_out.txt'</span>,delim_whitespace<span class="op">=</span><span class="va">True</span>,header<span class="op">=</span><span class="va">None</span>,names<span class="op">=</span>[<span class="st">"cav_id"</span>,<span class="st">"drug_score"</span>,<span class="st">"volume"</span>,<span class="st">"nb_asph"</span>,<span class="st">"inter_chain"</span>,<span class="st">"apol_asph_proportion"</span>,<span class="st">"mean_asph_radius"</span>,<span class="st">"as_density"</span>,<span class="st">"mean_asph_solv_acc"</span>,<span class="st">"mean_loc_hyd_dens"</span>,<span class="st">"flex"</span>,<span class="st">"hydrophobicity_score"</span>,<span class="st">"volume_score"</span>,<span class="st">"charge_score"</span>,<span class="st">"polarity_score"</span>,<span class="st">"a0_apol"</span>,<span class="st">"a0_pol"</span>,<span class="st">"af_apol"</span>,<span class="st">"af_pol"</span>,<span class="st">"n_abpa"</span>,<span class="st">"ala"</span>,<span class="st">"cys"</span>,<span class="st">"asp"</span>,<span class="st">"glu"</span>,<span class="st">"phe"</span>,<span class="st">"gly"</span>,<span class="st">"his"</span>,<span class="st">"ile"</span>,<span class="st">"lys"</span>,<span class="st">"leu"</span>,<span class="st">"met"</span>,<span class="st">"asn"</span>,<span class="st">"pro"</span>,<span class="st">"gln"</span>,<span class="st">"arg"</span>,<span class="st">"ser"</span>,<span class="st">"thr"</span>,<span class="st">"val"</span>,<span class="st">"trp"</span>,<span class="st">"tyr"</span>,<span class="st">"chain_1_type"</span>,<span class="st">"chain_2_type"</span>,<span class="st">"num_res_chain_1"</span>,<span class="st">"num_res_chain_2"</span>,<span class="st">"lig_het_tag"</span>,<span class="st">"name_chain_1"</span>,<span class="st">"name_chain_2"</span>])</span>
+<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a><span class="co"># d=as.data.frame(read.table("peptide_out.txt",sep=" ", header=TRUE, col.names=c("cav_id","drug_score","volume","nb_asph","inter_chain","apol_asph_proportion","mean_asph_radius","as_density","mean_asph_solv_acc","mean_loc_hyd_dens","flex","hydrophobicity_score","volume_score","charge_score","polarity_score","a0_apol","a0_pol","af_apol","af_pol","n_abpa","ala","cys","asp","glu","phe","gly","his","ile","lys","leu","met","asn","pro","gln","arg","ser","thr","val","trp","tyr","chain_1_type","chain_2_type","num_res_chain_1","num_res_chain_2","lig_het_tag","name_chain_1","name_chain_2")))</span></span>
+<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>p<span class="op">=</span>sns.histplot(data<span class="op">=</span>df, x<span class="op">=</span><span class="st">"a0_apol"</span>, color<span class="op">=</span><span class="st">"skyblue"</span>,bins<span class="op">=</span><span class="dv">20</span>, label<span class="op">=</span><span class="st">"apolar surface area"</span>, kde<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>p.<span class="bu">set</span>(xlabel<span class="op">=</span><span class="st">'Surface in A^2'</span>, ylabel<span class="op">=</span><span class="st">'Count'</span>)</span>
+<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>p<span class="op">=</span>sns.histplot(data<span class="op">=</span>df, bins<span class="op">=</span><span class="dv">20</span>,x<span class="op">=</span><span class="st">"a0_pol"</span>, color<span class="op">=</span><span class="st">"red"</span>, label<span class="op">=</span><span class="st">"polar surface area"</span>, kde<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>p.<span class="bu">set</span>(xlabel<span class="op">=</span><span class="st">'Surface in A^2'</span>, ylabel<span class="op">=</span><span class="st">'Count'</span>)</span>
+<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>p.legend() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="17">
+<pre><code>&lt;matplotlib.legend.Legend at 0x7fb9ebf9ee80&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="2021-02-02-fpocket-towards-biologics_files/figure-html/cell-2-output-2.png" width="593" height="428"></p>
+</div>
+</div>
+<div class="cell" data-execution_count="2">
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a>sns.scatterplot(data<span class="op">=</span>df, x<span class="op">=</span><span class="st">"n_abpa"</span>, y<span class="op">=</span><span class="st">"a0_apol"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-display" data-execution_count="18">
+<pre><code>&lt;AxesSubplot:xlabel='n_abpa', ylabel='a0_apol'&gt;</code></pre>
+</div>
+<div class="cell-output cell-output-display">
+<p><img src="2021-02-02-fpocket-towards-biologics_files/figure-html/cell-3-output-2.png" width="597" height="428"></p>
+</div>
+</div>
+<p>The plot above shows the relationship between the number of ABPA’s (almost burried polar atoms - if you don’t know what these are, you should read <a href="https://pubs.acs.org/doi/10.1021/ja207494u">this paper on shielded hydrogen bonds</a> and the apolar surface area. Coloring done is by volume of the “pocket”.</p>
+</section>
+</section>
+<section id="perspectives" class="level2">
+<h2 class="anchored" data-anchor-id="perspectives">Perspectives</h2>
+<p>All of these new functionalities (a part from the support of yet another “useless” file format) set the grounds for characterization of various types of binding epitopes using fpocket. This can terefore be used for functional characterization of protein structures, ultimately indicating where might bind what on a protein structure.</p>
+<p>But still a few sleepless nights to go until we can achieve that. Fortunately everything is opensource, so you can do that before!!! ;)</p>
+
+
+</section>
+</section>
+
+</main> <!-- /main -->
+<script type="ojs-module-contents">
+{"contents":[{"methodName":"interpret","cellName":"ojs-cell-1","inline":false,"source":"// Create drawing area\ndivNGL = html`<div style=\"width:800px;height:600px;position:relative\"></div>`;\n"},{"methodName":"interpret","cellName":"ojs-cell-2","inline":false,"source":"NGL = require(\"ngl@next\");\n// Create trajectory object\nstage = new NGL.Stage(divNGL, { backgroundColor: \"black\",cameraType: \"orthographic\"});\npdbString = await FileAttachment(\"6hik.pdb\").blob();\nstructure = await stage.loadFile(pdbString, {ext: \"pdb\", asTrajectory: false})\nstructure.addRepresentation(\"cartoon\",{ \"sele\": \":L\", \"color\": \"red\"});\nstructure.addRepresentation(\"cartoon\",{ \"sele\": \":A\", \"color\": \"grey\"});\nstructure.autoView();\n"},{"methodName":"interpret","cellName":"ojs-cell-3","inline":false,"source":"// Create drawing area\ndivNGL2 = html`<div style=\"width:800px;height:600px;position:relative\"></div>`;\n"},{"methodName":"interpret","cellName":"ojs-cell-4","inline":false,"source":"// Create trajectory object\nstage2 = new NGL.Stage(divNGL2, { backgroundColor: \"black\",cameraType: \"orthographic\"});\npdbString2 = await FileAttachment(\"6hik_out.pdb\").blob();\nstructure2 = await stage2.loadFile(pdbString2, {ext: \"pdb\", asTrajectory: false})\nstructure2.addRepresentation(\"cartoon\",{ \"sele\": \":L\", \"color\": \"red\"});\nstructure2.addRepresentation(\"cartoon\",{ \"sele\": \":A\", \"color\": \"grey\"});\nstructure2.addRepresentation(\"hyperball\",{ \"sele\": \":C\",\"colorScheme\":\"residueindex\"});\nstructure2.autoView();\n"},{"methodName":"interpret","cellName":"ojs-cell-5","inline":false,"source":"// Create drawing area\ndivNGL3 = html`<div style=\"width:800px;height:600px;position:relative\"></div>`;\n"},{"methodName":"interpret","cellName":"ojs-cell-6","inline":false,"source":"// Create trajectory object\nstage3 = new NGL.Stage(divNGL3, { backgroundColor: \"black\",cameraType: \"orthographic\"});\npdbString3 = await FileAttachment(\"6hik_out_explicit.pdb\").blob();\nstructure3 = await stage3.loadFile(pdbString3, {ext: \"pdb\", asTrajectory: false})\nstructure3.addRepresentation(\"cartoon\",{ \"sele\": \":L\", \"color\": \"red\"});\nstructure3.addRepresentation(\"cartoon\",{ \"sele\": \":A\", \"color\": \"grey\"});\nstructure3.addRepresentation(\"hyperball\",{ \"sele\": \":C\",'color':\"orange\"});\nstructure3.autoView();\n"}]}
+</script>
+<script type="module">
+if (window.location.protocol === "file:") { alert("The OJS runtime does not work with file:// URLs. Please use a web server to view this document."); }
+window._ojs.paths.runtimeToDoc = "../../posts/post-with-code/2021-02-02-fpocket-towards-biologics";
+window._ojs.paths.runtimeToRoot = "../..";
+window._ojs.paths.docToRoot = "../../..";
+window._ojs.selfContained = false;
+window._ojs.runtime.interpretFromScriptTags();
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+window.document.addEventListener("DOMContentLoaded", function (event) {
+  const toggleBodyColorMode = (bsSheetEl) => {
+    const mode = bsSheetEl.getAttribute("data-mode");
+    const bodyEl = window.document.querySelector("body");
+    if (mode === "dark") {
+      bodyEl.classList.add("quarto-dark");
+      bodyEl.classList.remove("quarto-light");
+    } else {
+      bodyEl.classList.add("quarto-light");
+      bodyEl.classList.remove("quarto-dark");
+    }
+  }
+  const toggleBodyColorPrimary = () => {
+    const bsSheetEl = window.document.querySelector("link#quarto-bootstrap");
+    if (bsSheetEl) {
+      toggleBodyColorMode(bsSheetEl);
+    }
+  }
+  toggleBodyColorPrimary();  
+  const disableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'prefetch';
+    }
+  }
+  const enableStylesheet = (stylesheets) => {
+    for (let i=0; i < stylesheets.length; i++) {
+      const stylesheet = stylesheets[i];
+      stylesheet.rel = 'stylesheet';
+    }
+  }
+  const manageTransitions = (selector, allowTransitions) => {
+    const els = window.document.querySelectorAll(selector);
+    for (let i=0; i < els.length; i++) {
+      const el = els[i];
+      if (allowTransitions) {
+        el.classList.remove('notransition');
+      } else {
+        el.classList.add('notransition');
+      }
+    }
+  }
+  const toggleColorMode = (alternate) => {
+    // Switch the stylesheets
+    const alternateStylesheets = window.document.querySelectorAll('link.quarto-color-scheme.quarto-color-alternate');
+    manageTransitions('#quarto-margin-sidebar .nav-link', false);
+    if (alternate) {
+      enableStylesheet(alternateStylesheets);
+      for (const sheetNode of alternateStylesheets) {
+        if (sheetNode.id === "quarto-bootstrap") {
+          toggleBodyColorMode(sheetNode);
+        }
+      }
+    } else {
+      disableStylesheet(alternateStylesheets);
+      toggleBodyColorPrimary();
+    }
+    manageTransitions('#quarto-margin-sidebar .nav-link', true);
+    // Switch the toggles
+    const toggles = window.document.querySelectorAll('.quarto-color-scheme-toggle');
+    for (let i=0; i < toggles.length; i++) {
+      const toggle = toggles[i];
+      if (toggle) {
+        if (alternate) {
+          toggle.classList.add("alternate");     
+        } else {
+          toggle.classList.remove("alternate");
+        }
+      }
+    }
+    // Hack to workaround the fact that safari doesn't
+    // properly recolor the scrollbar when toggling (#1455)
+    if (navigator.userAgent.indexOf('Safari') > 0 && navigator.userAgent.indexOf('Chrome') == -1) {
+      manageTransitions("body", false);
+      window.scrollTo(0, 1);
+      setTimeout(() => {
+        window.scrollTo(0, 0);
+        manageTransitions("body", true);
+      }, 40);  
+    }
+  }
+  const isFileUrl = () => { 
+    return window.location.protocol === 'file:';
+  }
+  const hasAlternateSentinel = () => {  
+    let styleSentinel = getColorSchemeSentinel();
+    if (styleSentinel !== null) {
+      return styleSentinel === "alternate";
+    } else {
+      return false;
+    }
+  }
+  const setStyleSentinel = (alternate) => {
+    const value = alternate ? "alternate" : "default";
+    if (!isFileUrl()) {
+      window.localStorage.setItem("quarto-color-scheme", value);
+    } else {
+      localAlternateSentinel = value;
+    }
+  }
+  const getColorSchemeSentinel = () => {
+    if (!isFileUrl()) {
+      const storageValue = window.localStorage.getItem("quarto-color-scheme");
+      return storageValue != null ? storageValue : localAlternateSentinel;
+    } else {
+      return localAlternateSentinel;
+    }
+  }
+  let localAlternateSentinel = 'alternate';
+  // Dark / light mode switch
+  window.quartoToggleColorScheme = () => {
+    // Read the current dark / light value 
+    let toAlternate = !hasAlternateSentinel();
+    toggleColorMode(toAlternate);
+    setStyleSentinel(toAlternate);
+  };
+  // Ensure there is a toggle, if there isn't float one in the top right
+  if (window.document.querySelector('.quarto-color-scheme-toggle') === null) {
+    const a = window.document.createElement('a');
+    a.classList.add('top-right');
+    a.classList.add('quarto-color-scheme-toggle');
+    a.href = "";
+    a.onclick = function() { try { window.quartoToggleColorScheme(); } catch {} return false; };
+    const i = window.document.createElement("i");
+    i.classList.add('bi');
+    a.appendChild(i);
+    window.document.body.appendChild(a);
+  }
+  // Switch to dark mode if need be
+  if (hasAlternateSentinel()) {
+    toggleColorMode(true);
+  } else {
+    toggleColorMode(false);
+  }
+  const icon = "";
+  const anchorJS = new window.AnchorJS();
+  anchorJS.options = {
+    placement: 'right',
+    icon: icon
+  };
+  anchorJS.add('.anchored');
+  const isCodeAnnotation = (el) => {
+    for (const clz of el.classList) {
+      if (clz.startsWith('code-annotation-')) {                     
+        return true;
+      }
+    }
+    return false;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button', {
+    text: function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+  });
+  clipboard.on('success', function(e) {
+    // button target
+    const button = e.trigger;
+    // don't keep focus
+    button.blur();
+    // flash "checked"
+    button.classList.add('code-copy-button-checked');
+    var currentTitle = button.getAttribute("title");
+    button.setAttribute("title", "Copied!");
+    let tooltip;
+    if (window.bootstrap) {
+      button.setAttribute("data-bs-toggle", "tooltip");
+      button.setAttribute("data-bs-placement", "left");
+      button.setAttribute("data-bs-title", "Copied!");
+      tooltip = new bootstrap.Tooltip(button, 
+        { trigger: "manual", 
+          customClass: "code-copy-button-tooltip",
+          offset: [0, -8]});
+      tooltip.show();    
+    }
+    setTimeout(function() {
+      if (tooltip) {
+        tooltip.hide();
+        button.removeAttribute("data-bs-title");
+        button.removeAttribute("data-bs-toggle");
+        button.removeAttribute("data-bs-placement");
+      }
+      button.setAttribute("title", currentTitle);
+      button.classList.remove('code-copy-button-checked');
+    }, 1000);
+    // clear code selection
+    e.clearSelection();
+  });
+  function tippyHover(el, contentFn) {
+    const config = {
+      allowHTML: true,
+      content: contentFn,
+      maxWidth: 500,
+      delay: 100,
+      arrow: false,
+      appendTo: function(el) {
+          return el.parentElement;
+      },
+      interactive: true,
+      interactiveBorder: 10,
+      theme: 'quarto',
+      placement: 'bottom-start'
+    };
+    window.tippy(el, config); 
+  }
+  const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+  for (var i=0; i<noterefs.length; i++) {
+    const ref = noterefs[i];
+    tippyHover(ref, function() {
+      // use id or data attribute instead here
+      let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+      try { href = new URL(href).hash; } catch {}
+      const id = href.replace(/^#\/?/, "");
+      const note = window.document.getElementById(id);
+      return note.innerHTML;
+    });
+  }
+      let selectedAnnoteEl;
+      const selectorForAnnotation = ( cell, annotation) => {
+        let cellAttr = 'data-code-cell="' + cell + '"';
+        let lineAttr = 'data-code-annotation="' +  annotation + '"';
+        const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+        return selector;
+      }
+      const selectCodeLines = (annoteEl) => {
+        const doc = window.document;
+        const targetCell = annoteEl.getAttribute("data-target-cell");
+        const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+        const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+        const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+        const lineIds = lines.map((line) => {
+          return targetCell + "-" + line;
+        })
+        let top = null;
+        let height = null;
+        let parent = null;
+        if (lineIds.length > 0) {
+            //compute the position of the single el (top and bottom and make a div)
+            const el = window.document.getElementById(lineIds[0]);
+            top = el.offsetTop;
+            height = el.offsetHeight;
+            parent = el.parentElement.parentElement;
+          if (lineIds.length > 1) {
+            const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+            const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+            height = bottom - top;
+          }
+          if (top !== null && height !== null && parent !== null) {
+            // cook up a div (if necessary) and position it 
+            let div = window.document.getElementById("code-annotation-line-highlight");
+            if (div === null) {
+              div = window.document.createElement("div");
+              div.setAttribute("id", "code-annotation-line-highlight");
+              div.style.position = 'absolute';
+              parent.appendChild(div);
+            }
+            div.style.top = top - 2 + "px";
+            div.style.height = height + 4 + "px";
+            let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+            if (gutterDiv === null) {
+              gutterDiv = window.document.createElement("div");
+              gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+              gutterDiv.style.position = 'absolute';
+              const codeCell = window.document.getElementById(targetCell);
+              const gutter = codeCell.querySelector('.code-annotation-gutter');
+              gutter.appendChild(gutterDiv);
+            }
+            gutterDiv.style.top = top - 2 + "px";
+            gutterDiv.style.height = height + 4 + "px";
+          }
+          selectedAnnoteEl = annoteEl;
+        }
+      };
+      const unselectCodeLines = () => {
+        const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+        elementsIds.forEach((elId) => {
+          const div = window.document.getElementById(elId);
+          if (div) {
+            div.remove();
+          }
+        });
+        selectedAnnoteEl = undefined;
+      };
+      // Attach click handler to the DT
+      const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+      for (const annoteDlNode of annoteDls) {
+        annoteDlNode.addEventListener('click', (event) => {
+          const clickedEl = event.target;
+          if (clickedEl !== selectedAnnoteEl) {
+            unselectCodeLines();
+            const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+            if (activeEl) {
+              activeEl.classList.remove('code-annotation-active');
+            }
+            selectCodeLines(clickedEl);
+            clickedEl.classList.add('code-annotation-active');
+          } else {
+            // Unselect the line
+            unselectCodeLines();
+            clickedEl.classList.remove('code-annotation-active');
+          }
+        });
+      }
+  const findCites = (el) => {
+    const parentEl = el.parentElement;
+    if (parentEl) {
+      const cites = parentEl.dataset.cites;
+      if (cites) {
+        return {
+          el,
+          cites: cites.split(' ')
+        };
+      } else {
+        return findCites(el.parentElement)
+      }
+    } else {
+      return undefined;
+    }
+  };
+  var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+  for (var i=0; i<bibliorefs.length; i++) {
+    const ref = bibliorefs[i];
+    const citeInfo = findCites(ref);
+    if (citeInfo) {
+      tippyHover(citeInfo.el, function() {
+        var popup = window.document.createElement('div');
+        citeInfo.cites.forEach(function(cite) {
+          var citeDiv = window.document.createElement('div');
+          citeDiv.classList.add('hanging-indent');
+          citeDiv.classList.add('csl-entry');
+          var biblioDiv = window.document.getElementById('ref-' + cite);
+          if (biblioDiv) {
+            citeDiv.innerHTML = biblioDiv.innerHTML;
+          }
+          popup.appendChild(citeDiv);
+        });
+        return popup.innerHTML;
+      });
+    }
+  }
+});
+</script>
+</div> <!-- /content -->
+
+
+
+</body></html>

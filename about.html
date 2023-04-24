@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Spinning coral</title>
+<title>Spinning coral - About</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -30,12 +30,9 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-listing/list.min.js"></script>
-<script src="site_libs/quarto-listing/quarto-listing.js"></script>
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
 <link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" class="quarto-color-scheme" id="quarto-text-highlighting-styles">
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" class="quarto-color-scheme quarto-color-alternate" id="quarto-text-highlighting-styles">
@@ -62,43 +59,12 @@ ul.task-list li input[type="checkbox"] {
     "search-submit-button-title": "Submit"
   }
 }</script>
-<script>
 
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-listing .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
-
-    const options = {
-      valueNames: ['listing-title','listing-author','listing-date','listing-image','listing-description','listing-categories',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
-      
-      searchColumns: ["listing-title","listing-author","listing-date","listing-image","listing-description","listing-categories"],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
-
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 <link rel="stylesheet" href="styles.scss">
 </head>
 
-<body class="nav-fixed">
+<body class="nav-fixed fullcontent">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
@@ -116,7 +82,7 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll ms-auto">
   <li class="nav-item">
-    <a class="nav-link" href="./about.html" rel="" target="">
+    <a class="nav-link active" href="./about.html" rel="" target="" aria-current="page">
  <span class="menu-text">About</span></a>
   </li>  
   <li class="nav-item compact">
@@ -138,315 +104,67 @@ ul.task-list li input[type="checkbox"] {
     </nav>
 </header>
 <!-- content -->
-<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-full page-navbar">
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(6)</span></div><div class="category" data-category="3d-editor">3d-editor <span class="quarto-category-count">(1)</span></div><div class="category" data-category="DNA">DNA <span class="quarto-category-count">(1)</span></div><div class="category" data-category="PPI">PPI <span class="quarto-category-count">(1)</span></div><div class="category" data-category="RNA">RNA <span class="quarto-category-count">(1)</span></div><div class="category" data-category="antibody">antibody <span class="quarto-category-count">(1)</span></div><div class="category" data-category="binding site">binding site <span class="quarto-category-count">(1)</span></div><div class="category" data-category="cavity">cavity <span class="quarto-category-count">(2)</span></div><div class="category" data-category="crystallography">crystallography <span class="quarto-category-count">(1)</span></div><div class="category" data-category="database">database <span class="quarto-category-count">(1)</span></div><div class="category" data-category="dihedral">dihedral <span class="quarto-category-count">(1)</span></div><div class="category" data-category="energy">energy <span class="quarto-category-count">(1)</span></div><div class="category" data-category="epitope">epitope <span class="quarto-category-count">(1)</span></div><div class="category" data-category="fpocket">fpocket <span class="quarto-category-count">(1)</span></div><div class="category" data-category="news">news <span class="quarto-category-count">(1)</span></div><div class="category" data-category="opensource">opensource <span class="quarto-category-count">(1)</span></div><div class="category" data-category="oss">oss <span class="quarto-category-count">(1)</span></div><div class="category" data-category="pocket">pocket <span class="quarto-category-count">(1)</span></div><div class="category" data-category="pocket comparison">pocket comparison <span class="quarto-category-count">(1)</span></div><div class="category" data-category="pockets">pockets <span class="quarto-category-count">(1)</span></div><div class="category" data-category="protein">protein <span class="quarto-category-count">(1)</span></div><div class="category" data-category="rdkit">rdkit <span class="quarto-category-count">(3)</span></div><div class="category" data-category="small molecule xray">small molecule xray <span class="quarto-category-count">(1)</span></div><div class="category" data-category="structure-based drug design">structure-based drug design <span class="quarto-category-count">(1)</span></div><div class="category" data-category="torsion">torsion <span class="quarto-category-count">(1)</span></div><div class="category" data-category="xray">xray <span class="quarto-category-count">(1)</span></div><div class="category" data-category="xtb">xtb <span class="quarto-category-count">(1)</span></div></div></div>
+    
 <!-- main -->
-<main class="content column-page-left" id="quarto-document-content">
-
-<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-about-jolla">
+  <img src="profile.jpg" class="about-image
+  round " style="height: 15em; width: 15em;">
+ <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Spinning coral</h1>
+<h1 class="title">About</h1>
 </div>
-
-
-
 <div class="quarto-title-meta">
-
-    
-  
-    
   </div>
-  
+</header><main class="content" id="quarto-document-content">
+<p>About this blog</p>
+<p>During my everyday work I’m in contact with a lot of people supporting early stage drug discovery. During this work I use proprietary tools, but also several open source tools. Usually you face several issues a lot of other people faced before or will face in the future. One aim of this blog is to share these quirks and allow others to gain some time, trigger discussions, get feedback and improve the field as openly as possible.</p>
+<p>I’ll likely write about whatever crosses my mind here, but it’ll surely focus on topics around cheminformatics, bioinformatics, binding sites, maybe a few papers. Let’s see where this goes.</p>
+<section id="about-myself" class="level2">
+<h2 data-anchor-id="about-myself">About myself</h2>
+<p>I’m a European citizen, dad of two beautiful girls and I am currently stranded in France. I did my PhD in Xavier Barril’s excellent group at the University of Barcelona, then a post-doc in molecular modelling within a French pharma company. However, I spent most of my “professional career” at <a href="https://www.discngine.com">Discngine</a> based in Paris, France. A great place to work, even though we tend not to apply for these fancy marketing labels ;)</p>
+<p>Together with Vincent Le Guilloux (also at Discngine now) we developed <a href="https://github.com/Discngine/fpocket">fpocket</a> while we were still finishing our Bioinformatics Masters degree. After that I wrote a bunch of papers (during my PhD) mainly on binding site characterisation, druggability assessment, structure kinetic relationships and a couple of other things more.</p>
+<p>Together with a great team at Discngine, I also started <a href="https://3decision.discngine.cloud">3decision</a> a subscription-based structure repo &amp; analytics platform a few years back now.</p>
+</section>
+<section id="spinning-coral" class="level2">
+<h2 data-anchor-id="spinning-coral">Spinning coral</h2>
+<p>The name of the blog was inspired by my 7 years old daughter, Anna. She always wants to play with 3D molecular viewers on my screen. She started to do that when she was around 5, having no idea what a protein is and looks like she basically asks me: “Daddy, may I spin the coral again?”.</p>
+</section>
+<section id="inspirations" class="level2">
+<h2 data-anchor-id="inspirations">Inspirations</h2>
+<p>Having a blog on cheminformatics etc is not the brightest and newest idea. I’ve had a lot of good reads thanks to all of these excellent &amp; very well known blogs:</p>
+<ul>
+<li><a href="https://iwatobipen.wordpress.com">https://iwatobipen.wordpress.com/</a></li>
+<li><a href="http://practicalcheminformatics.blogspot.com">http://practicalcheminformatics.blogspot.com/</a></li>
+<li><a href="https://greglandrum.github.io/rdkit-blog/">https://greglandrum.github.io/rdkit-blog/</a></li>
+</ul>
 
-</header>
 
-
-
-
-
-<div class="quarto-listing quarto-listing-container-grid" id="listing-listing">
-<div class="listing-actions-group">
-   <div class="input-group input-group-sm quarto-listing-sort">
-     <span class="input-group-text"><i class="bi bi-sort-down"></i></span>
-     <select id="listing-listing-sort" class="form-select" aria-label="Order By" onchange="window['quarto-listings']['listing-listing'].sort(this.options[this.selectedIndex].value, { order: this.options[this.selectedIndex].getAttribute('data-direction')})">
-       <option value="" disabled="" selected="" hidden="">Order By</option>
-       <option value="index" data-direction="asc">Default</option>
-         <option value="listing-title" data-direction="asc">
-          Title
-        </option>
-         <option value="listing-date-sort" data-direction="asc">
-          Date - Oldest
-        </option>
-         <option value="listing-date-sort" data-direction="desc">
-          Date - Newest
-        </option>
-         <option value="listing-author" data-direction="asc">
-          Author
-        </option>
-     </select>
-  </div>
-    <div class="input-group input-group-sm quarto-listing-filter">
-      <span class="input-group-text"><i class="bi bi-search"></i></span>
-      <input type="text" class="search form-control" placeholder="Filter">
-    </div>
-</div>
-<div class="list grid quarto-listing-cols-3">
-<div class="g-col-1" data-index="0" data-categories="news" data-listing-date-sort="1680904800000" data-listing-file-modified-sort="1682361730528" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="2">
-<a href="./posts/post-with-code/2023-24-04-forced-revamp/2023-24-04-forced-revamp.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top"><img src="posts/post-with-code/2023-24-04-forced-revamp/migration.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Forced revamp ongoing
-</h5>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('news'); return false;">
-news
-</div>
-</div>
-<div class="card-text listing-description">
-This blog is under migration to quarto.
-</div>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Peter Schmidtke
-</div>
-<div class="listing-date">
-Apr 8, 2023
-</div>
-</div>
-</div>
-</div>
-</a>
-</div>
-<div class="g-col-1" data-index="1" data-categories="binding site,pocket,cavity,pocket comparison,structure-based drug design" data-listing-date-sort="1667775600000" data-listing-file-modified-sort="1681843888850" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="20">
-<a href="./posts/post-with-code/2022-11-07-binding-site-comparison-benchmark/2022-11-07-binding-site-comparison-benchmark.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top">
-<img src="./posts/post-with-code/2022-11-07-binding-site-comparison-benchmark/3decision_3dviewer_image.png" class="thumbnail-image card-img" style="height: 150px;">
-</p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Binding site comparison - current benchmark issues
-</h5>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('binding site'); return false;">
-binding site
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('pocket'); return false;">
-pocket
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('cavity'); return false;">
-cavity
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('pocket comparison'); return false;">
-pocket comparison
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('structure-based drug design'); return false;">
-structure-based drug design
-</div>
-</div>
-<div class="card-text listing-description">
-A (long) comment on current pitfalls on binding site comparison papers &amp; their benchmarking
-</div>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-
-</div>
-<div class="listing-date">
-Nov 7, 2022
-</div>
-</div>
-</div>
-</div>
-</a>
-</div>
-<div class="g-col-1" data-index="2" data-categories="torsion,dihedral,oss,opensource,rdkit,xtb,energy" data-listing-date-sort="1613430000000" data-listing-file-modified-sort="1682362638714" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="10">
-<a href="./posts/post-with-code/2021-02-16-torsion-angle-scans-xtb/2021-02-16-torsion-angle-scans-xtb.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top">
-<img src="./posts/post-with-code/2021-02-16-torsion-angle-scans-xtb/xtb_torsion_scan.png" class="thumbnail-image card-img" style="height: 150px;">
-</p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Torsion angle scan with rdkit &amp; xtb
-</h5>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('torsion'); return false;">
-torsion
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('dihedral'); return false;">
-dihedral
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('oss'); return false;">
-oss
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('opensource'); return false;">
-opensource
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('rdkit'); return false;">
-rdkit
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('xtb'); return false;">
-xtb
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('energy'); return false;">
-energy
-</div>
-</div>
-<div class="card-text listing-description">
-Log of the hassle doing torsion angle scans with rdkit &amp; xtb - ultimately comparing results to the crystallography open database
-</div>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Peter Schmidtke
-</div>
-<div class="listing-date">
-Feb 16, 2021
-</div>
-</div>
-</div>
-</div>
-</a>
-</div>
-<div class="g-col-1" data-index="3" data-categories="fpocket,pockets,cavity,PPI,protein,epitope,DNA,RNA,antibody" data-listing-date-sort="1612220400000" data-listing-file-modified-sort="1681843993623" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="12">
-<a href="./posts/post-with-code/2021-02-02-fpocket-towards-biologics/2021-02-02-fpocket-towards-biologics.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top">
-<img src="./posts/post-with-code/2021-02-02-fpocket-towards-biologics/fpocket-logo.png" class="thumbnail-image card-img" style="height: 150px;">
-</p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-fpocket 4.0 - Towards biologics
-</h5>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('fpocket'); return false;">
-fpocket
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('pockets'); return false;">
-pockets
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('cavity'); return false;">
-cavity
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('PPI'); return false;">
-PPI
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('protein'); return false;">
-protein
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('epitope'); return false;">
-epitope
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('DNA'); return false;">
-DNA
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('RNA'); return false;">
-RNA
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('antibody'); return false;">
-antibody
-</div>
-</div>
-<div class="card-text listing-description">
-A quick demo of all the new fpocket features with special focus on protein-peptide interfaces
-</div>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Peter Schmidtke
-</div>
-<div class="listing-date">
-Feb 2, 2021
-</div>
-</div>
-</div>
-</div>
-</a>
-</div>
-<div class="g-col-1" data-index="4" data-categories="rdkit,crystallography,small molecule xray,xray,database" data-listing-date-sort="1611529200000" data-listing-file-modified-sort="1682368913904" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="17">
-<a href="./posts/post-with-code/2021-01-25-cod-and-torsion-angles/2021-01-25-cod-and-torsion-angles.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top">
-<img src="./posts/post-with-code/2021-01-25-cod-and-torsion-angles/toc-cod.png" class="thumbnail-image card-img" style="height: 150px;">
-</p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Crystallography Open Database and torsion angle statistics with rdkit
-</h5>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('rdkit'); return false;">
-rdkit
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('crystallography'); return false;">
-crystallography
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('small molecule xray'); return false;">
-small molecule xray
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('xray'); return false;">
-xray
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('database'); return false;">
-database
-</div>
-</div>
-<div class="card-text listing-description">
-First steps to check how easy / feasible it is to extract torsion angle statistics from the COD
-</div>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Peter Schmidtke
-</div>
-<div class="listing-date">
-Jan 25, 2021
-</div>
-</div>
-</div>
-</div>
-</a>
-</div>
-<div class="g-col-1" data-index="5" data-categories="rdkit,3d-editor" data-listing-date-sort="1611356400000" data-listing-file-modified-sort="1681844000062" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="7">
-<a href="./posts/post-with-code/2021-01-23-grafting-fragments/2021-01-23-grafting-fragments.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top">
-<img src="./posts/post-with-code/2021-01-23-grafting-fragments/toc-grafting.png" class="thumbnail-image card-img" style="height: 150px;">
-</p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Grafting fragments onto molecules in rdkit - babysteps
-</h5>
-<div class="listing-categories">
-<div class="listing-category" onclick="window.quartoListingCategory('rdkit'); return false;">
-rdkit
-</div>
-<div class="listing-category" onclick="window.quartoListingCategory('3d-editor'); return false;">
-3d-editor
-</div>
-</div>
-<div class="card-text listing-description">
-This is a quick set-up for attaching a fragment to a molecule on a particular location.
-</div>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Peter Schmidtke
-</div>
-<div class="listing-date">
-Jan 23, 2021
-</div>
-</div>
-</div>
-</div>
-</a>
-</div>
-</div>
-<div class="listing-no-matching d-none">
-No matching items
-</div>
-</div></main> <!-- /main -->
+</section>
+</main> 
+  <hr class="about-sep">
+   <div class="about-links">
+  <a href="https://twitter.com/pschmidtke" class="about-link" rel="" target="">
+    <i class="bi bi-twitter"></i>
+     <span class="about-link-text">Twitter (discontinued)</span>
+  </a>
+  <a href="https://linkedin.com" class="about-link" rel="" target="">
+    <i class="bi bi-linkedin"></i>
+     <span class="about-link-text">LinkedIn</span>
+  </a>
+  <a href="https://github.com/pschmidtke" class="about-link" rel="" target="">
+    <i class="bi bi-github"></i>
+     <span class="about-link-text">Github</span>
+  </a>
+  <a href="https://masto.ai/@pschmidtke" class="about-link" rel="" target="">
+    <i class="bi bi-mastodon"></i>
+     <span class="about-link-text">mastodon</span>
+  </a>
+</div>
+</div>
+ <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
@@ -582,13 +300,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   } else {
     toggleColorMode(false);
   }
-  const icon = "";
-  const anchorJS = new window.AnchorJS();
-  anchorJS.options = {
-    placement: 'right',
-    icon: icon
-  };
-  anchorJS.add('.anchored');
   const isCodeAnnotation = (el) => {
     for (const clz of el.classList) {
       if (clz.startsWith('code-annotation-')) {                     
