@@ -1,15 +1,10 @@
 project:
   type: website
-  output-dir: docs
 execute:
   freeze: auto
 website:
   title: "Spinning coral"
-  google-analytics: "372266383"
-  cookie-consent:
-    type: express
-    style: headline
-    palette: dark
+  google-analytics: "G-9LJZZ6RBGN"
   navbar:
     right:
       - about.qmd
