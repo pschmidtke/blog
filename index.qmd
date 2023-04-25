@@ -5,10 +5,19 @@ listing:
   sort: "date desc"
   type: grid
   categories: true
-  sort-ui: true
-  filter-ui: true
+  sort-ui: false
+  filter-ui: false
 page-layout: full
 title-block-banner: false
 ---
 
-
+<style>
+  body {
+  background-image: url("images/vmdscene.png");
+  background-size: cover;
+  background-color: rgba(0,0,0,0.8);
+  background-blend-mode: darken;
+  background-repeat: no-repeat;
+}
+  
+</style>
