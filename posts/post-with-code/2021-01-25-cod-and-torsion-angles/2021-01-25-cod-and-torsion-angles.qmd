@@ -16,6 +16,8 @@ image: toc-cod.png
 output-file: 2021-01-25-cod-and-torsion-angles.html
 title: Crystallography Open Database and torsion angle statistics with rdkit
 toc: true
+execute:
+  freeze: auto
 jupyter: python3
 ---
 
