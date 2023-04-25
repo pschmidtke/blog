@@ -5,6 +5,11 @@ execute:
   freeze: auto
 website:
   title: "Spinning coral"
+  google-analytics: "372266383"
+  cookie-consent:
+    type: express
+    style: headline
+    palette: dark
   navbar:
     right:
       - about.qmd
