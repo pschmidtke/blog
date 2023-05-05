@@ -1055,7 +1055,12 @@ This section is to verify how this very first section on very similar binding si
 
 > The sequences of all single chain entries of the sc-PDB[65] were sequence culled using the PISCES[104] server (with a sequence identity threshold of 25%). The single chain sc-PDB entry sequences of the culled set were compared to those of all single chain proteins as stored in the PDB using USEARCH[105]. Structures whose sequences were identical to those of at least nine others were retained. This resulted in a data set of 13 groups of diverse structures. The PDB structures within each group were aligned and the ligand-occupied binding sites were compared to ensure that all ligands were located at the same site. This visual inspection led to the exclusion of one group represented by the sc-PDB entry with the PDB ID 4l8u (chain A) as the ligand-defined binding sites differed for the structures with 100% sequence identity. A complete list of data set 1 can be found in S9 Table. An all-against-all comparison was performed to assess the performance of each tool. Site pairs of proteins with identical sequences were regarded as positives while other matches were defined as negatives.
 
-
+- I'm a bit puzzled by the fact that they obtain only 13 groups through such an approach (that's just a comment)
+- The structures were aligned, but not sure how (cf the discussion that I had earlier) & that's not reproducible now
+- Visual inspection is ok, but not reproducible as well
+- In the end we have a set with binding site locations & conformations that could potentially vary significantly (i.e. the 7l7j vs 4cwr comparison that we had in the post)
+- I'm not sure I understood how the sc-PDB is used as reference or limit here (goes back to point #1 above)
+- As this is not reproducible, I cannot use the approach to update a benchmark set at any time
 
 <!-- 
 ## SCOP classification
