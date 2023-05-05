@@ -1050,6 +1050,7 @@ This section is to verify how this very first section on very similar binding si
   - No apo structures can be considered here
   - On top of structural variation one adds the variation of the definition on where the binding site exactly is 
     - @Ehrt2018 et al are totally right that this is something to check. I'm just relunctant to use this to define an ideal benchmark set.  
+  - One drawback I have here is that my binding site definition is totally fixed by residue numbers. If the structure moves (i.e. residues 107-112 in HSP90) this definition might change. 
 - Second they cluster by identical sequence, as opposed to what I did here (same protein strictly speaking)
   - that very likely something I might revise on my side when starting with the 2nd set of structures with similar sequences on non identical proteins - but for let's keep it clean & simple.
 
