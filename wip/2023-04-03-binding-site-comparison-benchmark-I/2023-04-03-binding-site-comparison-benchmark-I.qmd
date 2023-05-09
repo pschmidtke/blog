@@ -1062,6 +1062,57 @@ This section is to verify how this very first section on very similar binding si
 - In the end we have a set with binding site locations & conformations that could potentially vary significantly (i.e. the 7l7j vs 4cwr comparison that we had in the post)
 - I'm not sure I understood how the sc-PDB is used as reference or limit here (goes back to point #1 above)
 - As this is not reproducible, I cannot use the approach to update a benchmark set at any time
+- The approch used by the authors only considers single chain structures, which can be a limitation when you want to extend you dataset
+- Again I'm not sure how the sc-PDB vs PDB query is run here and to which extent there are quality filters in there. I don't filter at all by commonly used quality filters
+
+
+#### APoc @Gao2013
+
+> (iii) Bench Subject/Control Sets. Two sets are used to benchmark the performance of APoc. Complete linkage clustering was first conducted on unique ligands curated from the PDB (see above) at a Tc threshold of 0.5, which indicates a high level chemical similarity (the mean/sd of Tc is 0.16/0.12 among all ligands in the PDB). In each cluster, the ligand type most found frequently in the pockets of protein chains curated at 90% sequence identity is selected as the cluster representative, e.g. ADP represents a cluster of ligands including AMP, ATP, etc. Within each cluster, we used a graph-based algorithm, SIMCOMP (Hattori et al., 2010), to obtain the equivalence between heavy atoms of each pair of ligands. We collect atomic contacts between heavy atoms of the ligand and protein. Two ligand–protein contacts from two separate structures are of the same type if the ligand atoms are mapped each other in the SIMCOMP alignment and the protein residues belong to the same group defined above for Equation 4. We then define the Subject set as pairs of pockets such that:
+- Ligands found in these two pockets have a Tc ≥ 0.5,
+- Sequence similarity < 30% between the two associated proteins,
+- They share ≥ 50 atomic ligand–protein contacts of same type.
+In total, we found 38 066 pairs of pockets for the Subject set. We expect that a significant number of entries in this set share a high level of pocket similarity because they recognize the same or similar types of ligands and likely possess a putative common anchor region due to the overlap of a large number of ligand-pocket contacts (Brylinski and Skolnick, 2009). Note that no geometric information is explicitly used in this procedure.
+
+Well this is a totally different approach and very much focused around the "similar ligands bind to similar pockets" assumption, strenghtened by the use of contact analysis. As such the dataset is not at all comparable to what we have for now, it is likely already very challenging. 
+
+
+#### Though Dataset @Govindaraj2018
+> First, we identified in the PDB protein chains composed of 50–999 amino acids that non-covalently bind small organic molecules (“Select ligand-bound proteins”). No constraints were imposed on the resolution to maximize the coverage and include experimentally determined structures of varied quality. Next, we retained those proteins binding a single ligand whose TC to at least one FDA-approved drug is ≥0.5 (“Select drug-like molecules”). The TC is calculated for 1024-bit molecular fingerprints with OpenBabel [44] against FDA-approved drugs in the DrugBank database [45]. Subsequently, protein sequences were clustered with CD-HIT [46] at 40% sequence similarity (“Cluster proteins”). From each homologous cluster, we selected a representative set of proteins binding chemically dissimilar ligands whose pairwise TC is < 0.5 at different locations separated by at least 8 Å (“Select representative complexes”).
+...
+In the next step, all target-bound ligands were clustered with the SUBSET program [49] (“Cluster ligands”). Using a TC threshold of 0.7 produced 1266 groups of chemically similar molecules. From all possible combinations of protein pairs within each cluster of similar compounds, we selected those having a TM-score of < 0.4 as reported by Fr-TM-align [50] (“Select globally dissimilar protein pairs”). The Positive subset of TOUGH-M1 comprises 505,116 protein pairs having different structures, yet binding chemically similar ligands. Finally, we identified a representative structure within each group of proteins binding similar compounds, and considered all pairwise combinations of structures from different clusters that have a TM-score to one another of < 0.4 (“Select globally dissimilar protein pairs”). The Negative subset of TOUGH-M1 comprises 556,810 protein pairs that have different structures and bind chemically dissimilar ligands.
+
+The approach taken to create the Tough M1 dataset is similar to the one for APoc. It's focused on identifying positive matching binding sites using ligand similarity & structural dissimilarity as main drivers. So the conclusion is the same as for APoc, it's not at all overlapping with what I did here.
+
+### Shaper & Fuzcav @Desaphy2012 & @Weill2010
+> An sc-PDB binding site is defined by any monomer (amino acid, ion, cofactor, prosthetic group) presenting one heavy atom closer than 6.5 Å from any heavy atom of the pharmacological ligand.
+> All protein-ligand binding sites have been retrieved from the 2008 release of the sc-PDB database, which currently comprises 5952 entries ... Data set 1 is composed of 769 pairs of nonredundant similar binding sites seeded with 769 pairs of nonredundant dissimilar binding sites. The similar pairs have been selected as follows. First, all entries from the sc-PDB database have been clustered according to their UniProt name, leading to 911 clusters and 1204 singletons. Second, an all-against-all comparison of all active sites within each cluster was realized with the 3-D alignment tool SiteAlign to generate a distance matrix
+...
+In the current study, two entries were randomly selected from each of the 911 clusters if their binding sites were found similar (d1 e 0.6 and d2 e 0.2). The same number of dissimilar binding sites was randomly selected from the initial set of 911 clusters. Binding site pairs with an Enzyme Commission (E.C.) annotation differing at the first level were retrieved until the final number of 769 pairs was reached.
+...
+
+- Again, a ligand position & sourroundings are used to define the area of the binding site
+- The expected hits were obtained using another algorithm called SiteAlign (@Shalon2008). This would be the corresponding method to what I did with the contact matrices here, but SiteAlign works on a larger variety of structures. However, it's already giving an output score of the binding site similarity, which is interesting, but already biasing the set as well
+- The set is composed of 769 pairs of non redudant similar & dissimilar binding sites. Redundancy reduction is an important aspect for the work around sc-PDB, this set & statistical significance on evaluations performed using such a set. On my end, my first data-set is nearly 100% redundant (:scream:) and will allow to verify the stability of a pocket comparison algorithm on similar binding sites (apo & holo) ... so my first set doesn't have exactly the same purpose as this one here.
+
+
+# Recaputilating my things to keep in mind
+
+During the writing process I had to set aside or make several approximations. Let's just resume a bit the list of things to keep in mind: 
+
+-   Uniprot accession vs polymer entity group ID handling to be clarified with RCSB folks
+  - that's just a reminder to ask the RCSB why there's a difference
+-   Don't forget to check if all sidechains of the binding site are resolved in the selected structures
+  - that's something I didn't do indeed and a check I should add in subsequent posts
+-   Treat homo-multimers rationally in the data-set construction
+  - here it's a decision to make and for now I'm not really decided yet
+-   Handle canonical residue numbering properly in distanceMatrix code
+  - that's something I'll have to address in the next post. I didn't have to do it here as all structures I selected here had the same numbering
+-   Consider also optional side-chain sensitive distance calculations
+  - I'll probably add that when finalizing the scripts, this way one can adjust to a more precise or more fuzzy structural clustering
+-   What to do with large motions implicating new residues in binding sites?
+  - That's a tricky one. Either one can use the ligands to define the binding site, but then again, we cannot do it on apo structures. Maybe one option would be to screen all structures & add all implicated residues in the assessment taken into consideration all structures. This would make most sense at least for a proper conformational classification. 
+-   Decide how to handle NMR conformations in the dataset
 
 <!-- 
 ## SCOP classification
