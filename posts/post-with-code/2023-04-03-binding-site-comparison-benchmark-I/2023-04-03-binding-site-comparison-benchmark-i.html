@@ -1095,7 +1095,7 @@ gtag('config', 'G-9LJZZ6RBGN', { 'anonymize_ip': true});
 <div class="cell-output cell-output-stdout">
 <pre><code>&lt;AtomGroup [&lt;Atom 302: CA of type C of resname GLU, resid 47 and segid A and altLoc &gt;, &lt;Atom 311: CA of type C of resname LEU, resid 48 and segid A and altLoc &gt;, &lt;Atom 333: CA of type C of resname ASN, resid 51 and segid A and altLoc &gt;, ..., &lt;Atom 1331: CA of type C of resname GLY, resid 183 and segid A and altLoc &gt;, &lt;Atom 1335: CA of type C of resname THR, resid 184 and segid A and altLoc &gt;, &lt;Atom 1351: CA of type C of resname VAL, resid 186 and segid A and altLoc &gt;]&gt;</code></pre>
 </div>
-<div class="cell-output cell-output-display" data-execution_count="37">
+<div class="cell-output cell-output-display" data-execution_count="5">
 <pre><code>&lt;Axes: &gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
@@ -1724,7 +1724,7 @@ Not all positions found for 4FCR discarding structure
 Not all positions found for 6EYA discarding structure</code></pre>
 </div>
 <div class="cell-output cell-output-stderr">
-<pre><code>/var/folders/51/p06ylvs507q40bm1kxbl65km0000gp/T/ipykernel_17756/1742338535.py:41: ClusterWarning:
+<pre><code>/var/folders/51/p06ylvs507q40bm1kxbl65km0000gp/T/ipykernel_20735/1742338535.py:41: ClusterWarning:
 
 scipy.cluster: The symmetric non-negative hollow observation matrix looks suspiciously like an uncondensed distance matrix
 </code></pre>
@@ -1797,7 +1797,7 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 <details>
 <summary>Code</summary>
 <div class="sourceCode cell-code" id="cb54"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb54-1"><a href="#cb54-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> scipy.cluster.hierarchy <span class="im">import</span> cut_tree</span>
-<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>h_cluster_id <span class="op">=</span> cut_tree(clusters, height<span class="op">=</span><span class="fl">1.5</span>).reshape(<span class="op">-</span><span class="dv">1</span>, )</span>
+<span id="cb54-2"><a href="#cb54-2" aria-hidden="true" tabindex="-1"></a>h_cluster_id <span class="op">=</span> cut_tree(clusters, height<span class="op">=</span><span class="fl">1.0</span>).reshape(<span class="op">-</span><span class="dv">1</span>, )</span>
 <span id="cb54-3"><a href="#cb54-3" aria-hidden="true" tabindex="-1"></a>sns.displot(h_cluster_id)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-display">
@@ -1828,7 +1828,7 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 <span id="cb55-7"><a href="#cb55-7" aria-hidden="true" tabindex="-1"></a>  headers<span class="op">=</span>[<span class="st">"Structure"</span>,<span class="st">"Cluster ID"</span>], colalign<span class="op">=</span>(<span class="st">"center"</span>,<span class="st">"center"</span>)</span>
 <span id="cb55-8"><a href="#cb55-8" aria-hidden="true" tabindex="-1"></a>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
-<div class="cell-output cell-output-display" data-execution_count="48">
+<div class="cell-output cell-output-display" data-execution_count="16">
 <table class="table table-sm table-striped small">
 <caption>Final List of structures and their corresponding cluster ID of the selected HSP90 alpha human ATP binding site containing structures </caption>
 <thead>
@@ -1896,7 +1896,7 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 </tr>
 <tr class="odd">
 <td style="text-align: center;">1UYL:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">1YC1:A</td>
@@ -1912,7 +1912,7 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 </tr>
 <tr class="odd">
 <td style="text-align: center;">1YER:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">1YES:A</td>
@@ -1924,11 +1924,11 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 </tr>
 <tr class="even">
 <td style="text-align: center;">2BSM:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">2BT0:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">2BYH:A</td>
@@ -1944,15 +1944,15 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 </tr>
 <tr class="odd">
 <td style="text-align: center;">2CCS:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">2CCT:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">2CCU:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">2FWY:A</td>
@@ -1968,11 +1968,11 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 </tr>
 <tr class="odd">
 <td style="text-align: center;">2JJC:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">2K5B:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">3</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">2QF6:A</td>
@@ -1992,27 +1992,27 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 </tr>
 <tr class="odd">
 <td style="text-align: center;">2UWD:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">2VCI:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">2VCJ:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">2WI1:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">2WI2:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">2WI3:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">2WI4:A</td>
@@ -2020,7 +2020,7 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 </tr>
 <tr class="even">
 <td style="text-align: center;">2WI5:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">2WI6:A</td>
@@ -2032,7 +2032,7 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 </tr>
 <tr class="odd">
 <td style="text-align: center;">2XAB:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">2XDK:A</td>
@@ -2040,7 +2040,7 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 </tr>
 <tr class="odd">
 <td style="text-align: center;">2XDL:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">2XDS:A</td>
@@ -2084,23 +2084,23 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 </tr>
 <tr class="even">
 <td style="text-align: center;">2YE2:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">2YE3:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">2YE4:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">2YE5:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">2YE6:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">2YE7:A</td>
@@ -2112,23 +2112,23 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 </tr>
 <tr class="odd">
 <td style="text-align: center;">2YE9:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">2YEA:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">2YEB:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">2YEC:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">2YED:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">2YEE:A</td>
@@ -2140,11 +2140,11 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 </tr>
 <tr class="even">
 <td style="text-align: center;">2YEG:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">2YEH:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">2YEI:A</td>
@@ -2156,19 +2156,19 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 </tr>
 <tr class="even">
 <td style="text-align: center;">2YI0:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">2YI6:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">2YI7:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">2YJW:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">2YJX:A</td>
@@ -2204,7 +2204,7 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 </tr>
 <tr class="even">
 <td style="text-align: center;">3B24:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">3B25:A</td>
@@ -2224,7 +2224,7 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 </tr>
 <tr class="odd">
 <td style="text-align: center;">3BM9:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">3BMY:A</td>
@@ -2244,7 +2244,7 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 </tr>
 <tr class="even">
 <td style="text-align: center;">3FT5:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">3FT8:A</td>
@@ -2256,7 +2256,7 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 </tr>
 <tr class="odd">
 <td style="text-align: center;">3HHU:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">3HYY:A</td>
@@ -2288,7 +2288,7 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 </tr>
 <tr class="odd">
 <td style="text-align: center;">3K99:A</td>
-<td style="text-align: center;">2</td>
+<td style="text-align: center;">4</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">3MNR:P</td>
@@ -2304,7 +2304,7 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 </tr>
 <tr class="odd">
 <td style="text-align: center;">3OWB:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">3OWD:A</td>
@@ -2360,7 +2360,7 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 </tr>
 <tr class="odd">
 <td style="text-align: center;">3T0H:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">3T0Z:A</td>
@@ -2404,15 +2404,15 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 </tr>
 <tr class="even">
 <td style="text-align: center;">4AWO:A</td>
-<td style="text-align: center;">3</td>
+<td style="text-align: center;">5</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">4AWP:A</td>
-<td style="text-align: center;">3</td>
+<td style="text-align: center;">5</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">4AWQ:A</td>
-<td style="text-align: center;">3</td>
+<td style="text-align: center;">5</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">4B7P:A</td>
@@ -2460,7 +2460,7 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 </tr>
 <tr class="even">
 <td style="text-align: center;">4EEH:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">4EFT:A</td>
@@ -2472,7 +2472,7 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 </tr>
 <tr class="odd">
 <td style="text-align: center;">4EGH:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">4EGI:A</td>
@@ -2484,11 +2484,11 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 </tr>
 <tr class="even">
 <td style="text-align: center;">4FCP:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">4FCQ:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">4HY6:A</td>
@@ -2516,7 +2516,7 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 </tr>
 <tr class="even">
 <td style="text-align: center;">4L94:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">4LWE:A</td>
@@ -2524,19 +2524,19 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 </tr>
 <tr class="even">
 <td style="text-align: center;">4LWF:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">4LWG:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">4LWH:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">4LWI:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">4NH7:A</td>
@@ -2596,35 +2596,35 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 </tr>
 <tr class="even">
 <td style="text-align: center;">4YKQ:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">4YKR:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">4YKT:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">4YKU:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">4YKW:A</td>
-<td style="text-align: center;">4</td>
+<td style="text-align: center;">6</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">4YKX:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">4YKY:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">4YKZ:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">5CF0:A</td>
@@ -2636,7 +2636,7 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 </tr>
 <tr class="even">
 <td style="text-align: center;">5FND:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">5FNF:A</td>
@@ -2656,15 +2656,15 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 </tr>
 <tr class="odd">
 <td style="text-align: center;">5J2V:A</td>
-<td style="text-align: center;">5</td>
+<td style="text-align: center;">7</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">5J2X:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">5J64:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">5J6L:A</td>
@@ -2672,11 +2672,11 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 </tr>
 <tr class="odd">
 <td style="text-align: center;">5J6M:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">8</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">5J6N:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">8</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">5J82:A</td>
@@ -2684,15 +2684,15 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 </tr>
 <tr class="even">
 <td style="text-align: center;">5J86:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">8</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">5J8M:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">5J8U:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">5J9X:A</td>
@@ -2720,7 +2720,7 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 </tr>
 <tr class="odd">
 <td style="text-align: center;">5LO6:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">8</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">5LQ9:A</td>
@@ -2748,11 +2748,11 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 </tr>
 <tr class="even">
 <td style="text-align: center;">5M4E:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">5M4H:A</td>
-<td style="text-align: center;">2</td>
+<td style="text-align: center;">9</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">5NYH:A</td>
@@ -2760,7 +2760,7 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 </tr>
 <tr class="odd">
 <td style="text-align: center;">5NYI:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">5OCI:A</td>
@@ -2780,11 +2780,11 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 </tr>
 <tr class="even">
 <td style="text-align: center;">5VYY:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">8</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">5XQD:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">5XQE:A</td>
@@ -2804,7 +2804,7 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 </tr>
 <tr class="even">
 <td style="text-align: center;">5XRD:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">5XRE:A</td>
@@ -2824,7 +2824,7 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 </tr>
 <tr class="odd">
 <td style="text-align: center;">6CEO:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">6CYG:A</td>
@@ -2844,11 +2844,11 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 </tr>
 <tr class="even">
 <td style="text-align: center;">6ELN:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">6ELO:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">6ELP:A</td>
@@ -2860,7 +2860,7 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 </tr>
 <tr class="even">
 <td style="text-align: center;">6EY9:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">8</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">6EYB:A</td>
@@ -2868,11 +2868,11 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 </tr>
 <tr class="even">
 <td style="text-align: center;">6F1N:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">6FCJ:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">6GPR:A</td>
@@ -2884,7 +2884,7 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 </tr>
 <tr class="even">
 <td style="text-align: center;">6GPW:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">6GPY:A</td>
@@ -2900,7 +2900,7 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 </tr>
 <tr class="even">
 <td style="text-align: center;">6HHR:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">6LR9:A</td>
@@ -2908,7 +2908,7 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 </tr>
 <tr class="even">
 <td style="text-align: center;">6LSZ:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">6LT8:A</td>
@@ -2916,7 +2916,7 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 </tr>
 <tr class="even">
 <td style="text-align: center;">6LTI:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">6LTK:A</td>
@@ -2928,11 +2928,11 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 </tr>
 <tr class="odd">
 <td style="text-align: center;">6TN4:AAA</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">6TN5:AAA</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">6U99:A</td>
@@ -2948,19 +2948,19 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 </tr>
 <tr class="even">
 <td style="text-align: center;">7KRJ:A</td>
-<td style="text-align: center;">6</td>
+<td style="text-align: center;">10</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">7KW7:A</td>
-<td style="text-align: center;">2</td>
+<td style="text-align: center;">11</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">7L7I:A</td>
-<td style="text-align: center;">6</td>
+<td style="text-align: center;">10</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">7L7J:A</td>
-<td style="text-align: center;">6</td>
+<td style="text-align: center;">10</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">7LSZ:A</td>
@@ -2972,27 +2972,27 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 </tr>
 <tr class="even">
 <td style="text-align: center;">7S8Y:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">7S8Z:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">7S90:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">7S95:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">7S98:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">7S99:A</td>
-<td style="text-align: center;">0</td>
+<td style="text-align: center;">2</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">7S9F:A</td>
@@ -3012,11 +3012,11 @@ scipy.cluster: The symmetric non-negative hollow observation matrix looks suspic
 </tr>
 <tr class="even">
 <td style="text-align: center;">7UR3:A</td>
-<td style="text-align: center;">7</td>
+<td style="text-align: center;">12</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">8AGI:A</td>
-<td style="text-align: center;">8</td>
+<td style="text-align: center;">13</td>
 </tr>
 </tbody>
 </table>
