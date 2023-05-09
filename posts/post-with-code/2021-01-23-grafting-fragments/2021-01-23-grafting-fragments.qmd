@@ -42,7 +42,6 @@ from rdkit import Chem
 from rdkit.Chem.Draw import IPythonConsole
 from rdkit.Chem import Draw
 IPythonConsole.ipython_useSVG=True 
-import py3Dmol
 from rdkit.Chem import AllChem
 import copy
 from rdkit.Chem.rdMolAlign import AlignMol
