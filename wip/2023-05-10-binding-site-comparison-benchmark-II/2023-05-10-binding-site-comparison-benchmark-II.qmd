@@ -1,0 +1,332 @@
+---
+aliases:
+  - /binding site/pocket/cavity/pocket comparison/structure-based drug design/2023/05/10/binding-site-comparison-benchmark-II
+author: Peter Schmidtke
+badges: true
+branch: master
+categories:
+  - binding site
+  - pocket
+  - cavity
+  - pocket comparison
+  - structure-based drug design
+date: '2023-05-10'
+bibliography: refs.bib
+description: Second post on establishing a benchmark for binding site comparison methods on similar proteins
+image: toc.png
+output-file: 2023-05-10-binding-site-comparison-benchmark-ii.html
+title: Binding Site Comparison Benchmarks - II - Binding sites on the similar proteins
+from: markdown+emoji
+toc: true
+jupyter: python3
+execute:
+  freeze: auto
+---
+
+# Introduction
+
+[The previous post](../2023-04-03-binding-site-comparison-benchmark-I/2023-04-03-binding-site-comparison-benchmark-I.qmd) of this series established a first protocol on how to identify & cluster (conformationally) the ATP binding site of the N-terminal domain of human HSP90 alpha. It can be generalized to other proteins as well but to keep it simple (it's that simple) I'll stick to a single protein for now and generalize at a later stage.
+
+In this second post we'll gradually extend the dataset with ATP binding sites of proteins that are very similar to the human HSP90 alpha. 
+
+#### What is similar?
+One can adopt several ways to assess similarity between proteins. Here I'll use a commonly understood and accepted sequence local similarity on the N-terminal domain. I'll further assess the binding site residue conservation in detail. So at this stage of the dataset creation I'll focus on things I'd expect to be found as very very similar to the human HSP90 alpha N-terminal domain when doing a pocket comparison. 
+
+#### Things to keep in mind
+Again I'll track all things that I left aside or important approximations I made. They'll be tracked as side-note and depending on the outcome of the whole exercise I'll come back to them at a later stage.
+
+::: column-margin
+Things to keep in mind
+
+- listing goes here
+:::
+
+# Methods & Results
+
+## Identify similar sequences
+
+Usually one what do just a simple blast! Unfortunately, things are a bit trickier. First of all, we are currently looking only at the N-terminal domain of HSP90 (around 230 amino acids). The full human HSP90 alpha protein has 732 amino acids. So, shall we search for globally similar sequences? or smaller regions?
+
+The N-terminal part is considered to be a domain, so structured on itself. There are numerous structure resolution papers that show that, @Sreeramulu2009 is just one of them, as an example here, where only the N-terminal domain of HSP90 is amplified, produced & resolved. 
+
+We could even go further and use only the range of amino acids that are involved in the ATP binding site. In the case of a small domain like this one here that might not be required, but for large domains it might be of interest to focus on the binding site only. In this example this would mean start at the glutamate 47 and go up to the valine 186 (+ maybe a few flanking residues)
+
+For the sake of simplicity I'll take the whole N-terminal domain (amino acids 9-236), corresponding to the [first region of HS90A_HUMAN in the UniProt database](https://www.uniprot.org/uniprotkb/P07900/entry#family_and_domains).
+
+### The blast mess
+
+Here we need to find PDB structures containing a resolved portion of the domain of interest (or similar). There are unfortunately thousands of services allowing to do that, and as usual they don't give the same results ... it would be too easy otherwise. One important factor is to search against an up to date version of the RCSB PDB. The only service I found that clearly states what release of the PDB is being used is [NCBI blastp page](https://blast.ncbi.nlm.nih.gov/Blast.cgi?ALIGNMENTS=50&ALIGNMENT_VIEW=Pairwise&AUTO_FORMAT=Semiauto&CLIENT=web&DATABASE=pdb&DESCRIPTIONS=100&ENTREZ_QUERY=(none)&EXPECT=20000&FORMAT_BLOCK_ON_RESPAGE=None&FORMAT_ENTREZ_QUERY=(none)&FORMAT_OBJECT=Alignment&FORMAT_TYPE=HTML&GAPCOSTS=9+1&I_THRESH=0.005&LAYOUT=TwoWindows&MATRIX_NAME=PAM30&NCBI_GI=on&PAGE=Proteins&PROGRAM=blastp&QUERY=gapn&SERVICE=plain&SET_DEFAULTS.x=14&SET_DEFAULTS.y=5&SHOW_LINKOUT=on&SHOW_OVERVIEW=on&WORD_SIZE=2&END_OF_HTTPGET=Yes).
+
+I don't want to reinvent the wheel or install blast locally etc, so here I'll use the biotite (@Kunzmann2018) integration of the NCBI blast service. 
+
+```{python}
+#| eval: false
+#| code-fold: false
+#| 
+import biotite.sequence.io.fasta as fasta
+import biotite.application.blast as blast
+from biotite.sequence import ProteinSequence
+import urllib
+import io 
+import pickle
+
+uniprotcode="P07900"
+start=9
+end=236
+url="https://rest.uniprot.org/uniprotkb/"+uniprotcode+".fasta"
+
+with urllib.request.urlopen(url) as file_handle:
+  file_object = io.TextIOWrapper(file_handle)
+  fasta_file = fasta.FastaFile.read(file_object)
+  for header, seq_str in fasta_file.items():
+    seq = ProteinSequence(seq_str)
+    selected_sequence = str(seq[start:end])
+
+app = blast.BlastWebApp("blastp", selected_sequence, database="pdb",obey_rules=True)
+app.set_max_results(5000)
+app.set_max_expect_value(1e-30)
+app.start()
+app.join(timeout=1000)
+alignments = app.get_alignments()
+xml=app.get_xml_response()
+
+# open a file, where you ant to store the data
+file = open('data/blasthits.pkl', 'wb')
+
+# dump information to that file
+pickle.dump(xml, file)
+
+# close the file
+file.close()
+
+```
+
+Here we get all blast hits with an e-value above 1e-30 (arbitrary choice) and store the xml response in a pickled file, not to spam the NCBI service too much during writing this post :wink:. It's also very slow to run, so I'll just load the pickled file in the next step.
+
+#### Parse the blast results
+
+We can now load the pickled results & parse them to make them a bit more workable
+
+```{python}
+import pickle
+import xml.etree.ElementTree as ET
+
+
+file = open('data/blasthits.pkl', 'rb')
+
+# dump information to that file
+xml = pickle.load(file)
+file.close()
+# print(xml)
+root = ET.fromstring(xml)
+identifiers = []
+evalues = []
+for alignment in root.iter('Hit'):
+    identifier = alignment.find('Hit_id').text
+    # Extract the coverage
+    hsp = alignment.find('Hit_hsps/Hsp')
+    coverage = int(hsp.find('Hsp_query-to').text) / int(hsp.find('Hsp_query-from').text)
+    # Extract the percentage of identity
+    identity = float(hsp.find('Hsp_identity').text) / float(hsp.find('Hsp_align-len').text)
+
+    # Extract the e-value
+    evalue = float(hsp.find('Hsp_evalue').text)
+    identifiers.append(identifier)
+    evalues.append(evalue)
+print(identifiers)
+```
+
+We end up here with 139 hits. As a reminder, when gathering all structures of the same protein we identified over 300 structures. I'm expecting them to be part of the hitlist found here. I tried to find any indication on the PDB subset used by the NCBI, but couldn't identify whether they use the full RCSB PDB or a subset only. Anyway, this isn't useable as such. So I optimistically tried the blast on uniprot and got even less hits. Digging into the detail I noticed that the ebi is just running an ncbi blast behind the scenes as well. 
+
+Well that's a bummer. I have two options here, either I expand the hitlist, by identifying all other structures encompassing the same protein as the hits I got here. But the hits aren't unique as well per biomolecule, not sure what this corresponds to in the end. Or I'd need to basically build my own blast database locally & do everything by hand. Let me roughly outline the steps here:
+
+For each PDB structure & chain:
+
+- extract the expressed sequence
+- add it to a blast db file with an identifier corresponding to the pdb code + chain code
+- run the blast locally
+
+The RCSB PDB seems to offer a protein sequence search as API now. Let's try that option instead: 
+
+```{python}
+import json
+import requests
+query="""{
+  "query": {
+    "type": "terminal",
+    "service": "sequence",
+    "parameters": {
+      "evalue_cutoff": 1e-30,
+      "identity_cutoff": 0.1,
+      "sequence_type": "protein",
+      "value": "QPMEEEEVETFAFQAEIAQLMSLIINTFYSNKEIFLRELISNSSDALDKIRYESLTDPSKLDSGKELHINLIPNKQDRTLTIVDTGIGMTKADLINNLGTIAKSGTKAFMEALQAGADISMIGQFGVGFYSAYLVAEKVTVITKHNDDEQYAWESSAGGSFTVRTDTGEPMGRGTKVILHLKEDQTEYLEERRIKEIVKKHSQFIGYPITLFVEKERDKEVSDDEAE"
+    }
+  },
+  "request_options": {
+    "results_verbosity": "verbose",
+    "scoring_strategy": "sequence",
+    "return_all_hits": true
+  },
+  "return_type": "polymer_entity"
+}"""
+
+
+url="https://search.rcsb.org/rcsbsearch/v2/query?json="+query
+response=requests.get(url)
+hits=json.loads(response.text)["result_set"]
+print(hits[0])
+```
+
+Here we get all structures (510 hits by the time I'm writing this) & even a bit more information which portion of the input sequence hit where on the structure. Now let's start meddling with the sequence mess:
+
+```{python}
+#| fig-cap: Result of hierarchical clustering of HSP90 ATP binding sites based on CA positions
+#| label: fig-clustering-final
+#| code-fold: true
+#| eval: true
+
+import gemmi
+from gemmi import cif
+import urllib
+import numpy as np
+from scipy.spatial.distance import cdist
+import scipy.spatial.distance as ssd
+import scipy
+import matplotlib.pyplot as plt
+
+
+
+#get all polymer identifiers from previous results
+polymer_identifiers=[hit["identifier"] for hit in hits]
+
+#now let's build another graphql query against the rcsb to get the author defined chain names of the structures that correspond to the polymer identified. 
+query="""
+{
+  polymer_entities(entity_ids: """+str(polymer_identifiers).replace("'","\"")+""")
+  {
+    rcsb_id
+    rcsb_polymer_entity_container_identifiers {
+      auth_asym_ids
+    }
+    rcsb_polymer_entity_align{
+      reference_database_name
+            aligned_regions{
+              entity_beg_seq_id
+              length
+              ref_beg_seq_id
+            }
+    }
+  }
+}
+"""
+url=f"https://data.rcsb.org/graphql?query={query}"
+response=requests.get(url)
+chains_tmp=response.json()["data"]["polymer_entities"]
+
+#here we know what polymer id corresponds to what chain name
+chain_polymer_mapping={chain["rcsb_id"]:chain["rcsb_polymer_entity_container_identifiers"]["auth_asym_ids"] for chain in chains_tmp}
+
+#From our blast hits, let's keep only the sequence matching bits to simplify the object a bit:
+clean_hits={hit["identifier"]:hit["services"][0]["nodes"][0]["match_context"][0] for hit in hits}
+
+#Let's get our ATP binding site residue list mapping from our initial sequence: 
+residue_list=[47,48,51,52,54,55,58,93,95,96,97,98,106,107,112,131,132,133,134,135,136,137,138,139,152,183,184,186]
+
+#As we searched only for a chunk of the original sequences, the indices are now off by 10 amino acids. Let's adapt that: 
+residue_list=np.array(residue_list)-9
+
+def transformResidueNumbers(residue_numbers, rcsbpolymerhit):
+  sequence_offset_query=rcsbpolymerhit["query_beg"]  #number of residues to remove from pocket residue selection (the aligned query might be truncated)
+  
+  sequence_offset_subject=rcsbpolymerhit["subject_beg"] #same for the subject
+  
+  shifted_residue_list_query=np.array(residue_numbers)-sequence_offset_query  #shift the residue list to match the aligned sequence
+  gap_offset=(np.array(list(rcsbpolymerhit["query_aligned_seq"]))=='-').cumsum()  #adjust all positions to increment themselves if a gap was found before
+
+  shifted_residue_list_subject=np.array(residue_numbers)-sequence_offset_subject
+  print([rcsbpolymerhit["query_aligned_seq"][res+gap_offset[res]] for res in shifted_residue_list_query])
+  print([rcsbpolymerhit["subject_aligned_seq"][res+gap_offset[res]] for res in shifted_residue_list_query])
+  return [res+gap_offset[res]+sequence_offset_subject for res in shifted_residue_list_query]
+
+
+def getContactMatrix(pdbCode, chainCode, residueSelection, debug=False):
+  content= urllib.request.urlopen("https://files.rcsb.org/view/"+pdbCode+".cif").read()
+
+  block=cif.read_string(content)[0]
+  structure=gemmi.make_structure_from_block(block)
+  debug=False
+  positions=[]
+  print(residueSelection)
+  for model in structure:
+    if model.name=="1":
+      for chain in model:
+        if chain.name == chainCode:
+          for residue in chain:
+            if residue.label_seq in residueSelection:
+              if debug:
+                print(residue.seqid)
+                print(residue)
+              for atom in residue:
+                if atom.name=="CA":
+                  if debug: print("ok")
+                  positions.append(atom.pos.tolist())
+                  break #we need that for multiple occurences
+
+  if(len(positions)!=len(residueSelection)):
+    print("Not all positions found for "+pdbCode+" discarding structure")
+    return None
+
+  positions_np=np.array(positions)
+  return cdist(positions_np, positions_np, 'euclidean')
+
+def clusterMatrices(matrixList):  
+  nMatrices=len(matrixList)
+  result=np.zeros((nMatrices,nMatrices))
+  for i in range(nMatrices):
+    for j in range(nMatrices):
+      if i==j:
+        result[i][j]=0.0
+      elif i<j:
+        result[i][j]=np.mean(np.abs(matrixList[i]-matrixList[j]))
+        result[j][i]=result[i][j]
+
+  
+  distArray = ssd.squareform(result)
+  clusters=scipy.cluster.hierarchy.linkage(result, method='single', metric='euclidean')
+  return(clusters)
+
+
+# mapped_residues=transformResidueNumbers(residue_list,clean_hits["4IPE_1"])
+
+contactMatrices=[]
+#for pdbid in list(chain_polymer_mapping.keys()):
+for pdbid in ['2XDU_1']:
+  print(pdbid)
+  chain=chain_polymer_mapping[pdbid][0] #take only the first chain
+  pdbcode=pdbid.split("_")[0]
+  mapped_residues=transformResidueNumbers(residue_list,clean_hits[pdbid])
+  contactMatrices.append(getContactMatrix(pdbcode,chain,mapped_residues))
+
+
+
+# contactMatrices=[getContactMatrix(structure["pdbCode"],structure["chain"],residuelist) for structure in selectedPdbCodesAndChains]
+
+none_indices = [ic for ic, matrix in enumerate(contactMatrices) if matrix is None]
+
+labels=[structure.split("_")[0] for structure in list(chain_polymer_mapping.keys())]
+chainCodes=[chain_polymer_mapping[structure][0] for structure in list(chain_polymer_mapping.keys())]
+filteredContactMatrices = [matrix for i, matrix in enumerate(contactMatrices) if i not in none_indices]
+
+filteredLabels = [label for idx, label in enumerate(labels) if idx not in none_indices]
+filteredChainCodes= [code for idx, code in enumerate(chainCodes) if idx not in none_indices]
+
+clusters=clusterMatrices(filteredContactMatrices)
+
+plt.figure(figsize=(10, 60))
+
+scipy.cluster.hierarchy.dendrogram(clusters,labels=filteredLabels,orientation='right',leaf_font_size=7,color_threshold=1.0)
+plt.show()
+
+
+```
+
