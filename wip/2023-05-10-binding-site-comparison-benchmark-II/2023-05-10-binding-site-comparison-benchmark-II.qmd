@@ -193,8 +193,9 @@ from scipy.spatial.distance import cdist
 import scipy.spatial.distance as ssd
 import scipy
 import matplotlib.pyplot as plt
-
-
+import pandas as pd
+import blosum
+subst_matrix = blosum.BLOSUM(62)
 
 #get all polymer identifiers from previous results
 polymer_identifiers=[hit["identifier"] for hit in hits]
@@ -230,23 +231,34 @@ chain_polymer_mapping={chain["rcsb_id"]:chain["rcsb_polymer_entity_container_ide
 clean_hits={hit["identifier"]:hit["services"][0]["nodes"][0]["match_context"][0] for hit in hits}
 
 #Let's get our ATP binding site residue list mapping from our initial sequence: 
-residue_list=[47,48,51,52,54,55,58,93,95,96,97,98,106,107,112,131,132,133,134,135,136,137,138,139,152,183,184,186]
+residue_list=np.array([47,48,51,52,54,55,58,93,95,96,97,98,106,107,112,131,132,133,134,135,136,137,138,139,152,183,184,186])-9
 
-#As we searched only for a chunk of the original sequences, the indices are now off by 10 amino acids. Let's adapt that: 
-residue_list=np.array(residue_list)-9
+#As we searched only for a chunk of the original sequences, the indices are now off by 9 amino acids. Let's adapt that: 
+# residue_list=np.array(residue_list)-9
 
 def transformResidueNumbers(residue_numbers, rcsbpolymerhit):
-  sequence_offset_query=rcsbpolymerhit["query_beg"]  #number of residues to remove from pocket residue selection (the aligned query might be truncated)
-  
-  sequence_offset_subject=rcsbpolymerhit["subject_beg"] #same for the subject
-  
-  shifted_residue_list_query=np.array(residue_numbers)-sequence_offset_query  #shift the residue list to match the aligned sequence
-  gap_offset=(np.array(list(rcsbpolymerhit["query_aligned_seq"]))=='-').cumsum()  #adjust all positions to increment themselves if a gap was found before
+  df = pd.DataFrame(columns = ["aa_query", "aa_subject", "query_residue_number","subject_residue_number"])
 
-  shifted_residue_list_subject=np.array(residue_numbers)-sequence_offset_subject
-  print([rcsbpolymerhit["query_aligned_seq"][res+gap_offset[res]] for res in shifted_residue_list_query])
-  print([rcsbpolymerhit["subject_aligned_seq"][res+gap_offset[res]] for res in shifted_residue_list_query])
-  return [res+gap_offset[res]+sequence_offset_subject for res in shifted_residue_list_query]
+  currentindex=0
+  subject_aligned_seq_list=list(rcsbpolymerhit["subject_aligned_seq"])
+  query_current_residue_number=rcsbpolymerhit["query_beg"]
+  subject_current_residue_number=rcsbpolymerhit["subject_beg"]
+  for idx,queryaa in enumerate(list(rcsbpolymerhit["query_aligned_seq"])):
+    if(queryaa!='-'):
+      query_residue_number=query_current_residue_number
+      query_current_residue_number+=1
+    else: 
+      query_residue_number=-1
+    if(subject_aligned_seq_list[idx]!='-'):
+      subject_residue_number=subject_current_residue_number
+      subject_current_residue_number+=1
+    else:
+      subject_residue_number=-1
+    new_row=pd.DataFrame({"aa_query":queryaa,"aa_subject":subject_aligned_seq_list[idx],"query_residue_number":query_residue_number,"subject_residue_number":subject_residue_number}, index=[0])
+    df=pd.concat([df.loc[:],new_row]).reset_index(drop=True)
+  
+  subject_residue_list=[df.loc[df['query_residue_number'] == residue_number, 'aa_subject'].values[0] for residue_number in residue_numbers]
+  return((df.loc[df['query_residue_number'].isin(residue_numbers),"subject_residue_number"].tolist(),subject_residue_list))
 
 
 def getContactMatrix(pdbCode, chainCode, residueSelection, debug=False):
@@ -279,7 +291,7 @@ def getContactMatrix(pdbCode, chainCode, residueSelection, debug=False):
   positions_np=np.array(positions)
   return cdist(positions_np, positions_np, 'euclidean')
 
-def clusterMatrices(matrixList):  
+def clusterMatrices(matrixList,selectedResidueList,blosumWeight=1.0):  
   nMatrices=len(matrixList)
   result=np.zeros((nMatrices,nMatrices))
   for i in range(nMatrices):
@@ -287,46 +299,60 @@ def clusterMatrices(matrixList):
       if i==j:
         result[i][j]=0.0
       elif i<j:
-        result[i][j]=np.mean(np.abs(matrixList[i]-matrixList[j]))
+        r1=selectedResidueList[i]
+        r2=selectedResidueList[j]
+        blosum_score=(np.array([subst_matrix[r1[idx]][r2[idx]] for idx in range(len(r1))])<0.0).sum()
+        result[i][j]=np.mean(np.abs(matrixList[i]-matrixList[j]))+blosumWeight*blosum_score
         result[j][i]=result[i][j]
 
-  
   distArray = ssd.squareform(result)
   clusters=scipy.cluster.hierarchy.linkage(result, method='single', metric='euclidean')
   return(clusters)
 
 
-# mapped_residues=transformResidueNumbers(residue_list,clean_hits["4IPE_1"])
-
+# create the contact matrices (CA based for now)
 contactMatrices=[]
-#for pdbid in list(chain_polymer_mapping.keys()):
-for pdbid in ['2XDU_1']:
+resultResidueNames=[]
+selectedResidues=[]
+
+# for pdbid in ['1UYF_1']:
+for pdbid in list(chain_polymer_mapping.keys()):
   print(pdbid)
   chain=chain_polymer_mapping[pdbid][0] #take only the first chain
   pdbcode=pdbid.split("_")[0]
-  mapped_residues=transformResidueNumbers(residue_list,clean_hits[pdbid])
+  tmp_result=transformResidueNumbers(residue_list,clean_hits[pdbid])
+  mapped_residues=tmp_result[0]
   contactMatrices.append(getContactMatrix(pdbcode,chain,mapped_residues))
+  resultResidueNames.append(tmp_result[1])
+  selectedResidues.append([chain+":"+str(res) for res in mapped_residues])
 
 
-
-# contactMatrices=[getContactMatrix(structure["pdbCode"],structure["chain"],residuelist) for structure in selectedPdbCodesAndChains]
 
 none_indices = [ic for ic, matrix in enumerate(contactMatrices) if matrix is None]
 
 labels=[structure.split("_")[0] for structure in list(chain_polymer_mapping.keys())]
 chainCodes=[chain_polymer_mapping[structure][0] for structure in list(chain_polymer_mapping.keys())]
 filteredContactMatrices = [matrix for i, matrix in enumerate(contactMatrices) if i not in none_indices]
+filteredresultResidueNames = [bl for i, bl in enumerate(resultResidueNames) if i not in none_indices]
+
 
 filteredLabels = [label for idx, label in enumerate(labels) if idx not in none_indices]
 filteredChainCodes= [code for idx, code in enumerate(chainCodes) if idx not in none_indices]
 
-clusters=clusterMatrices(filteredContactMatrices)
+#final clustering of contact matrices
+clusters=clusterMatrices(filteredContactMatrices,filteredresultResidueNames)
 
-plt.figure(figsize=(10, 60))
+plt.figure(figsize=(10, 100))
 
-scipy.cluster.hierarchy.dendrogram(clusters,labels=filteredLabels,orientation='right',leaf_font_size=7,color_threshold=1.0)
+scipy.cluster.hierarchy.dendrogram(clusters,labels=filteredLabels,orientation='right',leaf_font_size=9,color_threshold=2.0)
 plt.show()
-
 
 ```
 
+Well that was a bit painful to set up. As usual it's a bit tricky to get the sequence numberings right, especially when aligning structures with gaps in the underlying aligned sequences. However in the figure above now we should have a good hierarchical tree for a pure backbone geometry based comparison. 
+The pocket comparison method we'd might want to evaluate later might make use of particular amino acids or side chain positions. Thus, I already integrated a bit of code to account for a penalty in the distance between two binding sites if unfavourable permutations were found (blosum62 score<0). Feel free to adapt to whatever you need. In the current code, an unfavourable substitution of an amino acid, even if the positionn of the alpha carbon is the same is equivalent to a 1A distance. 
+
+In the end we get a full set of structures, HSP90 alpha human ones, and similars. Let's check how much of our dataset established in the previous post. In theory we should be able to gather 100% of it through the approach outlined here as well. 
+
+The tree, if cut at 2A distance for instance contains one major cluster and a smaller cluster. The major cluster can be decomposed into 3 subclusters. 
+All other binding sites either form tiny clusters or are outliers here. 
