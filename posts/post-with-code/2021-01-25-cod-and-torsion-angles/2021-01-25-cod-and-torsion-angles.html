@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.313">
+<meta name="generator" content="quarto-1.3.353">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -97,6 +97,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-submit-button-title": "Submit"
   }
 }</script>
+<script async="" src="https://hypothes.is/embed.js"></script>
 <script type="module" src="../../../site_libs/quarto-ojs/quarto-ojs-runtime.js"></script>
 <link href="../../../site_libs/quarto-ojs/quarto-ojs.css" rel="stylesheet">
 <script async="" data-id="101409313" src="//static.getclicky.com/js"></script>
@@ -322,7 +323,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="datawarrior_example.png" title="Example screenshot from datawarrior" class="img-fluid figure-img"></p>
-<p></p><figcaption class="figure-caption">datawarrior screenshot</figcaption><p></p>
+<figcaption class="figure-caption">datawarrior screenshot</figcaption>
 </figure>
 </div>
 <p>As you might already observe on the screenshot above, there’s a lot of noise (for drug discovery) in there.</p>
@@ -429,7 +430,7 @@ The other nice thing (I didn’t know about) is that dask (if installed through 
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="dask_cod.png" title="Monitoring dask distributed computation using Bokeh" class="img-fluid figure-img"></p>
-<p></p><figcaption class="figure-caption">dask screenshot</figcaption><p></p>
+<figcaption class="figure-caption">dask screenshot</figcaption>
 </figure>
 </div>
 <p>I tested quite a range of combinations and ways to run this in dask (bag, compute, map …. ) and combinations of number of worker nodes vs threads. In the end, parallelization still isn’t optimally spread over all cpu’s, but I guess that’s likely due to the fact that every calculation can range from immediate failure to runnning for a very long time. I guess, that on longer living and more stable jobs this is far more efficient.</p>
@@ -437,7 +438,7 @@ The other nice thing (I didn’t know about) is that dask (if installed through 
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="weird_cods.png" title="unprocessable with openbabel" class="img-fluid figure-img"></p>
-<p></p><figcaption class="figure-caption">issues with these cod’s</figcaption><p></p>
+<figcaption class="figure-caption">issues with these cod’s</figcaption>
 </figure>
 </div>
 <p>The nasty thing here is that I even tried to kill these freezing jobs with timeout decorators and such. Without success. Even a ctrl+c in a shell didn’t kill the job … only a kill -9 did. So in the end I kept the multiprocessing version here in the code and filtered out the three incriminating molecules ( by hand, but would be really interested to know how this can be handled in a more geeky way).</p>
@@ -470,7 +471,7 @@ The other nice thing (I didn’t know about) is that dask (if installed through 
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="myselection.png" title="My selection of compounds - excerpt" class="img-fluid figure-img"></p>
-<p></p><figcaption class="figure-caption">quick overview</figcaption><p></p>
+<figcaption class="figure-caption">quick overview</figcaption>
 </figure>
 </div>
 <p>NB: the results above are from the initial post. I had to repeat the whole thing when I moved the blog to quarto. During this redo I published the output sd file on <a href="https://zenodo.org/record/7860342#.ZEbnw-xBxTY">zenodo</a> so you can use it. It’s the state of the COD of April 2023.</p>
@@ -533,7 +534,7 @@ The other nice thing (I didn’t know about) is that dask (if installed through 
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="torsion_angles_riniker.png" class="img-fluid figure-img"></p>
-<p></p><figcaption class="figure-caption">torsions</figcaption><p></p>
+<figcaption class="figure-caption">torsions</figcaption>
 </figure>
 </div>
 <p>The first thing to notice is that they calculated a dihedral between 0 and 360, I just took the angles popping out of rdkit (between -180 and 180). So a bit of a mindgame to compare both. On smarts patterns 1 and 3 we have peaks around 0, which coincides with the CSD results. It is interesting to see that there’s a bit of data for smarts pattern 1 suggesting angles around 180° might be possible, though not favourable (again, more filtering and quality checks needed to confirm/discard that).</p>
@@ -968,6 +969,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
   }
 });
+</script>
+<script src="https://utteranc.es/client.js" repo="pschmidtke/blog" issue-term="pathname" theme="github-light" crossorigin="anonymous" async="">
 </script>
 </div> <!-- /content -->
 
