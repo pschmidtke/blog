@@ -31,6 +31,7 @@ In this second post we'll gradually extend the dataset with ATP binding sites of
 
 #### What is similar?
 One can adopt several ways to assess similarity between proteins. Here I'll use a commonly understood and accepted sequence local similarity on the N-terminal domain. I'll further assess the binding site residue conservation in detail. So at this stage of the dataset creation I'll focus on things I'd expect to be found as very very similar to the human HSP90 alpha N-terminal domain when doing a pocket comparison. 
+The Rognan lab discussed this topic in more than one paper. Feel free to check out @Kellenberger2008 and @Eguida2022 for more details.
 
 #### Things to keep in mind
 Again I'll track all things that I left aside or important approximations I made. They'll be tracked as side-note and depending on the outcome of the whole exercise I'll come back to them at a later stage.
@@ -108,6 +109,7 @@ Here we get all blast hits with an e-value above 1e-30 (arbitrary choice) and st
 We can now load the pickled results & parse them to make them a bit more workable
 
 ```{python}
+#! eval: false
 import pickle
 import xml.etree.ElementTree as ET
 
@@ -146,9 +148,12 @@ For each PDB structure & chain:
 - add it to a blast db file with an identifier corresponding to the pdb code + chain code
 - run the blast locally
 
+#### Fall back to the RCSB PDB search
+
 The RCSB PDB seems to offer a protein sequence search as API now. Let's try that option instead: 
 
 ```{python}
+#| eval: false
 import json
 import requests
 query="""{
@@ -177,13 +182,14 @@ hits=json.loads(response.text)["result_set"]
 print(hits[0])
 ```
 
-Here we get all structures (510 hits by the time I'm writing this) & even a bit more information which portion of the input sequence hit where on the structure. Now let's start meddling with the sequence mess:
+Here we get all structures (510 hits by the time I'm writing this) & even a bit more information which portion of the input sequence hit where on the structure. Now let's start meddling with the sequence mess and integrate already all the clustering bits we did in the previous post. 
+
+### Clustering the similar binding sites
 
 ```{python}
-#| fig-cap: Result of hierarchical clustering of HSP90 ATP binding sites based on CA positions
-#| label: fig-clustering-final
 #| code-fold: true
-#| eval: true
+#| output: false
+#| eval: false
 
 import gemmi
 from gemmi import cif
@@ -196,6 +202,11 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import blosum
 subst_matrix = blosum.BLOSUM(62)
+
+```
+```{python}
+#| code-fold: true
+#| eval: false
 
 #get all polymer identifiers from previous results
 polymer_identifiers=[hit["identifier"] for hit in hits]
@@ -266,9 +277,7 @@ def getContactMatrix(pdbCode, chainCode, residueSelection, debug=False):
 
   block=cif.read_string(content)[0]
   structure=gemmi.make_structure_from_block(block)
-  debug=False
   positions=[]
-  print(residueSelection)
   for model in structure:
     if model.name=="1":
       for chain in model:
@@ -290,24 +299,6 @@ def getContactMatrix(pdbCode, chainCode, residueSelection, debug=False):
 
   positions_np=np.array(positions)
   return cdist(positions_np, positions_np, 'euclidean')
-
-def clusterMatrices(matrixList,selectedResidueList,blosumWeight=1.0):  
-  nMatrices=len(matrixList)
-  result=np.zeros((nMatrices,nMatrices))
-  for i in range(nMatrices):
-    for j in range(nMatrices):
-      if i==j:
-        result[i][j]=0.0
-      elif i<j:
-        r1=selectedResidueList[i]
-        r2=selectedResidueList[j]
-        blosum_score=(np.array([subst_matrix[r1[idx]][r2[idx]] for idx in range(len(r1))])<0.0).sum()
-        result[i][j]=np.mean(np.abs(matrixList[i]-matrixList[j]))+blosumWeight*blosum_score
-        result[j][i]=result[i][j]
-
-  distArray = ssd.squareform(result)
-  clusters=scipy.cluster.hierarchy.linkage(result, method='single', metric='euclidean')
-  return(clusters)
 
 
 # create the contact matrices (CA based for now)
@@ -334,19 +325,75 @@ labels=[structure.split("_")[0] for structure in list(chain_polymer_mapping.keys
 chainCodes=[chain_polymer_mapping[structure][0] for structure in list(chain_polymer_mapping.keys())]
 filteredContactMatrices = [matrix for i, matrix in enumerate(contactMatrices) if i not in none_indices]
 filteredresultResidueNames = [bl for i, bl in enumerate(resultResidueNames) if i not in none_indices]
+filteredSelectedResidues = [bl for i, bl in enumerate(selectedResidues) if i not in none_indices]
+
 
 
 filteredLabels = [label for idx, label in enumerate(labels) if idx not in none_indices]
 filteredChainCodes= [code for idx, code in enumerate(chainCodes) if idx not in none_indices]
-
+finalList=pd.DataFrame(({"pdbid":filteredLabels,"chain":filteredChainCodes,"residues":filteredSelectedResidues}))
+finalList.to_csv("data/finalList.tsv",sep="\t",index=False)
 #final clustering of contact matrices
-clusters=clusterMatrices(filteredContactMatrices,filteredresultResidueNames)
 
-plt.figure(figsize=(10, 100))
 
-scipy.cluster.hierarchy.dendrogram(clusters,labels=filteredLabels,orientation='right',leaf_font_size=9,color_threshold=2.0)
+file = open('data/contactMatrices.pkl', 'wb')
+
+# dump information to that file
+pickle.dump({"contactMatrices":filteredContactMatrices,"fileredResidueNames":filteredresultResidueNames,"filteredLabels":filteredLabels,"filteredChainCodes":filteredChainCodes,"finalList":finalList}, file)
+
+# close the file
+file.close()
+
+
+```
+
+
+
+
+
+```{python}
+#| output: false
+#| eval: false
+import numpy as np 
+
+def clusterMatrices(matrixList,selectedResidueList,blosumWeight=1.0):  
+  nMatrices=len(matrixList)
+  result=np.zeros((nMatrices,nMatrices))
+  for i in range(nMatrices):
+    for j in range(nMatrices):
+      if i==j:
+        result[i][j]=0.0
+      elif i<j:
+        r1=selectedResidueList[i]
+        r2=selectedResidueList[j]
+        blosum_score=(np.array([subst_matrix[r1[idx]][r2[idx]] for idx in range(len(r1))])<0.0).sum()
+        result[i][j]=np.mean(np.abs(matrixList[i]-matrixList[j]))+blosumWeight*blosum_score
+        result[j][i]=result[i][j]
+
+  distArray = ssd.squareform(result)
+  clusters=scipy.cluster.hierarchy.linkage(result, method='single', metric='euclidean')
+  return(clusters)
+
+
+
+file = open('data/contactMatrices.pkl', 'rb')
+contactMatrices = pickle.load(file)
+file.close()
+
+clusters=clusterMatrices(contactMatrices["contactMatrices"],contactMatrices["fileredResidueNames"])
+
+```
+
+```{python}
+#| fig-cap: Result of hierarchical clustering of HSP90 ATP binding sites based on CA positions
+#| label: fig-clustering-final
+#| eval: false
+#| 
+
+plt.figure(figsize=(9, 100))
+
+scipy.cluster.hierarchy.dendrogram(clusters,labels=contactMatrices["filteredLabels"],orientation='right',leaf_font_size=9,color_threshold=2.0)
 plt.show()
-
 ```
 
 Well that was a bit painful to set up. As usual it's a bit tricky to get the sequence numberings right, especially when aligning structures with gaps in the underlying aligned sequences. However in the figure above now we should have a good hierarchical tree for a pure backbone geometry based comparison. 
@@ -354,5 +401,325 @@ The pocket comparison method we'd might want to evaluate later might make use of
 
 In the end we get a full set of structures, HSP90 alpha human ones, and similars. Let's check how much of our dataset established in the previous post. In theory we should be able to gather 100% of it through the approach outlined here as well. 
 
-The tree, if cut at 2A distance for instance contains one major cluster and a smaller cluster. The major cluster can be decomposed into 3 subclusters. 
-All other binding sites either form tiny clusters or are outliers here. 
+```{python}
+#| code-fold: true
+#| eval: false
+import pickle
+
+file = open('data/identicallist.pkl', 'rb')
+identical_list = pickle.load(file)
+file.close()
+
+similar_list = [contactMatrices["filteredLabels"][idx]+":"+code for idx, code in enumerate(contactMatrices["filteredChainCodes"])]
+
+intersection = np.intersect1d(identical_list, similar_list)
+
+print(f"{len(intersection)} common structures vs {len(similar_list)} in the similar list and {len(identical_list)} in the identical list")
+
+
+```
+
+That's a nice and expected outcome here. All structures identified from our previous post are found through the approach used here as well. But instead of only 295 structures, we now have a total of 477 structures with different levels of similarity between all structures. 
+
+## Results
+
+I won't put all the raw results in a table format in HTML here, but [you can get the final list of structures, chain codes & residue selections as download from here](data/finalList.tsv). The tsv file is structured like this: 
+
+```{python}
+#| label: tbl-final
+#| tbl-cap: First ten rows of the final list of structures, chain codes & residue selections
+#| echo: false
+#| eval: false
+
+from IPython.display import Markdown
+from tabulate import tabulate
+
+Markdown(tabulate(
+  contactMatrices["finalList"].head(10),
+  headers=["pdbid","chain", "residues"]
+))
+
+```
+
+### How can this be used as benchmark dataset?
+
+Let's come back to our initial problem. How can this dataset now be used to evaluate the performance of a pocket comparison method? 
+The dataset contains information about:
+
+- what binding site is similar to another
+- to what extent the binding sites are similar (more or less similar)
+
+So we already have a set of structures that we can in theory compare to one another an see if the binding site comparison similarity metric correlates with the similarity we considered here. 
+We can also use the dataset to compare to structures outside of the set, a decoy set. This is in theory easy to set up but has important implications on how to evaluate a performance of a method. 
+
+First let's clean up a bit and define a function that allows us to get the most similar binding sites from our set versus a chosen query structure:
+  
+```{python}
+#| code-fold: true
+#| #| label: tbl-similarity-sample
+#| tbl-cap: Excerpt of the similarity matrix of binding sites
+#| eval: false
+import itertools
+
+def getDistanceMatrix(matrixList,selectedResidueList,blosumWeight=1.0):  
+  nMatrices=len(matrixList)
+  result=np.zeros((nMatrices,nMatrices))
+  for i in range(nMatrices):
+    for j in range(nMatrices):
+      if i==j:
+        result[i][j]=0.0
+      elif i<j:
+        r1=selectedResidueList[i]
+        r2=selectedResidueList[j]
+        blosum_score=(np.array([subst_matrix[r1[idx]][r2[idx]] for idx in range(len(r1))])<0.0).sum()
+        result[i][j]=np.mean(np.abs(matrixList[i]-matrixList[j]))+blosumWeight*blosum_score
+        result[j][i]=result[i][j]
+
+  return(result)
+
+distanceMatrix=getDistanceMatrix(contactMatrices["contactMatrices"],contactMatrices["fileredResidueNames"])
+
+np_similar_list=np.array(similar_list)
+sortedMatrix=[]
+for rowid in range(0,distanceMatrix.shape[0]):
+  o=np.argsort(distanceMatrix[rowid,:])
+  np_similar_list[o]
+  sortedMatrix.append([np_similar_list[rowid],list(np.char.add(np.char.add(np_similar_list[o],": "),distanceMatrix[rowid,o].astype('<U7')))])
+
+
+sortedMatrixDF=pd.DataFrame(sortedMatrix,columns=["pdbid","similar structures"])
+sortedMatrixDF.to_csv("data/similarityList.tsv",sep="\t",index=False)
+
+truncatedMatrix=[[element[0],element[1][:10]] for element in sortedMatrix[:10]]
+Markdown(tabulate(
+  truncatedMatrix[:10],
+  headers=["pdbid","similar structures"]
+))
+```
+
+Table @tbl-similarity-sample shows only the first 10 most similar structures and underlying binding sites to the binding site corresponding to the **pdbid** on the leftmost column. 
+
+You can retrieve the full list through the downloadable tsv file here: [similarityList.tsv](data/similarityList.tsv)
+
+This file can be used for various purposes. You can decide to reduce the dataset to reduce structural reduncany. You can also use it to train a method, parameters, scores on how similarity is defined etc.
+
+#### Decoys?
+
+In all benchmark datasets I've seen so far in the litterature there's a distinction between binding sites one should find (actives) and binding sites one shouldn't find (decoys). 
+I fully understand that this is rather standard procedure for similarity metric performance measurements & evaluation studies. However, in the context of binding site comparison there are  on a large variety of structures (like against the PDB) things get a little bit trickier. 
+
+
+## Assessing ligand similarity in similar binding sites 
+
+One interesting aspect about HSP90 is that there are a lot of structures in the RCSB. A lot of these structures have soaked or cocrystallized ligands from similar or congeneric chemical series. One other analysis (just out of curiosity) one can add here is to assess how similar the ligands binding to the very similar binding site conformations really are.
+
+In order to try integrate that we first need to gather the ligands contained in the binding site encompassed by the residues selected, which aren't ions or surfactants or water. I didn't find a clear & easy way to get ligands contained within a given set of residues using RCSB resources, so I'll calculate the center of mass of the binding site residues here and check against the center of mass of all ligands in the structure. Very cumbersome but should do the trick here.
+
+```{python}
+#| eval: false
+#| code-fold: true
+
+from rdkit import Chem
+from rdkit.Chem import AllChem
+from rdkit.Chem import rdFMCS
+from rdkit import DataStructs
+from rdkit.Chem import rdMolDescriptors
+import seaborn as sns
+import io
+
+
+def getLigandHetCodeInBindingSite(pdbCode, chainCode, residueSelection, debug=False):
+  content= urllib.request.urlopen("https://files.rcsb.org/view/"+pdbCode+".cif").read()
+  block=cif.read_string(content)[0]
+  structure=gemmi.make_structure_from_block(block)
+  positions=[]
+  hetDict={}
+  for model in structure:
+    if model.name=="1":
+      for chain in model:
+        if chain.name == chainCode:
+          for residue in chain:
+            if residue.label_seq in residueSelection:
+              if debug:
+                print(residue.seqid)
+                print(residue)
+              for atom in residue:
+                if atom.name=="CA":
+                  if debug: print("ok")
+                  positions.append(atom.pos.tolist())
+                  break #we need that for multiple occurences
+            elif(str(residue.entity_type)=="EntityType.NonPolymer" and (str(residue.name) !="HOH" or str(residue.name)!="WAT")):
+              dname=residue.name+":"+chain.name+":"+str(residue.seqid.num)
+              hetDict[dname]=[]
+              for atom in residue:
+                  hetDict[dname].append(atom.pos.tolist())
+
+  if(len(positions)!=len(residueSelection)):
+    print("Not all positions found for "+pdbCode+" discarding structure")
+    return None
+  binding_site_com=np.mean(np.array(positions))
+  results=[]
+  if(len(hetDict.keys())>0):
+    for ligand in hetDict.keys():
+      ligand_com=np.mean(np.array(hetDict[ligand]))
+      ligand_distance=np.linalg.norm(binding_site_com-ligand_com)
+      results.append([ligand,ligand_distance])
+  return results
+  
+
+
+hetatms=[]
+for index,row in contactMatrices["finalList"].iterrows():
+  hetatms.append(getLigandHetCodeInBindingSite(row["pdbid"],row["chain"],[int(el.split(":")[1]) for el in row["residues"]]))
+
+retainedhetatmcodes=[]
+threshold=3.0
+for index,row in contactMatrices["finalList"].iterrows():
+  tmp=[hetatm[0].split(":")[0] for hetatm in hetatms[index]if hetatm[1]<threshold]
+  if(len(tmp)>0):
+    
+    retainedhetatmcodes+=[tmp]
+  else:
+    retainedhetatmcodes+=[['']]
+
+contactMatrices["finalList"]["ligands"]=retainedhetatmcodes
+flatretainedhetatmcodes = list(itertools.chain(*retainedhetatmcodes))
+
+
+query="""
+{
+  chem_comps(comp_ids: """+str(flatretainedhetatmcodes).replace("'","\"")+""") {
+    rcsb_id
+    chem_comp {
+      
+      formula_weight
+    }
+    rcsb_chem_comp_descriptor{
+      SMILES
+    }
+  }
+}
+"""
+
+moleculedict={}
+url=f"https://data.rcsb.org/graphql?query={query}"
+response=requests.get(url)
+dataRCSB=response.json()["data"]["chem_comps"]
+
+for compound in dataRCSB:
+  if compound["chem_comp"]["formula_weight"]>180.0:
+    moleculedict[compound["rcsb_id"]]={"molecule":Chem.MolFromSmiles(compound["rcsb_chem_comp_descriptor"]["SMILES"])}
+
+```
+
+```{python}
+#| eval: false
+import base64
+plots=[]
+refmolecules=[]
+hetcodes=[]
+pdbcodes=[]
+for index,row in contactMatrices["finalList"].iterrows():
+  if index<10:
+    print(index,retainedhetatmcodes[index])
+    t=sortedMatrixDF.iloc[[index]]["similar structures"].values[0]
+    sortedpdbcodes=[line.split(" ")[0].rstrip(":") for line in t]
+    sortedpocketsimilarityscores=[float(line.split(" ")[1].rstrip(":")) for line in t]
+    rowmolecules=[]
+    fps=[]
+    for pdbcode in sortedpdbcodes:
+      tableindex=sortedMatrixDF.loc[sortedMatrixDF["pdbid"]==pdbcode].index[0]
+      ligands=contactMatrices["finalList"].iloc[[tableindex]]["ligands"].values[0]
+      for ligand in ligands:
+        if ligand in moleculedict:
+          rowmolecules.append(moleculedict[ligand]["molecule"])
+          fps.append(rdMolDescriptors.GetMorganFingerprint(moleculedict[ligand]["molecule"],radius=2))
+    reffp=fps[0]
+    fpscores = DataStructs.BulkTanimotoSimilarity(reffp, fps)
+    plotdata=pd.DataFrame(zip(sortedpocketsimilarityscores,fpscores),columns=["pocket dissimilarity","fp similarity"])
+    g = sns.pairplot(plotdata)
+    buf = io.BytesIO()
+    g.fig.savefig(buf, format='png')
+    buf.seek(0)
+    image = base64.b64encode(buf.read())
+    plots.append(image)
+    refmolecules.append(rowmolecules[0])
+    pdbcodes.append(row["pdbid"])
+    hetcodes.append(retainedhetatmcodes[index])
+
+
+# Draw.MolsToGridImage(rowmolecules[:20],molsPerRow=5,subImgSize=(300,200),legends=["Tanimoto: "+str(round(score,2)) for score in scores[:20]])
+
+    # mcs = rdFMCS.FindMCS(rowmolecules,threshold=0.8,completeRingsOnly=True,ringMatchesRingOnly=True)
+    # patt = Chem.MolFromSmarts(mcs.smartsString)
+    # refMol = rowmolecules[0]
+    # AllChem.Compute2DCoords(refMol)
+    # refMatch = refMol.GetSubstructMatch(patt)
+    # for probeMol in rowmolecules[1:]:
+    #   AllChem.GenerateDepictionMatching2DStructure(query , refMatch)
+```
+
+
+
+```{python}
+#| code-fold: true
+#| eval: false
+
+tableplotdata=pd.DataFrame(zip(pdbcodes,refmolecules,plots,hetcodes),columns=["pdb","molecule","similarity plot","ligand name"])
+
+with open("data/similarityplots.pkl","wb") as f:
+  pickle.dump(tableplotdata,f)
+
+
+# Markdown(tabulate(
+#   tableplotdata[:10],
+#   headers=["pdbid","molecule","similarity"]
+# ))
+
+
+```
+
+
+```{python}
+#| code-fold: true
+#| tbl-cap: Pocket Dissimilarity (0 similar, higher dissimilar) vs ligand Tanimoto similarity (higher similar, lower dissimilar)
+
+from rdkit import Chem
+from rdkit.Chem import PandasTools
+import urllib
+
+with open("data/similarityplots.pkl","rb") as f:
+  tableplotdata=pickle.load(f)
+  tableplotdata["smiles"]=[Chem.MolToSmiles(mol) for mol in tableplotdata["molecule"]]
+  PandasTools.AddMoleculeColumnToFrame(tableplotdata,'smiles','molecule')
+  for index, row in tableplotdata.iterrows():
+    uri = 'data:image/png;base64,' + urllib.parse.quote(row["similarity plot"])
+    html = '<img width="300px" src = "%s"/>' % uri
+    row["similarity plot"]=html
+
+tableplotdata.to_html(escape=False)
+
+```
+
+The table above summarizes for 10 out of over 400 structures the similarity of the binding sites versus the Tanimoto similarity of the ligands located in the binding sites. I used a Morgan fingerprint (radius) 2 and according to a [blogpost by Greg Landrum](https://greglandrum.github.io/rdkit-blog/posts/2021-05-18-fingerprint-thresholds1.html), the random threshold is situated at around 0.2 - 0.3. 
+
+Feel free to adapt the code to display the plots for all structures.
+
+When looking through the first few plots we can see that even though sometimes there might be some correlation between the two similarity metrics, for the large bulk there doesn't seem to be. Both similarity metrics can be discussed, refined, rendered more fuzzy or precise, one can also replace the ligand similarity by an MCS approach. Again, you can adapt the code quite easily to get there, but still the current results give a lot of examples where rather different ligands can bind to very similar binding sites. Also in several cases ligands above the significance threshold can be found in very similar pockets (compound series), but the opposite is also true.
+
+Let's discuss in more detail a typical compound series found in the dataset. In the @tbl-similarity-fp structure 2h55 resulted in the following distribution: 
+
+![Distribution of ligand similarity vs pocket similarity values when using 2h55 ligand DZ8 as reference](images/2h55_plot.png){#fig-2h55}
+
+In the orange box on @fig-2h55 several ligands with some similarity to DZ8 are identified in very similar binding sites (pocket dissimilarity close to 0). More dissimilar binding sites do not seem to bind this class of ligands. This points into the direction that this series of compounds binds clearly to a particular conformation (or induces it, or both). 
+It is also interesting to note that the majority of other compounds in the set are significantly dissimilar to the query ligand.
+
+![Distribution of ligand similarity vs pocket similarity values when using 6b9a ligand PA7 as reference](images/6b9a_plot.png){#fig-6b9a}
+
+On figure @fig-6b9a we can see a very different distribution. Here we have an ATP analog as query ligand & the corresponding binding site. 
+It is very interesting to observe the skewness to more dissimilar binding sites compared to 6b9a. Despite the dissimilarity on binding sites we can see a large cluster of ligands with around 0.5 Tanimoto similarity to PA7. This cluster encompasses ATP & all the closer analogs. 
+This example is a very good one to illustrate the complexity behind the theory of similar ligands bind to similar binding sites. ATP analogs clearly accomodate for a larger variety of binding site conformations & mutations than the compound series around DZ8 does. 
+We could then even imagine that DZ8 is conformation selective & has a few hallmarks of a more specific inhibitor. That's a bit far fetched for a comparison with a plain ATP analog here, but it appears to go into that direction nevertheless. 
+
+
+

@@ -13,7 +13,7 @@ categories:
 date: '2023-04-03'
 bibliography: refs.bib
 description: First post in a row on setting up a proper benchmark dataset for binding site comparison algorithm evaluation.
-image: 3decision_3dviewer_image.png
+image: toc.png
 output-file: 2023-04-03-binding-site-comparison-benchmark-i.html
 title: Binding Site Comparison Benchmarks - I - Binding sites on the same protein
 from: markdown+emoji
@@ -25,7 +25,8 @@ execute:
 
 # Summary
 
-In this article I'll go through the overall thought process of setting up a benchmark set. For the sake of simplicity I'll do it for a single target to evaluate the performance of a binding site comparison algorithm. I'll try to provide code whenever possible against public resources or snippets if a bit of scripting is needed. I am describing my thought process here. I will for sure run into dead ends (I won't describe all of these :grimacing:) and as a result I'll have to make some decisions & put other things aside. In order to keep track of things I put aside I'll use a side-note throughout the post to track all of these & make a summary of how to address or amend them later.
+In this article I'll go through the overall thought process of setting up a benchmark set for the same binding site on the same protein. For the sake of simplicity I'll do it for a single target to evaluate the performance of a binding site comparison algorithm. I'll try to provide code whenever possible against public resources or snippets if a bit of scripting is needed. 
+I will for sure run into dead ends (I won't describe all of these :grimacing:) and as a result I'll have to make some decisions & put other things aside. In order to keep track of things I put aside I'll use a side-note throughout the post to track all of these & make a summary of how to address or amend them later.
 
 ::: column-margin
 Things to keep in mind
@@ -35,18 +36,18 @@ Things to keep in mind
 
 # The target binding site
 
-In order to show the overall process, let's start with a well studied target & relatively easy target, HSP90. A usual guinea pig since my PhD in Xavier Barril's lab, but it's a good example to show without exploring too much in super large protein families in the beginning. I aim to apply the process outlined here later to a thrombin, a trypsin like serine protease, which will likely involve some adjustments.
+In order to show the overall process, let's start with a well studied & relatively easy target, HSP90. A usual guinea pig since my PhD in Xavier Barril's lab, but it's a good example to show without exploring too much in super large protein families in the beginning. The aim of this post is to derive several approaches on how to set up a proper dataset and later apply that to other targets.
 
 # HSP90
 
-The heat shock protein 90 is a rather abundant protein in the cell and helps during protein folding of not yet formed proteins, or protects already folded proteins from external stress (thermal stress for instance) - thus HSP = Heat Shock Protein. Let's start with [HSP90 alpha from the homo sapiens](https://www.uniprot.org/uniprotkb/P07900/entry), even though they are common among eucaryotes. Several kinases are dependent (activated) on HSP90, especially those acting as hub (@Citri2006). This is one of the reasons why HSP90 has been investigated as potential drug target for treatment of several forms of cancer. The action of HSP is dependent on ATP and the dephosphorylation of this molecule & the ATP binding site is located on a particular are in the N-terminal part of HSP90. This will be the binding site to focus on here.
+The heat shock protein 90 is a rather abundant protein in the cell and helps during protein folding of not yet formed proteins, or protects already folded proteins from external stress (thermal stress for instance) - thus HSP = Heat Shock Protein. Let's start with [HSP90 alpha from the homo sapiens](https://www.uniprot.org/uniprotkb/P07900/entry). Several kinases are dependent (activated) on HSP90, especially those acting as hub (@Citri2006). This is one of the reasons why HSP90 has been investigated as potential drug target for treatment of several forms of cancer. The action of HSP is dependent on ATP and the dephosphorylation of this molecule & the ATP binding site is located on a particular part of the N-terminal domain of HSP90. This will be the binding site to focus on here.
 
 ## Why HSP90 as a first example
 
--   HSP90 has a lot of structures available in the public domain.
--   It's not part of any gigantic protein family (kinases, GPCR's etc), which keeps the initial comparison space to cover a bit smaller.
+-   HSP90 has a lot of structures available in the public domain
+-   It's not part of any gigantic protein family (kinases, GPCR's etc), which keeps the initial comparison space to cover a bit smaller and easier to manage
 -   The fold of the protein is still conserved among several other proteins, so there's matter for detecting expected similarities
--   It binds ATP, such as a lot of proteins in nature - which is interesting for the if I bind the same molecule I must be similar conundrum.
+-   It binds ATP, such as a lot of proteins in nature - which is interesting for the if I bind the same molecule I must be similar conundrum
 -   The binding site can undergo important conformational changes, which is good to evaluate sensity on conformation
 -   Water plays a very important role upon binding of small molecules into the ATP binding site
 
@@ -54,7 +55,7 @@ The heat shock protein 90 is a rather abundant protein in the cell and helps dur
 
 HSP90 alpha human is composed of two domains: - the N-terminal Histidine kinase, DNA gyrase B and HSP90-like ATPase domain (ranging from amino acid 40 to 193) - the C-terminal HSP90 protein domain (196-714)
 
-The ATP binding site of interest is on the N-terminal part and this is the part that you have the most crystal strucutres for in the RCSB today. A full length Alphafold model available in the public domain. NB: there appears to be another ATP binding site on the C-terminal part, that is only accessible when activated - so interesting to maybe look out for that one as well (@Soti2003).
+The ATP binding site of interest is on the N-terminal part and this is the part that you have the most crystal structures in the RCSB today. A full length Alphafold model is also available in the public domain, but I won't discuss any of that here for now. NB: there appears to be another ATP binding site on the C-terminal part, that is only accessible when activated - so interesting to maybe look out for that one as well (@Soti2003). But again, not the main purpose of this post.
 
 ## The topology of the ATP binding site (N-ter)
 
@@ -85,15 +86,15 @@ structure.addRepresentation("contact",{ "sele": "47-55 or 91 or 93 or 96-97 or 9
 structure.autoView();
 ```
 
-The binding site is composed of a section containing the adenin moety which is characterized by a beta sheet at the bottom of the site, and two helices lining the site. The sidechains exposed to the binding site lumen are globally hydrophobic, a part from the very important aspartate 93, which is interacting directly with the adenine moeity. The adenin moeity is sourrounded by water molecules and several of these watersare important hallmarks of several HSP90 binders. The ribose moeity is not forming any H-bonds with the protein itself but has hydroxyls oriented towards the solvent. The ether of the ribose is orented towards the valine 107, adjacent to a rather hydrophobic part of the pocket coated by Y139, F138 and W162. The triphospate is solvent exposed and interacting with a small helix-loop-helix motive which, as we will probably see a bit later part of the more mobile regions of the binding site.
+The binding site is composed of a section containing the adenin moiety which is characterized by a beta sheet at the bottom of the site, and two helices lining the site. The sidechains exposed to the binding site lumen are globally hydrophobic, a part from the very important aspartate 93, which is interacting directly with the adenine moiety. The adenine moiety is surrounded by water molecules and several of these waters are important hallmarks of several HSP90 binders. The ribose moiety is not forming any H-bonds with the protein itself but has hydroxyls oriented towards the solvent. The ether of the ribose is oriented towards the valine 107, adjacent to a rather hydrophobic part of the pocket coated by Y139, F138 and W162. The triphospate is solvent exposed and interacting with a small helix-loop-helix motive which, as we will probably see a bit later part of the more mobile regions of the binding site.
 
 # Establishing a reference set
 
-Now we have defined a binding site of interest, let's try to establish first a few obvious scenarios one might want to cover with a pocket comparison method. In my previous post I stated that the principle use case for binding site comparison methods that I'm focusing on is large scale comparison or screening. The underlying use cases that I'm mainly interested in are NOT protein function prediction, but rather the prediction of potential counter targets, or extracting bound ligands from related binding sites to inform structurally during my compound design cycle.
+Now we have defined a binding site of interest, let's try to establish first a few obvious scenarios one might want to cover with a pocket comparison method. In my previous post I stated that the principle use case for binding site comparison methods that I'm focusing on is large scale comparison or screening for drug discovery purposes. The underlying use cases that I'm mainly interested in are NOT protein function prediction, but rather the prediction of potential counter targets, or extracting bound ligands from related binding sites to inform structurally during my compound design cycle. The subsequent steps I'll outline in this post depend very much on the use I want to make of binding site comparison methods. As a result, what I'll discuss here might very well not apply to other use cases of binding site comparison methods.
 
 Let's consider that we are working on a drug design project on the HSP90 N-terminal ATP binding site and we have our favourite structure of HSP90 as starting point, [i.e. 4cwr](https://www.rcsb.org/structure/4CWR).
 
-If I want to find similar binding sites to my query binding site vs all known/putative binding sites, what hits I'd expect to get first in the hitlist ?:
+If I want to find similar binding sites to my query binding site vs all known/putative binding sites, what hits I'd expect to get first in the hitlist when screening large structure databases like the RCSB PDB or Alphafold?:
 
 1.  the ATP binding site of other HSP90 alpha human structures with the same overall conformation (more or less) - same sequence & conformation
 2.  the ATP binding site of other HSP90 human isoforms with a similar conformation - likely locally identical sequences & conformation
@@ -102,20 +103,26 @@ If I want to find similar binding sites to my query binding site vs all known/pu
 5.  the ATP binding site of close homologs (sequence - families etc) to the query structure - similar sequences
 6.  the ATP binding sites of proteins sharing the same fold as HSP90 - same fold
 7.  nucleotide binding sites with similar interaction patterns but dissimar fold - same interactions
-8.  all binding sites binding ATP must be similar (provocative on purpose ...) - same ligand
+8.  all binding sites binding ATP must be similar (that's provocative on purpose ...) - same ligand
 9.  unexpected & unrelated / unknown similarities - nightmare
 
-These first five give a graduation up to which level another ATP binding site could be potentially close to the HSP90 binding site. These are the obvious clusters of sequences, structures & conformations one would expect to find. As a result, one can use this type of graduation also for validating binding site comparison methods. One major difference with the setting I'm laying out here, is that the background data encompasses the full RCSB PDB structures containing all ligand binding sites + putative binding sites (empty clefts). This sets the approach I'm suggesting into stark contrast with previous benchmark sets. Such previous sets were classically composed of a list of expected matches of binding site pairs and decoys (expected mismatches). As Vincent Le Guilloux states it fairly regularly, if you can avoid a threshold effect, avoid it! This is exactly such a case where a discrete split between a match & a mismatch is typically introduced. As a result my background data (what one usually calls a decoy) is the full pocketome and I'll try to use metrics of success that measure, how many of the potentially expected hits are found before a bulk of less expected hits & why.
+I'd expect to retrieve hits also most likely (not guaranteed) in that particular order as well. 
+These first five give a graduation up to which level another ATP binding site could be potentially close to the HSP90 binding site. These are the obvious clusters of sequences, structures & conformations one would expect to find. As a result, one can use this type of graduation also for validating binding site comparison methods. One major difference with the setting I'm laying out here, is that the background data encompasses the full RCSB PDB structures containing all ligand binding sites + putative binding sites (empty clefts). This sets the approach I'm suggesting into stark contrast with previous benchmark sets. Such previous sets were classically composed of a list of expected matches of binding site pairs and decoys (expected mismatches). As Vincent Le Guilloux states it fairly regularly, if you can avoid a threshold effect, avoid it! This is exactly such a case where a discrete split between a match & a mismatch is typically introduced. As a result my background data (what one usually calls a decoy) would be the full pocketome. As a result I'll try to use metrics of success that measure, how many of the potentially expected hits are found before a bulk of less expected hits & why.
 
-In the subsequent sections I'll go through all the painful steps to create the dataset corresponding the very first & the easiest steps. I'll cover 2 to 5 in different posts, as already this one here is getting fairly long & complex. The situation 7 & 8 are a bit more tricky to set up. As for 9 - that's the big issue with binding site comparison benchmarking - you don't know until you know, but I'll try to do a bit of my homework on that as well!
+In this post I'll go through the steps to create the dataset corresponding the very first & the easiest steps. I'll cover 2 to 5 in different posts, as already this one here is getting fairly long & complex. The situation 7 & 8 are a bit more tricky to set up. As for 9 - that's the big issue with binding site comparison benchmarking - you don't know until you know, but I'll try to do a bit of my homework on that as well!
 
-## 1. Same Sequence & conformation
+## Same sequence & conformation
 
-Alright, here we go ... the same sequence is the easiest case of all of them & several previous studies included a selection of structures, but as you'll see even here to do things properly it gets quickly tricky. The following script will cover the required steps: - define the sets of residues of our reference binding site - gather all structures (PDB codes) containing a resolved HSP90 alpha human N terminal domain - filter out structures with mutations on binding site residues compared to the wild type - get an all by all comparison of the binding sites (structurally speaking) which would allow for some rough clustering of conformations
+Alright, here we go ... the same sequence is the easiest case of all of them & several previous studies included a selection of structures, but as you'll see even here to do things properly it gets quickly tricky. The following script will cover the required steps:
+
+ - define the sets of residues of our reference binding site
+ - gather all structures (PDB codes) containing a resolved HSP90 alpha human N terminal domain
+ - filter out structures with mutations on binding site residues compared to the wild type 
+ - get an all by all comparison of the binding sites (structurally speaking) which would allow for some rough clustering of conformations
 
 ### Defining the binding site
 
-On @fig-hsp-1 we already displayed a set of amino-acids on the HSP90 structure sourrounding the binding site. Let's get a list defined by hand getting all residues:
+On @fig-hsp-1 we already displayed a set of amino-acids on the HSP90 structure surrounding the binding site. Let's get a list defined by hand getting all residues:
 
 | WT Sequence Position | Chain | Residue |
 |----------------------|-------|---------|
@@ -148,7 +155,7 @@ On @fig-hsp-1 we already displayed a set of amino-acids on the HSP90 structure s
 | T184                 | A     | T184    |
 | V186                 | A     | V186    |
 
-: ATP binding site residue selection {#tbl-atp-binding-site-residues}
+: ATP binding site residue selection on structure 4cwr {#tbl-atpresidues}
 
 ### Gathering all PDB codes containing the site
 
@@ -156,7 +163,7 @@ Now we have the protein & binding site of interest defined, we can gather all RC
 
 In order to retrieve all PDB structures of a particular protein sequences one can use various resources. The obvious one to start with would be uniprot, ncbi or the RCSB itself.
 
-From uniprot we can use something the ID mapping service for instance (I go for python directly as the API runs an asynchroneous job):
+From uniprot we can use something like the ID mapping service for instance:
 
 ```{python}
 #| code-fold: true
@@ -374,7 +381,7 @@ From the RCSB we get 3 more structures than from Uniprot. Let's see what the dif
 ```{python}
 #| code-fold: false
 #| echo: false
-#| output: false
+#| output: true
 # s = set(rcsb_pdbcodes)
 # print( [x for x in up_pdbcodes if x not in s])
 # nothing ^
@@ -383,7 +390,7 @@ print( [x for x in rcsb_pdbcodes if x not in s])
 
 ```
 
-Again a bit worrysome difference between the RCSB & uniprot. An NCBI search seems to give yet another number of 273 structures. NB: when you have a look at the P07900 sequence cluster page of the RCSB, one gets 332 hits instead. So the RCSB seems to handle the uniprot accession code a bit differently from the Polymer Entity Group ID (or there's an issue with the data of one structure).
+Again a bit worrisome difference between the RCSB & Uniprot. An NCBI search seems to give yet another number of 273 structures. NB: when you have a look at the P07900 sequence cluster page of the RCSB, one gets 332 hits instead, so even one more than through the API. The RCSB seems to handle the uniprot accession code a bit differently from the Polymer Entity Group ID (or there's an issue with the data of one structure) when searching through the advanced search through the UI. I'll have to check with the RCSB folks on that one. For now I'll stick to the 331 structures from the previous API call vs the RCSB.
 
 ::: column-margin
 Things to keep in mind
@@ -391,7 +398,7 @@ Things to keep in mind
 -   Uniprot accession vs polymer entity group ID handling to be clarified with RCSB folks
 :::
 
-As we can see in @tbl-atp-binding-site-residues the residues encompassing our binding site of interest range from amino acid E47 on the WT sequence to V186. So now we need to know whether the region expressed & resolved includes the region of interest. This can now be done with a graphql query versus the RCSB (after a lot of trial & error :unamused: ). NB: I directly filter out structures (18) that contain mutations versus wild type.
+As we can see in @tbl-atpresidues the residues encompassing our binding site of interest range from amino acid E47 on the WT sequence to V186. So now we need to know whether the region expressed & resolved in each crystal structure includes our binding site of interest. This can now be done with a graphQL query versus the RCSB (after a lot of trial & error :unamused: ). NB: I directly filter out structures (18) that contain mutations versus wild type.
 
 ```{python}
 #| code-fold: true
@@ -458,6 +465,8 @@ residuelist=[47,48,51,52,54,55,58,93,95,96,97,98,106,107,112,131,132,133,134,135
 url=f"https://data.rcsb.org/graphql?query={query}"
 response=requests.get(url)
 dataRCSBGQL=response.json()["data"]["entries"]
+
+
 resolved_regions=extractSequenceRegions(dataRCSBGQL)
 
 selectedPdbCodes=[]
@@ -470,7 +479,7 @@ print(selectedPdbCodes)
 print(str(len(selectedPdbCodes)) + " structures identified")
 ```
 
-Now we have our list of 299 WT structures with the ATP binding site resolved. NB: you might have noticed that I'm not taking the resolution, Rfree or Rwork into account for the structure selection here. During the subsequent clustering step I'll still check if all residues of interest of the binding site are well resolved (some might not be).
+Now we have our list of 299 WT structures with the ATP binding site resolved. NB: you might have noticed that I'm not taking the resolution, Rfree or Rwork into account for the structure selection here. That's on purpose. During the subsequent clustering step I'll still check if all residues of interest of the binding site are resolved (or have been modelled by the crystallographer).
 
 ::: column-margin
 Things to keep in mind
@@ -481,16 +490,16 @@ Things to keep in mind
 
 ### Cluster by conformation
 
-The ATP binding site of HSP90 can be fairly flexible in specific regions. In order to evaluate a pocket comparison method's sensitivity to sidechain or backbone movements we can split down the 299 structures we just identified to smaller clusters of very similar conformations. This will allow us later to run tests of intra vs extra cluster pocket comparison using different algorithms.
+The ATP binding site of HSP90 can be fairly flexible in specific regions. In order to evaluate a pocket comparison method's sensitivity to sidechain or backbone movements we can split down the 299 structures we just identified to smaller clusters of very similar conformations. This will allow us later to run tests using different pocket comparison algorithms.
 
-Already doing all the previous work was not as straightforward what one might have expected, but it's still doable. Especially with the API available now from the RCSB. A few years back one had to rely on predictions from the [SIFTS project](https://www.ebi.ac.uk/pdbe/docs/sifts/) from @Dana2018 & @Velankar2012.
+Already doing all the previous work was not as straightforward as what one might have expected, but it's still doable. Especially with the API available now from the RCSB. A few years back one had to rely on predictions from the [SIFTS project](https://www.ebi.ac.uk/pdbe/docs/sifts/) from @Dana2018 & @Velankar2012.
 
-Structural superimpositioning poses the following challenges here:
+Usually one relies then on superposing all structures onto a single reference frame & detect main differences, calculate RMSD's etc. However, the structural superimpositioning poses the following challenges here:
 
-1.  shall we use all chains or all if the asymetric unit contains several copies of the same protein?
+1.  in case of a multimer, shall we use all chains or all if the asymetric unit contains several copies of the same protein?
     -   In theory we should assess if there are major differences between monomers or use the monomers as expected hit we should retrieve when comparing binding sites. Both should be covered by the overall dataset here so I'll be lazy and will focus on the first chain
-2.  shall we use a standard Kabsch superimpositioning (local/global?) & overall root mean square deviation to assess the similarity between binding site conformations?
-    -   If I'm bringing this thing up, I think it's important to address it properly. I'll try to explain a bit in more detail why.
+2.  shall we use a standard Kabsch superimpositioning [@Kabsch1976] (local/global?) & overall root mean square deviation to assess the similarity between binding site conformations?
+    -   If I'm bringing this thing up, I think it's important to address it properly. I'll try to explain a bit in more detail why
 
 ::: column-margin
 Things to keep in mind
@@ -535,21 +544,23 @@ structure3.addRepresentation("cartoon",{ "sele": "protein", "color": "#B66049"})
 structure1.autoView("ATP");
 ```
 
-So if you superimpose binding site residues only with a classical Kabsch algorithm (@Kabsch1976) you might alter significantly the positions of all binding site residues that appear to be stable (beta sheet & helix 44-58 for instance). Also clustering such superposed structures on differences on amino acid positions will yield sub-optimal results.
+So if you superimpose binding site residues only with a classical Kabsch algorithm you might alter significantly the positions of all binding site residues that appear to be stable (beta sheet & helix 44-58 for instance). Also clustering such superposed structures on differences on amino acid positions will yield sub-optimal results.
 
-Furthermore, one should decouple the act of superimposing two structures & the act of calculating the similarity of conformations once they are superimposed. With the classical Kabsch algorithm & the resulting RMSD, all of this is intertwined.
+Furthermore, one should decouple the superimpositioning two structures from the similarity measurement of conformations once they are superimposed. With the classical Kabsch algorithm & the resulting RMSD, all of this is intertwined.
 
 @Kufareva2011 already wrote about that topic and stated the properties of an ideal protein similarity measure as:
 
 > An ideal measure should allow both a single 'summary' number within a fixed range (e.g. 0% to 100%) and an underlying detailed vector or matrix representation. The single number must distinguish well between related (correct) and non-related (incorrect) structure pairs, i.e. its distributions on the two sets must overlap to a minimal possible degree. It has to be relevant, i.e. capture the nature of protein folding or protein interaction determinants rather than satisfy simple geometric criteria. It has to have the minimal number of parameters, which in turn need to be well justified and understandable. It has to be stable and robust against minor or fractional (affecting a small fraction of the model) experimental and modeling errors; such changes in the structures should not lead to major leaps in the calculated similarity measure values. It has to capture the similarities or differences between the structures at any given level of accuracy/resolution. Ideally, it should have an intuitive visual interpretation.
 
-@Kufareva2011 however conclude that even distance weighted optimization & related cartesian space metrics are always prone to several issues. In the end they deem that contact based metrics are more robust. So this is what I'll be using here.
+@Kufareva2011 however conclude that even distance weighted optimization & related cartesian space metrics are always prone to several issues. In the end they conclude that contact based metrics are more robust. So this is what I'll be using here.
 
 #### Contact based conformation comparison
 
-Here I'm going to use some tools already existing in MDanalysis, a popular python toolkit for MD trajectory analysis. It contains already prebuilt funtions to calculate the contact maps of a protein structure. But overall, you can achieve the same thing with any other toolkit & a lot of looping.
+At first I'm going to use some tools already existing in MDanalysis(@Gowers2016,@MichaudAgrawal2011), a popular python toolkit for MD trajectory analysis. It contains already prebuilt funtions to calculate the contact maps of a protein structure. But overall, you can achieve the same thing with any other toolkit & a lot of looping.
 
 ```{python}
+#| fig-cap: "Contact matrix of alpha carbons of the ATP binding site of structure 3t0z" 
+#| label: fig-contact1
 
 import MDAnalysis as mda
 import numpy as np
@@ -557,6 +568,7 @@ from scipy.spatial.distance import cdist
 from MDAnalysis.analysis import distances
 import seaborn as sns
 import gemmi
+import matplotlib.pyplot as plt
 
 filename="3t0z.pdb"
 u = mda.Universe(filename)
@@ -564,11 +576,10 @@ u = mda.Universe(filename)
 residue_seqnums=[47,48,51,52,54,55,58,93,95,96,97,98,106,107,112,131,132,133,134,135,136,137,138,139,152,183,184,186]
 residues = u.select_atoms('protein and name CA and resnum {}'.format(' '.join(map(str, residue_seqnums))))
 
-print(residues)
-
 distances3t0z = distances.distance_array(residues.positions, residues.positions)
 
 sns.heatmap(distances3t0z,yticklabels=residue_seqnums,xticklabels=residue_seqnums,cmap="Blues",square=True)
+plt.show()
 ```
 
 The code above has two main limitations that come to my mind. The first one is that the residue numbering I'm using is the canonical uniprot sequence one, but I'm not assured the residue numbering is the same in all HSP90 structures I selected. The second one is that I'm only computing distances between alpha carbons. This implies that I'll only be able to measure differences in backbone conformations and as such important conformational changes. I won't be able to detect subtle side-chain conformational changes. One could use an all atom distance matrix, or compute the center of mass for each residue & compare that instead. The time being let's stick to alpha carbons. Also, I dont need to check for missing atoms in the structures for now with this simplification.
@@ -586,11 +597,10 @@ Things to keep in mind
 Now let's calculate the same distance matrix on another structure, for instance 4cwr.
 
 ```{python}
-#| fig-cap: "Comparison of distinct binding site conformations (3t0z,4cwr) using a CA distance matrix" 
+#| fig-cap: "Comparison of distinct binding site conformations (3t0z,4cwr) using a CA contact matrix" 
 #| label: fig-dm-1
 #| code-fold: true
 
-import matplotlib.pyplot as plt
 
 filename="pdbs/4cwr_aligned.pdb"
 u = mda.Universe(filename)
@@ -606,19 +616,19 @@ plt.show()
 
 ```
 
-Visual inspection won't help a lot here. Let's calculate the difference between the two matrices. I'll call the resulting matrix a *contact difference matrix* from hereon. And check if we can spot the residues we observe to be moving significantly.
+Visual inspection won't help a lot here. Let's calculate the difference between the two matrices. I'll call the resulting matrix a **contact difference matrix** from hereon. And check if we can spot the residues we observe to be moving significantly.
 
 ```{python}
 #| code-fold: true
 #| label: fig-dm-2
-#| fig-cap: "Comparison of distinct binding site conformations (3t0z,4cwr) using a CA distance matrix" 
+#| fig-cap: "Comparison of distinct binding site conformations (3t0z,4cwr) using a contact difference matrix (colorscale in Angstroms)" 
 
 distancematrix=np.abs(distances3t0z-distances4cwr)
 sns.heatmap(distancematrix,yticklabels=residue_seqnums,xticklabels=residue_seqnums,cmap="Blues",square=True)
 plt.show()
 ```
 
-That looks already a lot nicer. Here we can see that residues 106, 107 and 112 clearly move a lot, comparing both structures. Also the section 131-139 shows signficant motion when compared to residues 41-98. To understand better what is going on, let's show both structures overlayed again & highlight & label all implicated residues.
+That looks already a lot nicer. Here we can see that residues 106, 107 and 112 clearly move a lot when comparing both structures. Also the section 131-139 shows signficant motion when compared to residues 41-98. To understand better what is going on, let's show both structures overlayed. 
 
 ```{ojs}
 //| code-fold: true
@@ -649,7 +659,7 @@ structure32.addRepresentation("label", {"sele": "(106-107 or 112 or 131-139) and
 structure31.autoView("(106-107 or 112 or 131-139) and .CA and :A");
 ```
 
-The distance matrix nicely catches the small shift of the 131-139 region. There is a subtle backbone movement ongoing. Regarding residues 106, 107 and 112 they are involved in a helical region that unfolds in one of the two structures. Observing that none of the residues between 107 and 112 are in the distance matrix is due to the fact that we did our initial residue selection based on a single reference structure to define the binding site. In the structure 4cwr this segment however structures itself into a helix. By doing so for instance I11O is now exposed to the binding site lumen. As a result, do we need to adjust the binding site residue selection? In theory, if we want to properly track & understand structural changes in the dataset at hand, yes. In this particular example the difference is captured by the sourrounding residues 106-107 and 112. So let's put it on my list of things to keep in mind which is getting longer :scream:.
+The contact difference matrix nicely catches the small shift of the 131-139 region. There is a subtle backbone movement ongoing. Regarding residues 106, 107 and 112 they are involved in a helical region that unfolds in one of the two structures. Observing that none of the residues between 107 and 112 are in the distance matrix is due to the fact that we did our initial residue selection based on a single reference structure to define the binding site. In the structure 4cwr this segment however structures itself into a helix. By doing so for instance I11O is now exposed to the binding site lumen. As a result, do we need to adjust the binding site residue selection? In theory, if we want to properly track & understand structural changes in the dataset at hand, yes. In this particular example the difference is captured by the surrounding residues 106-107 and 112. So let's put it on my list of things to keep in mind which is getting longer :scream:.
 
 ::: column-margin
 Things to keep in mind
@@ -662,7 +672,7 @@ Things to keep in mind
 -   What to do with large motions implicating new residues in binding sites?
 :::
 
-I'm interested to check on how such a contact difference matrix looks like on very similar structures, so I prepared an example between 4cwr & 1uyd, which a very close (as a lot of the HSP90 alpha human structures actually).
+I'm interested to check on how such a contact difference matrix looks like on very similar structures, so I prepared an example between 4cwr & 1uyd, which are very similar (as a lot of the HSP90 alpha human structures actually).
 
 ```{python}
 #| code-fold: true
@@ -699,7 +709,7 @@ sns.heatmap(distancematrix,yticklabels=residue_seqnums,xticklabels=residue_seqnu
 plt.show()
 ```
 
-In the figure above I didn't set a maximum to the color scale. This way you can see the full extent of movements observed especially around residue 112 - 133. Again, let's repeat the exercice and plot the residues that appear to be significantly moving here: 106,112, 131-133
+In the figure above I didn't set a maximum to the color scale. This way you can see the full extent of movements observed especially around residue 112 - 133. Again, let's repeat the exercise and plot the residues that appear to be significantly moving here: 106,112, 131-133
 
 ```{ojs}
 //| code-fold: true
@@ -735,7 +745,7 @@ The conformational changes are very important (as expected). Furthermore the sel
 
 #### Clustering contact (distance) matrices
 
-Now, in order to know whether one structure is close to another we can use these contact matrices calculated before & compare these one to another. The comparison between 4cwr & 3t0z results in a contact difference matrix (@fig-dm-2). The comparison of 4cwr and 1uyd results in another contact difference matrix (@fig-dm-3). Let's try to compute an average of each contact difference matrix and see what we get.
+Now, in order to know whether one structure is close to another we can use these contact matrices calculated before & compare these one to another. The comparison between 4cwr & 3t0z results in a contact difference matrix (@fig-dm-2). The comparison of 4cwr and 1uyd results in another contact difference matrix (@fig-dm-3). Let's try to compute an average of all the values of each contact difference matrix and see what we get.
 
 ```{python}
 #| code-fold: true
@@ -793,7 +803,7 @@ Things to keep in mind
 
 ### Automating things
 
-The first issue previously mentioned was briefly checked against 3decision, where I could see that none of the RCSB structures have sequence mapping. So in the case of the selected HSP90 structures and this binding site, it's not an issue to perform residue selections using the residue numbers I used here. You could extract that kind of info using a graphql query from the RCSB as well, but I'll pass here and will come back to that if / when needed. In order to address the second of the previously mentioned issue I am going to adjust a bit the graphql query I used earlier and track for each structure which chain corresponds to HSP90 containing the binding site we are interested in here.
+The first issue previously mentioned was briefly checked against 3decision. In the case of the selected HSP90 structures and this binding site, it's not an issue to perform residue selections using the residue numbers I used here. You could extract that kind of info using a graphQL query from the RCSB as well, but I'll pass here and will come back to that if / when needed. In order to address the second of the previously mentioned issues I am going to adjust a bit the graphQL query I used earlier and track for each structure which chain corresponds to HSP90 containing the binding site we are interested in here.
 
 ```{python}
 #| code-fold: true
@@ -833,7 +843,7 @@ print(selectedPdbCodesAndChains)
 # print(str(len(selectedPdbCodes)) + " structures identified")
 ```
 
-Now we have the list of pdb codes & the chain we need to use here. Let's wrap up the rest of the whole process to produce a larger distance matrix & clustering result. In the list of pdb codes above several structures are NOT anymore available in the PDB format. So I have to adapt the previous code to work with mmCIF files instead. And lucky as I am, MDanalysis doesn't seem to support them very well, nor mmtf which apparently doesn't read in chain information from mmCIF files. So I'll have to rewrite all of that using a different toolkit closer to crystallographers, i.e. [gemmi](https://github.com/project-gemmi/gemmi).
+Now we have the list of pdb codes & the chain we need to use here. Let's wrap up the rest of the whole process to produce a larger distance matrix & clustering result. In the list of pdb codes above, several structures are NOT anymore available in the PDB format. So I have to adapt the previous code to work with mmCIF files instead. And lucky as I am, MDanalysis doesn't seem to support them very well, nor mmtf which apparently doesn't read in chain information from mmCIF files. So I'll have to rewrite all of that using a different toolkit closer to crystallographers, i.e. [gemmi](https://github.com/project-gemmi/gemmi).
 
 ```{python}
 #| code-fold: false
@@ -1015,6 +1025,7 @@ Well that got more complicated than it should have been, didn't it? And unfortun
 
 But let's resume a bit what can be done with these results & scripts I provide here. 
 We now have a set of structures that: 
+
 1. have been automagically selected from the PDB
 2. this selection can be updated at any time (unless they change their API, which they will at some point)
 3. we have performed local structure comparison to know which known ATP binding sites are similar to each other in terms of conformation
@@ -1074,7 +1085,7 @@ This section is to verify how this very first section on very similar binding si
 - They share ≥ 50 atomic ligand–protein contacts of same type.
 In total, we found 38 066 pairs of pockets for the Subject set. We expect that a significant number of entries in this set share a high level of pocket similarity because they recognize the same or similar types of ligands and likely possess a putative common anchor region due to the overlap of a large number of ligand-pocket contacts (Brylinski and Skolnick, 2009). Note that no geometric information is explicitly used in this procedure.
 
-Well this is a totally different approach and very much focused around the "similar ligands bind to similar pockets" assumption, strenghtened by the use of contact analysis. As such the dataset is not at all comparable to what we have for now, it is likely already very challenging. 
+Well this is a totally different approach and very much focused around the "similar ligands bind to similar pockets" assumption, strengthened by the use of contact analysis. As such the dataset is not at all comparable to what we have for now, it is likely already very challenging. 
 
 
 #### Though Dataset @Govindaraj2018
@@ -1091,12 +1102,12 @@ The approach taken to create the Tough M1 dataset is similar to the one for APoc
 In the current study, two entries were randomly selected from each of the 911 clusters if their binding sites were found similar (d1 e 0.6 and d2 e 0.2). The same number of dissimilar binding sites was randomly selected from the initial set of 911 clusters. Binding site pairs with an Enzyme Commission (E.C.) annotation differing at the first level were retrieved until the final number of 769 pairs was reached.
 ...
 
-- Again, a ligand position & sourroundings are used to define the area of the binding site
+- Again, a ligand position & surroundings are used to define the area of the binding site
 - The expected hits were obtained using another algorithm called SiteAlign (@Schalon2008). This would be the corresponding method to what I did with the contact matrices here, but SiteAlign works on a larger variety of structures. However, it's already giving an output score of the binding site similarity, which is interesting, but already biasing the set as well
 - The set is composed of 769 pairs of non redudant similar & dissimilar binding sites. Redundancy reduction is an important aspect for the work around sc-PDB, this set & statistical significance on evaluations performed using such a set. On my end, my first data-set is nearly 100% redundant (:scream:) and will allow to verify the stability of a pocket comparison algorithm on similar binding sites (apo & holo) ... so my first set doesn't have exactly the same purpose as this one here.
 
 
-# Recaputilating my things to keep in mind
+# Recaputilating my things to keep in mind - Perspectives
 
 During the writing process I had to set aside or make several approximations. Let's just resume a bit the list of things to keep in mind: 
 
