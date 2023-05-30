@@ -25,12 +25,12 @@ execute:
 
 # Introduction
 
-[The previous post](../2023-04-03-binding-site-comparison-benchmark-I/2023-04-03-binding-site-comparison-benchmark-I.qmd) of this series established a first protocol on how to identify & cluster (conformationally) the ATP binding site of the N-terminal domain of human HSP90 alpha. It can be generalized to other proteins as well but to keep it simple (it's that simple) I'll stick to a single protein for now and generalize at a later stage.
+[The previous post](../2023-04-03-binding-site-comparison-benchmark-I/2023-04-03-binding-site-comparison-benchmark-I.qmd) of this series established a first protocol on how to identify & cluster the ATP binding site of the N-terminal domain of human HSP90 alpha. It can be generalized to other proteins as well but to keep it simple I'll continue this series on a single protein for now and generalize at a later stage.
 
 In this second post we'll gradually extend the dataset with ATP binding sites of proteins that are very similar to the human HSP90 alpha. 
 
 #### What is similar?
-One can adopt several ways to assess similarity between proteins. Here I'll use a commonly understood and accepted sequence local similarity on the N-terminal domain. I'll further assess the binding site residue conservation in detail. So at this stage of the dataset creation I'll focus on things I'd expect to be found as very very similar to the human HSP90 alpha N-terminal domain when doing a pocket comparison. 
+One can adopt several ways to assess the similarity between proteins. Here I'll use a commonly understood and accepted sequence local similarity on the N-terminal domain. I'll further assess the binding site residue conservation in detail. So at this stage of the dataset creation I'll focus on things I'd expect to be found as very very similar to the human HSP90 alpha N-terminal domain when doing a pocket comparison. 
 The Rognan lab discussed this topic in more than one paper. Feel free to check out @Kellenberger2008 and @Eguida2022 for more details.
 
 #### Things to keep in mind
@@ -46,7 +46,7 @@ Things to keep in mind
 
 ## Identify similar sequences
 
-Usually one what do just a simple blast! Unfortunately, things are a bit trickier. First of all, we are currently looking only at the N-terminal domain of HSP90 (around 230 amino acids). The full human HSP90 alpha protein has 732 amino acids. So, shall we search for globally similar sequences? or smaller regions?
+In order to identify similar sequences one usually would do just a simple blast. Unfortunately, things are a bit trickier. First of all, we are currently looking only at the N-terminal domain of HSP90 (around 230 amino acids). The full human HSP90 alpha protein has 732 amino acids. So, shall we search for globally similar sequences? or smaller regions?
 
 The N-terminal part is considered to be a domain, so structured on itself. There are numerous structure resolution papers that show that, @Sreeramulu2009 is just one of them, as an example here, where only the N-terminal domain of HSP90 is amplified, produced & resolved. 
 
@@ -56,7 +56,7 @@ For the sake of simplicity I'll take the whole N-terminal domain (amino acids 9-
 
 ### The blast mess
 
-Here we need to find PDB structures containing a resolved portion of the domain of interest (or similar). There are unfortunately thousands of services allowing to do that, and as usual they don't give the same results ... it would be too easy otherwise. One important factor is to search against an up to date version of the RCSB PDB. The only service I found that clearly states what release of the PDB is being used is [NCBI blastp page](https://blast.ncbi.nlm.nih.gov/Blast.cgi?ALIGNMENTS=50&ALIGNMENT_VIEW=Pairwise&AUTO_FORMAT=Semiauto&CLIENT=web&DATABASE=pdb&DESCRIPTIONS=100&ENTREZ_QUERY=(none)&EXPECT=20000&FORMAT_BLOCK_ON_RESPAGE=None&FORMAT_ENTREZ_QUERY=(none)&FORMAT_OBJECT=Alignment&FORMAT_TYPE=HTML&GAPCOSTS=9+1&I_THRESH=0.005&LAYOUT=TwoWindows&MATRIX_NAME=PAM30&NCBI_GI=on&PAGE=Proteins&PROGRAM=blastp&QUERY=gapn&SERVICE=plain&SET_DEFAULTS.x=14&SET_DEFAULTS.y=5&SHOW_LINKOUT=on&SHOW_OVERVIEW=on&WORD_SIZE=2&END_OF_HTTPGET=Yes).
+Now let's try to set up a first blast search. We want to find PDB structures containing a resolved portion of the domain of interest (or similar). There are unfortunately thousands of services allowing to do that, and as usual they don't give the same results. One important factor is to search against an up to date version of the RCSB PDB. The only service I found that clearly states what release of the PDB is being used is [NCBI blastp page](https://blast.ncbi.nlm.nih.gov/Blast.cgi?ALIGNMENTS=50&ALIGNMENT_VIEW=Pairwise&AUTO_FORMAT=Semiauto&CLIENT=web&DATABASE=pdb&DESCRIPTIONS=100&ENTREZ_QUERY=(none)&EXPECT=20000&FORMAT_BLOCK_ON_RESPAGE=None&FORMAT_ENTREZ_QUERY=(none)&FORMAT_OBJECT=Alignment&FORMAT_TYPE=HTML&GAPCOSTS=9+1&I_THRESH=0.005&LAYOUT=TwoWindows&MATRIX_NAME=PAM30&NCBI_GI=on&PAGE=Proteins&PROGRAM=blastp&QUERY=gapn&SERVICE=plain&SET_DEFAULTS.x=14&SET_DEFAULTS.y=5&SHOW_LINKOUT=on&SHOW_OVERVIEW=on&WORD_SIZE=2&END_OF_HTTPGET=Yes).
 
 I don't want to reinvent the wheel or install blast locally etc, so here I'll use the biotite (@Kunzmann2018) integration of the NCBI blast service. 
 
@@ -138,7 +138,7 @@ for alignment in root.iter('Hit'):
 print(identifiers)
 ```
 
-We end up here with 139 hits. As a reminder, when gathering all structures of the same protein we identified over 300 structures. I'm expecting them to be part of the hitlist found here. I tried to find any indication on the PDB subset used by the NCBI, but couldn't identify whether they use the full RCSB PDB or a subset only. Anyway, this isn't useable as such. So I optimistically tried the blast on uniprot and got even less hits. Digging into the detail I noticed that the ebi is just running an ncbi blast behind the scenes as well. 
+We end up here with 139 hits. As a reminder, when gathering all structures of the same protein we identified over 300 structures. I'm expecting them to be part of the hitlist found here. I tried to find any indication on the PDB subset used by the NCBI, but couldn't identify whether they use the full RCSB PDB or a subset only. In conclusion: this isn't useable as such. So I optimistically tried the blast service on uniprot and got even less hits. Digging into the detail I noticed that the ebi is just running an ncbi blast behind the scenes as well. 
 
 Well that's a bummer. I have two options here, either I expand the hitlist, by identifying all other structures encompassing the same protein as the hits I got here. But the hits aren't unique as well per biomolecule, not sure what this corresponds to in the end. Or I'd need to basically build my own blast database locally & do everything by hand. Let me roughly outline the steps here:
 
@@ -150,7 +150,7 @@ For each PDB structure & chain:
 
 #### Fall back to the RCSB PDB search
 
-The RCSB PDB seems to offer a protein sequence search as API now. Let's try that option instead: 
+The RCSB PDB seems to offer a protein sequence search as API now as well & this is the one I decided to use in the end: 
 
 ```{python}
 #| eval: false
@@ -182,14 +182,21 @@ hits=json.loads(response.text)["result_set"]
 print(hits[0])
 ```
 
-Here we get all structures (510 hits by the time I'm writing this) & even a bit more information which portion of the input sequence hit where on the structure. Now let's start meddling with the sequence mess and integrate already all the clustering bits we did in the previous post. 
+Here we get all structures (510 hits by the time I'm writing this) & even a bit more information which portion of the input sequence hit where on the structure. Be gentle with the calls to the RCSB, else they will blacklist your query. 
+
+Now let's start meddling with the sequence mess and integrate already all the 
+clustering bits we did in the previous post. 
 
 ### Clustering the similar binding sites
+
+In the previous clustering I did on identical structures I didn't need to bother about residue numberings as they were identical in the end for all human HSP90 alpha structures. Here, however, I'll retrieve sequences from other organisms etc and it's guaranteed that the residue numberings won't coincide most of the time with the ones I used before. 
+
+As a result the code I provide here includes a proper sequence mapping on the results from the RCSB query directly. 
 
 ```{python}
 #| code-fold: true
 #| output: false
-#| eval: false
+#| eval: true
 
 import gemmi
 from gemmi import cif
@@ -200,6 +207,8 @@ import scipy.spatial.distance as ssd
 import scipy
 import matplotlib.pyplot as plt
 import pandas as pd
+from IPython.display import Markdown
+from tabulate import tabulate
 import blosum
 subst_matrix = blosum.BLOSUM(62)
 
@@ -244,8 +253,6 @@ clean_hits={hit["identifier"]:hit["services"][0]["nodes"][0]["match_context"][0]
 #Let's get our ATP binding site residue list mapping from our initial sequence: 
 residue_list=np.array([47,48,51,52,54,55,58,93,95,96,97,98,106,107,112,131,132,133,134,135,136,137,138,139,152,183,184,186])-9
 
-#As we searched only for a chunk of the original sequences, the indices are now off by 9 amino acids. Let's adapt that: 
-# residue_list=np.array(residue_list)-9
 
 def transformResidueNumbers(residue_numbers, rcsbpolymerhit):
   df = pd.DataFrame(columns = ["aa_query", "aa_subject", "query_residue_number","subject_residue_number"])
@@ -353,7 +360,7 @@ file.close()
 
 ```{python}
 #| output: false
-#| eval: false
+#| eval: true
 import numpy as np 
 
 def clusterMatrices(matrixList,selectedResidueList,blosumWeight=1.0):  
@@ -387,8 +394,8 @@ clusters=clusterMatrices(contactMatrices["contactMatrices"],contactMatrices["fil
 ```{python}
 #| fig-cap: Result of hierarchical clustering of HSP90 ATP binding sites based on CA positions
 #| label: fig-clustering-final
-#| eval: false
-#| 
+#| eval: true
+#| code-fold: true
 
 plt.figure(figsize=(9, 100))
 
@@ -396,14 +403,14 @@ scipy.cluster.hierarchy.dendrogram(clusters,labels=contactMatrices["filteredLabe
 plt.show()
 ```
 
-Well that was a bit painful to set up. As usual it's a bit tricky to get the sequence numberings right, especially when aligning structures with gaps in the underlying aligned sequences. However in the figure above now we should have a good hierarchical tree for a pure backbone geometry based comparison. 
-The pocket comparison method we'd might want to evaluate later might make use of particular amino acids or side chain positions. Thus, I already integrated a bit of code to account for a penalty in the distance between two binding sites if unfavourable permutations were found (blosum62 score<0). Feel free to adapt to whatever you need. In the current code, an unfavourable substitution of an amino acid, even if the positionn of the alpha carbon is the same is equivalent to a 1A distance. 
+Well that was a bit painful to set up. However in the figure above now we should have a good hierarchical tree for a pure backbone geometry based comparison. 
+The pocket comparison method we'd might want to evaluate later might make use of particular amino acids or side chain positions. Thus, I already integrated a bit of code to account for a penalty in the distance between two binding sites if unfavourable permutations were found (blosum62 score<0). Feel free to adapt to whatever you need. In the current code, an unfavourable substitution of an amino acid is equivalent to a 1A distance between the two alpha carbons. The hierarchical tree was colored at a cut distance of 2A. We can however observe 3 smaller clusters in the large pink cluster. This very likely corresponds to the 3 clusters we identified on structures of identical sequence. 
 
 In the end we get a full set of structures, HSP90 alpha human ones, and similars. Let's check how much of our dataset established in the previous post. In theory we should be able to gather 100% of it through the approach outlined here as well. 
 
 ```{python}
 #| code-fold: true
-#| eval: false
+#| eval: true
 import pickle
 
 file = open('data/identicallist.pkl', 'rb')
@@ -429,10 +436,9 @@ I won't put all the raw results in a table format in HTML here, but [you can get
 #| label: tbl-final
 #| tbl-cap: First ten rows of the final list of structures, chain codes & residue selections
 #| echo: false
-#| eval: false
+#| eval: true
 
-from IPython.display import Markdown
-from tabulate import tabulate
+
 
 Markdown(tabulate(
   contactMatrices["finalList"].head(10),
@@ -449,16 +455,16 @@ The dataset contains information about:
 - what binding site is similar to another
 - to what extent the binding sites are similar (more or less similar)
 
-So we already have a set of structures that we can in theory compare to one another an see if the binding site comparison similarity metric correlates with the similarity we considered here. 
+So we already have a set of structures that we can in theory compare to one another and see if the binding site comparison similarity metric correlates with the similarity we considered here. 
 We can also use the dataset to compare to structures outside of the set, a decoy set. This is in theory easy to set up but has important implications on how to evaluate a performance of a method. 
 
 First let's clean up a bit and define a function that allows us to get the most similar binding sites from our set versus a chosen query structure:
   
 ```{python}
 #| code-fold: true
-#| #| label: tbl-similarity-sample
+#| label: tbl-similarity-sample
 #| tbl-cap: Excerpt of the similarity matrix of binding sites
-#| eval: false
+#| eval: true
 import itertools
 
 def getDistanceMatrix(matrixList,selectedResidueList,blosumWeight=1.0):  
@@ -505,13 +511,13 @@ This file can be used for various purposes. You can decide to reduce the dataset
 
 #### Decoys?
 
-In all benchmark datasets I've seen so far in the litterature there's a distinction between binding sites one should find (actives) and binding sites one shouldn't find (decoys). 
-I fully understand that this is rather standard procedure for similarity metric performance measurements & evaluation studies. However, in the context of binding site comparison there are  on a large variety of structures (like against the PDB) things get a little bit trickier. 
+In all benchmark datasets that I have seen so far in the litterature there's a distinction between binding sites one should find (actives) and binding sites one shouldn't find (decoys). 
+I fully understand that this is rather standard practice for similarity metric performance measurements & evaluation studies. However, in the context of binding site comparison on a large variety of structures (like against the PDB) things get a little bit trickier. 
 
 
 ## Assessing ligand similarity in similar binding sites 
 
-One interesting aspect about HSP90 is that there are a lot of structures in the RCSB. A lot of these structures have soaked or cocrystallized ligands from similar or congeneric chemical series. One other analysis (just out of curiosity) one can add here is to assess how similar the ligands binding to the very similar binding site conformations really are.
+One interesting aspect about HSP90 is that there are a lot of structures in the RCSB. A lot of these structures have soaked or cocrystallized ligands from similar or congeneric chemical series. One interesting aspect to analyze is how similar two ligands are to each other when they are known to bind to very similar binding site conformations.
 
 In order to try integrate that we first need to gather the ligands contained in the binding site encompassed by the residues selected, which aren't ions or surfactants or water. I didn't find a clear & easy way to get ligands contained within a given set of residues using RCSB resources, so I'll calculate the center of mass of the binding site residues here and check against the center of mass of all ligands in the structure. Very cumbersome but should do the trick here.
 
@@ -705,9 +711,9 @@ The table above summarizes for 10 out of over 400 structures the similarity of t
 
 Feel free to adapt the code to display the plots for all structures.
 
-When looking through the first few plots we can see that even though sometimes there might be some correlation between the two similarity metrics, for the large bulk there doesn't seem to be. Both similarity metrics can be discussed, refined, rendered more fuzzy or precise, one can also replace the ligand similarity by an MCS approach. Again, you can adapt the code quite easily to get there, but still the current results give a lot of examples where rather different ligands can bind to very similar binding sites. Also in several cases ligands above the significance threshold can be found in very similar pockets (compound series), but the opposite is also true.
+When looking through the first few plots we can see that even though sometimes there might be some correlation between the two similarity metrics, for the large bulk there doesn't seem to be any correlation. Both similarity metrics can be discussed, refined, rendered more fuzzy or precise, one can also replace the ligand similarity by an MCS approach. Again, you can adapt the code quite easily to get there, but still the current results give a lot of examples where rather different ligands can bind to very similar binding sites. Also in several cases ligands above the significance threshold can be found in very similar pockets (compound series), but the opposite is also true.
 
-Let's discuss in more detail a typical compound series found in the dataset. In the @tbl-similarity-fp structure 2h55 resulted in the following distribution: 
+Let's discuss in more detail a typical compound series found in the dataset. Structure 2h55 resulted in the following distribution: 
 
 ![Distribution of ligand similarity vs pocket similarity values when using 2h55 ligand DZ8 as reference](images/2h55_plot.png){#fig-2h55}
 
@@ -722,4 +728,31 @@ This example is a very good one to illustrate the complexity behind the theory o
 We could then even imagine that DZ8 is conformation selective & has a few hallmarks of a more specific inhibitor. That's a bit far fetched for a comparison with a plain ATP analog here, but it appears to go into that direction nevertheless. 
 
 
+## Testing algorithms for rank order
 
+Even though we don't have a full benchmark data-set to scrutinize every little detail of every algorithm, we can already run a few tests with what we have. 
+
+We can for instance envision the following scenario: For structures in the multiple larger subclusters we observed on @fig-clustering-final, what if one of them was taken as query versus the full RCSB PDB. Would we find the closest analogs with a pocket comparison algorithm?
+
+Now let's go into the tedious task of running some of the comparison algorithms against that data-set, considering the full PDB as background data (decoys). I'll start with 2 commercial solutions, for the main & simple reason that I don't have to prepare a dataset myself, but "just call an API". 
+
+One important aspect of variability I'll encounter here is the scope & definition of the binding site in these tools. 3decision runs fpocket [@LeGuilloux2009], PSILO SiteFinder for instance. KRIPO [Ritschel2014] on the other hand uses only ligands to define a binding site (so bye bye apo structures, I guess). For all of these approaches I'll try to see how to identify the relevant bindning site of interest if used as a query.
+
+### Algorithms I'll test (for now)
+
+- **Discngine 3decision**: Since my last year of my PhD till now I've been trying to develop my own algorithms to run pocket comparison. Throughout the years the team grew & a few colleagues of mine joined the effort. As a result, Discngine 3decision integrates now our current integration of this work. It's accessible via the UI, but also through a REST API, which I'll use here instead. 
+
+- **CCG PSILO**: PSILO is CCG's protein structure repository and Howard Feldman & Paul Labute have also integrated an algorithm in PSILO itself [@Feldman2010].
+
+- **KRIPO**: Is on the list of the algorithms evaluated in the paper by @Ehrt2018. It's probably the only one I can use without too much development required to get me going on the level of the RCSB PDB. NB: it's an interaction based algorithm. 
+
+
+### Discngine 3decision
+
+Below you can find code to run a pocket comparison versus 3decision with a sample input structure & residue selection. 
+
+```{python}
+
+apikey="91muf1dF.cedf2ea0-fe5d-11ed-a9bc-7936170dc693"
+
+```
