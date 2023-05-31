@@ -753,6 +753,6 @@ Below you can find code to run a pocket comparison versus 3decision with a sampl
 
 ```{python}
 
-apikey="91muf1dF.cedf2ea0-fe5d-11ed-a9bc-7936170dc693"
+apikey=""
 
 ```
