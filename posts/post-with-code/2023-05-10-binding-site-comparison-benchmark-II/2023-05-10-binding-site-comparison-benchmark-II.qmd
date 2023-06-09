@@ -726,7 +726,7 @@ On figure @fig-6b9a we can see a very different distribution. Here we have an AT
 It is very interesting to observe the skewness to more dissimilar binding sites compared to 6b9a. Despite the dissimilarity on binding sites we can see a large cluster of ligands with around 0.5 Tanimoto similarity to PA7. This cluster encompasses ATP & all the closer analogs. 
 This example is a very good one to illustrate the complexity behind the theory of similar ligands bind to similar binding sites. ATP analogs clearly accomodate for a larger variety of binding site conformations & mutations than the compound series around DZ8 does. 
 We could then even imagine that DZ8 is conformation selective & has a few hallmarks of a more specific inhibitor. That's a bit far fetched for a comparison with a plain ATP analog here, but it appears to go into that direction nevertheless. 
-
+<!-- 
 
 ## Testing algorithms for rank order
 
@@ -749,10 +749,5 @@ One important aspect of variability I'll encounter here is the scope & definitio
 
 ### Discngine 3decision
 
-Below you can find code to run a pocket comparison versus 3decision with a sample input structure & residue selection. 
+Below you can find code to run a pocket comparison versus 3decision with a sample input structure & residue selection.  -->
 
-```{python}
-
-apikey="91muf1dF.cedf2ea0-fe5d-11ed-a9bc-7936170dc693"
-
-```
