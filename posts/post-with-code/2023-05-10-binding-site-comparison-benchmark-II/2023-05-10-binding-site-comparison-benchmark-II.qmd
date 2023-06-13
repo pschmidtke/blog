@@ -397,9 +397,14 @@ clusters=clusterMatrices(contactMatrices["contactMatrices"],contactMatrices["fil
 #| eval: true
 #| code-fold: true
 
-plt.figure(figsize=(9, 100))
+import radialtree as rt
 
-scipy.cluster.hierarchy.dendrogram(clusters,labels=contactMatrices["filteredLabels"],orientation='right',leaf_font_size=9,color_threshold=2.0)
+# plt.figure(figsize=(9, 100))
+
+dendrogram=scipy.cluster.hierarchy.dendrogram(clusters,labels=contactMatrices["filteredLabels"],orientation='right',leaf_font_size=3,color_threshold=1.5,no_plot=True)
+rt.plot(dendrogram,fontsize=3,figsize=[12,12])
+
+
 plt.show()
 ```
 
